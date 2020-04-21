@@ -5,20 +5,11 @@
 #include <string.h>
 #include <errno.h>
 
-// For mutex support
-#if defined(_WIN32)
-#include <windows.h>
-#elif defined(__unix__) || defined(unix) || defined(__unix)
-#include <unistd.h>
-#ifdef _POSIX_THREADS
-#include <pthread.h>
-#endif
-#endif
-
 #include <md4c.h>
 #include <md4c_html.h>
 
 static PyObject *ParseError;
+static PyObject *StopParsing;
 
 /******************************************************************************
  * Buffer functions                                                           *
@@ -45,7 +36,9 @@ static int buffer_init(DynamicBuffer *buf) {
     return 0;
 }
 
-/* Double the size of the DynamicBuffer. Return 0 on success, -1 on failure. */
+/* 
+ * Double the size of the DynamicBuffer. Return 0 on success, -1 on failure.
+ */
 static int buffer_grow(DynamicBuffer *buf) {
     size_t new_len = buf->len * 2;
     char *new_data = realloc(buf->data, new_len);
@@ -70,6 +63,15 @@ static int buffer_append(DynamicBuffer *buf, const char *data, size_t len) {
 
     // Append
     memcpy(buf->data + buf->pos, data, len);
+    buf->pos += len;
+    return 0;
+}
+
+/*
+ * Free the DynamicBuffer
+ */
+static void buffer_free(DynamicBuffer *buf) {
+    free(buf->data);
 }
 
 /******************************************************************************
@@ -83,13 +85,6 @@ typedef struct {
     PyObject_HEAD
     unsigned int parser_flags;
     unsigned int renderer_flags;
-    const char *output;
-    Py_ssize_t out_size;
-#if defined(_WIN32)
-    CRITICAL_SECTION out_mutex;
-#elif defined(_POSIX_THREADS)
-    pthread_mutex_t out_mutex;
-#endif
 } HTMLRendererObject;
 
 /*
@@ -106,23 +101,15 @@ static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
         return -1;
     }
 
-#if defined(_WIN32)
-    InitializeCriticalSection(&self->out_mutex);
-#elif defined(_POSIX_THREADS)
-    int sts = pthread_mutex_init(&self->out_mutex);
-    if (sts != 0) {
-        errno = sts;
-        PyErr_SetFromErrno(PyExc_OSError);
-        return -1;
-    }
-#endif
+    return 0;
 }
 
+/*
+ * MD4C HTML callback. Appends to the buffer.
+ */
 static void HTMLRenderer_parse_callback(const char *output,
-        MD_SIZE out_size, void *self_void) {
-    HTMLRendererObject *self = self_void;
-    self->output = output;
-    self->out_size = out_size;
+        MD_SIZE out_size, void *buf) {
+    buffer_append(buf, output, out_size);
 }
 
 /*
@@ -131,7 +118,6 @@ static void HTMLRenderer_parse_callback(const char *output,
  */
 static PyObject * HTMLRenderer_parse(HTMLRendererObject *self, PyObject *args) {
     PyThreadState *_save;
-    int mutex_sts;
 
     // Parse arguments
     const char *input;
@@ -140,53 +126,27 @@ static PyObject * HTMLRenderer_parse(HTMLRendererObject *self, PyObject *args) {
         return NULL;
     }
 
-    // Lock the mutex
-#if defined(_WIN32)
-    Py_UNBLOCK_THREADS
-    EnterCriticalSection(&self->out_mutex);
-#elif defined(_POSIX_THREADS)
-    Py_UNBLOCK_THREADS
-    mutex_sts = pthread_mutex_lock(&self->out_mutex);
-    if (mutex_sts != 0) {
-        Py_BLOCK_THREADS
-        errno = mutex_sts;
-        PyErr_SetFromErrno(PyExc_OSError);
-        return NULL;
-    }
-#endif
-
     // Do the parse
-    int sts = md_html(input, in_size, HTMLRenderer_parse_callback,
-            self, self->parser_flags, self->renderer_flags);
-    // Store values before unlocking mutex
-    const char *output = self->output;
-    Py_ssize_t out_size = self->out_size;
-
-    // Unlock the mutex
-#if defined(_WIN32)
-    LeaveCriticalSection(&self->out_mutex);
-    Py_BLOCK_THREADS
-#elif defined(_POSIX_THREADS)
-    mutex_sts = pthread_mutex_unlock(&self->out_mutex);
-    if (mutex_sts != 0) {
-        Py_BLOCK_THREADS
-        errno = mutex_sts;
+    Py_UNBLOCK_THREADS
+    DynamicBuffer buf;
+    if (buffer_init(&buf) < 0) {
         PyErr_SetFromErrno(PyExc_OSError);
-        Py_DECREF(result);
         return NULL;
     }
+    int sts = md_html(input, in_size, HTMLRenderer_parse_callback,
+            &buf, self->parser_flags, self->renderer_flags);
     Py_BLOCK_THREADS
-#endif
 
     // Return
     if (sts < 0) {
         PyErr_SetString(ParseError, "Could not parse markdown");
         return NULL;
     }
-    PyObject *result = Py_BuildValue("s#", self->output, self->out_size);
+    PyObject *result = Py_BuildValue("s#", buf->data, buf->len);
     if (result == NULL) {
         return NULL;
     }
+    buffer_free(&buf);
     return result;
 }
 
@@ -205,20 +165,13 @@ static int HTMLRenderer_clear(HTMLRenderer *self) {
  * HTMLRenderer destructor
  */
 static void HTMLRenderer_dealloc(HTMLRendererObject *self) {
-    // Free mutex
-#if defined(_WIN32)
-    DeleteCriticalSection(&self->out_mutex);
-#elif defined(_POSIX_THREADS)
-    pthread_mutex_destroy(&self->out_mutex);
-#endif
-
     PyObject_GC_UnTrack(self);
     HTMLRenderer_clear(self);
     Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
 static PyMethodDef HTMLRenderer_methods[] = {
-    {"parse", (PyCFunction) HTMLRenderer_parse, METH_NOARGS,
+    {"parse", (PyCFunction) HTMLRenderer_parse, METH_VARARGS,
         "Parse a Markdown document and return the rendered HTML"
     },
     {NULL}
@@ -238,8 +191,20 @@ static PyTypeObject HTMLRendererType = {
     .tp_new = PyType_GenericNew,
     .tp_init = (initproc) HTMLRenderer_init,
     .tp_dealloc = (destructor) HTMLRenderer_dealloc,
+    .tp_traverse = (traverseproc) HTMLRenderer_traverse,
+    .tp_clear = (inquiry) HTMLRenderer_clear,
     .tp_methods = HTMLRenderer_methods,
 };
+
+/******************************************************************************
+ * TODO Basic inline parser - Provide our own HTML renderer that only renders
+ * the first paragraph? This seems like a bad idea. Maybe just implement a
+ * basic inline parser ourselves? Not sure. If we do the basic inline parser,
+ * only render the first paragraph, or raise an exception if it's more than
+ * one paragraph? Not sure.
+ *
+ * Actually, implement this in flask-md4c.
+ */
 
 /******************************************************************************
  * MD4C parsing-only class. TODO Accept callables for all the callbacks that  *
@@ -252,9 +217,380 @@ static PyTypeObject HTMLRendererType = {
 
 typedef struct {
     PyObject_HEAD
-    //TODO Parser flags
+    unsigned int parser_flags;
 } GenericParserObject;
 
+/*
+ * GenericParser __init__
+ */
+static int GenericParser_init(GenericParserObject *self, PyObject *args,
+        PyObject *kwds) {
+    unsigned int parser_flags = 0;
+    
+    static char *kwlist[] = {"parser_flags", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I", kwlist, &parser_flags)) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/*
+ * GenericParser callback data
+ * Stores the pointers to the Python callback functions and other data required
+ * by the C callback functions
+ */
+typedef struct {
+    PyObject *enter_block_callback;
+    PyObject *leave_block_callback;
+    PyObject *enter_span_callback;
+    PyObject *leave_span_callback;
+    PyObject *text_callback;
+    int exception; // Callback sets to nonzero if exception, zero if stopped
+                   // with StopParsing
+} GenericParserCallbackData;
+
+/*
+ * GenericParser Attribute Builder
+ * Builds a list of 2-tuples (substr_type, substr_text) representing an
+ * MD_ATTRIBUTE.
+ * substr_type is either MD_TEXT_NORMAL, MD_TEXT_ENTITIY, or MD_TEXT_NULLCHAR
+ * and substr_text is a string
+ *
+ * Return the list on success, NULL on failure
+ */
+static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
+    // Init list
+    PyObject *list = PyList_New(0);
+    if (list == NULL) {
+        return NULL;
+    }
+
+    // Add items
+    for (int i = 0; attr->substr_offsets[i] != attr->size; i++) {
+        // Init item
+        PyObject *item = Py_BuildValue("(is#)", attr->substr_types[i],
+                attr->text + attr->substr_offsets[i],
+                attr->substr_offsets[i + 1] - attr->substr_offsets[i]);
+        if (item == NULL) {
+            Py_DECREF(list);
+            return NULL;
+        }
+
+        // Append item
+        if (PyList_Append(list, item) < 0) {
+            Py_DECREF(item);
+            Py_DECREF(list);
+            return NULL;
+        }
+
+        offset = attr->substr_offsets[i];
+    }
+
+    return list;
+}
+
+/*
+ * GenericParser C callbacks
+ */
+static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
+        PyObject *python_callback) {
+    // Construct arguments
+    PyObject *arglist;
+    switch(type) {
+        case MD_BLOCK_UL:
+            arglist = Py_BuildValue("(i{s:i,s:C})", type,
+                    "is_tight", ((MD_BLOCK_UL_DETAIL *) detail)->is_tight,
+                    "mark", ((MD_BLOCK_UL_DETAIL *) detail)->mark);
+            break;
+        case MD_BLOCK_OL:
+            arglist = Py_BuildValue("(i{s:i,s:i,s:C})", type,
+                    "start", ((MD_BLOCK_OL_DETAIL *) detail)->start,
+                    "is_tight", ((MD_BLOCK_OL_DETAIL *) detail)->is_tight,
+                    "mark_delimiter", ((MD_BLOCK_OL_DETAIL *) detail)->
+                        mark_delimiter);
+            break;
+        case MD_BLOCK_LI:
+            arglist = Py_BuildValue("(i{s:i,s:C,s:i})", type,
+                    "is_task", ((MD_BLOCK_LI_DETAIL *) detail)->is_task,
+                    "task_mark", ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
+                    "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
+                        task_mark_offset);
+            break;
+        case MD_BLOCK_H:
+            arglist = Py_BuildValue("(i{s:i})", type
+                    "level", ((MD_BLOCK_H_DETAIL *) detail)->level);
+            break;
+        case MD_BLOCK_CODE:
+            arglist = Py_BuildValue("(i{s:O,s:O,s:C})", type,
+                    "info", GenericParser_md_attribute(
+                        &((MD_BLOCK_CODE_DETAIL *) detail)->info),
+                    "lang", GenericParser_md_attribute(
+                        &((MD_BLOCK_CODE_DETAIL *) detail)->lang),
+                    "fence_char", ((MD_BLOCK_CODE_DETAIL *) detail)->
+                        fence_char);
+            break;
+        case MD_BLOCK_TH:
+        case MD_BLOCK_TD:
+            arglist = Py_BuildValue("(i{s:i})", type,
+                    "align", ((MD_BLOCK_TD_DETAIL *) detail)->align);
+            break;
+        default:
+            arglist = Py_BuildValue("(i{})", type);
+    }
+    if (arglist == NULL) {
+        return -1;
+    }
+
+    // Call the Python callback
+    PyObject *result = PyObject_CallObject(python_callback, arglist);
+    Py_DECREF(arglist);
+    if (result == NULL) {
+        // Exception. Stop parsing. GenericParser.parse will check if the
+        // exception was StopParsing.
+        return -1;
+    }
+
+    // No error, continue parsing.
+    Py_DECREF(result);
+    return 0;
+}
+static int GenericParser_enter_block(MD_BLOCKTYPE type, void *detail,
+        void *cb_data) {
+    return GenericParser_block(type, detail,
+            ((GenericParserCallbackData *) cb_data)->enter_block_callback);
+}
+static int GenericParser_leave_block(MD_BLOCKTYPE type, void *detail,
+        void *cb_data) {
+    return GenericParser_block(type, detail,
+            ((GenericParserCallbackData *) cb_data)->leave_block_callback);
+}
+static int GenericParser_span(MD_SPANTYPE type, void *detail,
+        PyObject *python_callback) {
+    // Construct arguments
+    PyObject *arglist;
+    switch(type) {
+        case MD_SPAN_A:
+            arglist = Py_BuildValue("(i{s:O,s:O})", type,
+                    "href", GenericParser_md_attribute(
+                        &((MD_SPAN_A_DETAIL *) detail)->href),
+                    "title", GenericParser_md_attribute(
+                        &((MD_SPAN_A_DETAIL *) detail)->title));
+            break;
+        case MD_SPAN_IMG:
+            arglist = Py_BuildValue("(i{s:O,s:O})", type,
+                    "src", GenericParser_md_attribute(
+                        &((MD_SPAN_IMG_DETAIL *) detail)->src),
+                    "title", GenericParser_md_attribute(
+                        &((MD_SPAN_IMG_DETAIL *) detail)->title));
+            break;
+        case MD_SPAN_WIKILINK:
+            arglist = Py_BuildValue("(i{s:O})", type,
+                    "title", GenericParser_md_attribute(
+                        &((MD_SPAN_WIKILINK_DETAIL *) detail)->title));
+            break;
+        default:
+            arglist = Py_BuildValue("(i{})", type);
+    }
+    if (arglist == NULL) {
+        return -1;
+    }
+
+    // Call the Python callback
+    PyObject *result = PyObject_CallObject(python_callback, arglist);
+    Py_DECREF(arglist);
+    if (result == NULL) {
+        // Exception. Stop parsing. GenericParser.parse will check if the
+        // exception was StopParsing.
+        return -1;
+    }
+
+    // No error, continue parsing.
+    Py_DECREF(result);
+    return 0;
+}
+static int GenericParser_enter_span(MD_SPANTYPE type, void *detail,
+        void *cb_data) {
+    return GenericParser_span(type, detail,
+            ((GenericParserCallbackData *) cb_data)->enter_span_callback);
+}
+static int GenericParser_leave_span(MD_SPANTYPE type, void *detail,
+        void *cb_data) {
+    return GenericParser_span(type, detail,
+            ((GenericParserCallbackData *) cb_data)->leave_span_callback);
+}
+static int GenericParser_text(MD_TEXTTYPE type, const char *text, MD_SIZE size,
+        void *cb_data) {
+    // Construct arguments
+    PyObject *arglist = Py_BuildValue("(is#)", type, text, size);
+    if (arglist == NULL) {
+        return -1;
+    }
+
+    // Call the Python callback
+    PyObject *result = PyObject_CallObject(
+            ((GenericParserCallbackData *) cb_data)->text_callback, arglist);
+    Py_DECREF(arglist);
+    if (result == NULL) {
+        // Exception. Stop parsing. GenericParser.parse will check if the
+        // exception was StopParsing.
+        return -1;
+    }
+
+    // No error, continue parsing.
+    Py_DECREF(result);
+    return 0;
+}
+
+/*
+ * GenericParser.parse(input: str,
+ *     enter_block_callback: Callable[[int, dict], None]
+ *     leave_block_callback: Callable[[int, dict], None],
+ *     enter_span_callback: Callable[[int, dict], None],
+ *     leave_span_callback: Callable[[int, dict], None],
+ *     text_callback: Callable[[int, str], None]) -> None
+ * Parse a Markdown document and call the callbacks
+ */
+static PyObject * GenericParser_parse(GenericParserObject *self,
+        PyObject *args, PyObject *kwds) {
+    PyThreadState *_save;
+
+    // Parse arguments
+    const char *input;
+    Py_ssize_t in_size;
+    GenericParserCallbackData cb_data;
+    static char *kwlist[] = {
+        "input",
+        "enter_block_callback",
+        "leave_block_callback",
+        "enter_span_callback",
+        "leave_span_callback",
+        "text_callback",
+        NULL
+    };
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#OOOOO:parse",
+                &input, &in_size,
+                &cb_data.enter_block_callback,
+                &cb_data.leave_block_callback,
+                &cb_data.enter_span_callback,
+                &cb_data.leave_span_callback,
+                &cb_data.text_callback)) {
+        return NULL;
+    }
+
+    // Check that callbacks are all valid
+    if (!PyCallable_Check(cb_data.enter_block_callback)) {
+        PyErr_SetString(PyExc_TypeError,
+                "enter_block_callback must be callable");
+        return NULL;
+    }
+    if (!PyCallable_Check(cb_data.leave_block_callback)) {
+        PyErr_SetString(PyExc_TypeError,
+                "leave_block_callback must be callable");
+        return NULL;
+    }
+    if (!PyCallable_Check(cb_data.enter_span_callback)) {
+        PyErr_SetString(PyExc_TypeError,
+                "enter_span_callback must be callable");
+        return NULL;
+    }
+    if (!PyCallable_Check(cb_data.leave_span_callback)) {
+        PyErr_SetString(PyExc_TypeError,
+                "leave_span_callback must be callable");
+        return NULL;
+    }
+    if (!PyCallable_Check(cb_data.text_callback)) {
+        PyErr_SetString(PyExc_TypeError,
+                "text_callback must be callable");
+        return NULL;
+    }
+
+    // Make callback references owned
+    Py_INCREF(cb_data.enter_block_callback);
+    Py_INCREF(cb_data.leave_block_callback);
+    Py_INCREF(cb_data.enter_span_callback);
+    Py_INCREF(cb_data.leave_span_callback);
+    Py_INCREF(cb_data.text_callback);
+
+    // Do the parse
+    MD_PARSER parser = {
+        0,
+        self->parser_flags,
+        GenericParser_enter_block,
+        GenericParser_leave_block,
+        GenericParser_enter_span,
+        GenericParser_leave_span,
+        GenericParser_text,
+        NULL,
+        NULL
+    };
+    int result = md_parse(input, in_size, &parser, &cb_data);
+    if (result != 0) {
+        if (PyErr_Occurred()) {
+            if (PyErr_ExceptionMatches(StopParsing)) {
+                PyErr_Clear();
+                result = 0;
+            }
+        } else {
+            PyErr_SetString(PyExc_OSError, "OS Error during parsing. "
+                    "Out of memory?");
+        }
+    }
+
+    // Return callback references
+    Py_DECREF(cb_data.enter_block_callback);
+    Py_DECREF(cb_data.leave_block_callback);
+    Py_DECREF(cb_data.enter_span_callback);
+    Py_DECREF(cb_data.leave_span_callback);
+    Py_DECREF(cb_data.text_callback);
+
+    // Return
+    if (result == 0) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    } else {
+        return NULL;
+    }
+}
+
+/*
+ * GenericParser helpers for garbage collection
+ */
+static int GenericParser_traverse(GenericParser *self, visitproc visit,
+        void *arg) {
+    return 0;
+}
+static int GenericParser_clear(GenericParser *self) {
+    return 0;
+}
+
+/*
+ * GenericParser destructor
+ */
+static void GenericParser_dealloc(GenericParserObject *self) {
+    PyObject_GC_UnTrack(self);
+    GenericParser_clear(self);
+    Py_TYPE(self)->tp_free((PyObject *) self);
+}
+
+static PyMethodDef GenericParser_methods[] = {
+    {"parse", (PyCFunction) GenericParser_parse, METH_VARARGS | METH_KEYWORDS,
+        "Parse a Markdown document using the callbacks for output\n\n"
+        "Block and span callbacks must accept two arguments:\n"
+        "type - int representing the block/span type (a MD_BLOCK_* or\n"
+        "       MD_SPAN_* constant)\n"
+        "details - A dict with extra attributes for certain block/span types\n"
+        "\n"
+        "Text callbacks must accept two different arguments:\n"
+        "type - int representing the text type (a MD_TEXT_* constant)\n"
+        "text - str with the text data\n\n"
+        "All callbacks should return None but may raise exceptions.\n"
+        "Raising StopParsing will abort parsing early with no error.\n"
+        "Any other exception will be propagated back to the caller of this\n"
+        "method."
+    },
+    {NULL}
+}
 statuc PyTypeObject GenericParserType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "md4c.GenericParser",
@@ -264,8 +600,13 @@ statuc PyTypeObject GenericParserType = {
         "the slowest but most flexible way to parse.",
     .tp_basicsize = sizeof(GenericParserObject),
     .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
     .tp_new = PyType_GenericNew,
+    .tp_init = (initproc) GenericParser_init,
+    .tp_dealloc = (destructor) GenericParser_dealloc,
+    .tp_traverse = (traverseproc) GenericParser_traverse,
+    .tp_clear = (inquiry) GenericParser_clear,
+    .tp_methods = GenericParser_methods,
 };
 
 /******************************************************************************
@@ -408,6 +749,204 @@ PyMODINIT_FUNC PyInit_md4c(void)
         return NULL;
     }
 
+    // Add the MD_BLOCKTYPE enum constants to the module
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_DOC",
+                MD_BLOCK_DOC) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_QUOTE",
+                MD_BLOCK_QUOTE) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_UL",
+                MD_BLOCK_UL) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_OL",
+                MD_BLOCK_OL) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_LI",
+                MD_BLOCK_LI) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_HR",
+                MD_BLOCK_HR) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_H",
+                MD_BLOCK_H) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_CODE",
+                MD_BLOCK_CODE) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_HTML",
+                MD_BLOCK_HTML) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_P",
+                MD_BLOCK_P) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_TABLE",
+                MD_BLOCK_TABLE) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_THEAD",
+                MD_BLOCK_THEAD) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_TBODY",
+                MD_BLOCK_TBODY) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_TR",
+                MD_BLOCK_TR) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_TH",
+                MD_BLOCK_TH) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_BLOCK_TD",
+                MD_BLOCK_TD) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    // Add the MD_SPANTYPE enum constants to the module
+    if (PyModule_AddIntConstant(m, "MD_SPAN_EM",
+                MD_SPAN_EM) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_STRONG",
+                MD_SPAN_STRONG) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_A",
+                MD_SPAN_A) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_IMG",
+                MD_SPAN_IMG) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_CODE",
+                MD_SPAN_CODE) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_DEL",
+                MD_SPAN_DEL) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_LATEXMATH",
+                MD_SPAN_LATEXMATH) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_LATEXMATH_DISPLAY",
+                MD_SPAN_LATEXMATH_DISPLAY) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_WIKILINK",
+                MD_SPAN_WIKILINK) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_SPAN_U",
+                MD_SPAN_U) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    // Add the MD_TEXTTYPE enum constants to the module
+    if (PyModule_AddIntConstant(m, "MD_TEXT_NORMAL",
+                MD_TEXT_NORMAL) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_TEXT_NULLCHAR",
+                MD_TEXT_NULLCHAR) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_TEXT_BR",
+                MD_TEXT_BR) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_TEXT_SOFTBR",
+                MD_TEXT_SOFTBR) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_TEXT_ENTITY",
+                MD_TEXT_ENTITY) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_TEXT_CODE",
+                MD_TEXT_CODE) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_TEXT_HTML",
+                MD_TEXT_HTML) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_TEXT_LATEXMATH",
+                MD_TEXT_LATEXMATH) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    // Add the MD_ALIGN enum constants to the module
+    if (PyModule_AddIntConstant(m, "MD_ALIGN_DEFAULT",
+                MD_ALIGN_DEFAULT) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_ALIGN_LEFT",
+                MD_ALIGN_LEFT) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_ALIGN_CENTER",
+                MD_ALIGN_CENTER) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (PyModule_AddIntConstant(m, "MD_ALIGN_RIGHT",
+                MD_ALIGN_RIGHT) < 0) {
+        Py_DECREF(m);
+        return NULL;
+    }
+
     // Add the types to the module
     Py_INCREF(&HTMLRendererType);
     if (PyModule_AddObject(m, "HTMLRenderer", (PyObject *) &HTMLRendererType)
@@ -416,14 +955,36 @@ PyMODINIT_FUNC PyInit_md4c(void)
         Py_DECREF(m);
         return NULL;
     }
+    Py_INCREF(&GenericParserType);
+    if (PyModule_AddObject(m, "GenericParser", (PyObject *) &GenericParserType)
+            < 0) {
+        Py_DECREF(&HTMLRendererType);
+        Py_DECREF(&GenericParserType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
-    // Add the ParseError exception to the module
+    // Add the ParseError and StopParsing exceptions to the module
     ParseError = PyErr_NewException("md4c.ParseError", NULL, NULL);
     Py_XINCREF(ParseError);
     if (PyModule_AddObject(m, "ParseError", ParseError) < 0) {
         Py_XDECREF(ParseError);
         Py_CLEAR(ParseError);
         Py_DECREF(&HTMLRendererType);
+        Py_DECREF(&GenericParserType);
+        Py_DECREF(m);
+        return NULL;
+    }
+    // Add the ParseError exception to the module
+    StopParsing = PyErr_NewException("md4c.StopParsing", NULL, NULL);
+    Py_XINCREF(StopParsing);
+    if (PyModule_AddObject(m, "StopParsing", StopParsing) < 0) {
+        Py_XDECREF(StopParsing);
+        Py_CLEAR(StopParsing);
+        Py_XDECREF(ParseError);
+        Py_CLEAR(ParseError);
+        Py_DECREF(&HTMLRendererType);
+        Py_DECREF(&GenericParserType);
         Py_DECREF(m);
         return NULL;
     }
