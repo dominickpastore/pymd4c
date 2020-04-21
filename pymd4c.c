@@ -1,16 +1,18 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 
 // For mutex support
 #if defined(_WIN32)
 #include <windows.h>
-#elif defined(__unix__)
+#elif defined(__unix__) || defined(unix) || defined(__unix)
 #include <unistd.h>
-#elif defined(unix) || defined(__unix)
-#define __unix__
-#include <unistd.h>
+#ifdef _POSIX_THREADS
+#include <pthread.h>
+#endif
 #endif
 
 #include <md4c.h>
@@ -19,28 +21,56 @@
 static PyObject *ParseError;
 
 /******************************************************************************
- * Cross-platform synchronization                                             *
+ * Buffer functions                                                           *
  ******************************************************************************/
 
-//pthreads
-#define MUTEX_OBJ pthread_mutex_t
+#define DYNAMICBUFFER_INITSIZE = 256;
 
-pthread_mutex_t mutex;
-//All return zero on success, errno on fail
-pthread_mutex_init(&mutex, NULL);
-pthread_mutex_destroy(&mutex); //must be unlocked
-pthread_mutex_lock(&mutex);
-pthread_mutex_unlock(&mutex);
+typedef struct {
+    char *data;
+    size_t pos;
+    size_t len;
+} DynamicBuffer;
 
-//win32
-#define MUTEX_OBJ CRITICAL_SECTION
+/*
+ * Initialize a DynamicBuffer. Return 0 on success, -1 on failure.
+ */
+static int buffer_init(DynamicBuffer *buf) {
+    buf->data = malloc(DYNAMICBUFFER_INITSIZE);
+    if (buf->data == NULL) {
+        return -1;
+    }
+    buf->pos = 0;
+    buf->len = DYNAMICBUFFER_INITSIZE;
+    return 0;
+}
 
-CRITICAL_SECTION mutex;
-//All return nothing
-InitializeCritialSection(&mutex);
-DeleteCriticalSection(&mutex); //must be unlocked
-EnterCriticalSection(&mutex);
-LeaveCriticalSection(&mutex);
+/* Double the size of the DynamicBuffer. Return 0 on success, -1 on failure. */
+static int buffer_grow(DynamicBuffer *buf) {
+    size_t new_len = buf->len * 2;
+    char *new_data = realloc(buf->data, new_len);
+    if (new_data == NULL) {
+        return -1;
+    }
+    buf->data = new_data;
+    buf->len = new_len;
+    return 0;
+}
+
+/*
+ * Append data to a DynamicBuffer. Return 0 on success, -1 on failure.
+ */
+static int buffer_append(DynamicBuffer *buf, const char *data, size_t len) {
+    // Grow if necessary
+    while (len > (buf->len - buf->pos)) {
+        if (buffer_grow(buf) < 0) {
+            return -1;
+        }
+    }
+
+    // Append
+    memcpy(buf->data + buf->pos, data, len);
+}
 
 /******************************************************************************
  * HTML renderer class                                                        *
@@ -57,7 +87,7 @@ typedef struct {
     Py_ssize_t out_size;
 #if defined(_WIN32)
     CRITICAL_SECTION out_mutex;
-#elif defined(__unix__)
+#elif defined(_POSIX_THREADS)
     pthread_mutex_t out_mutex;
 #endif
 } HTMLRendererObject;
@@ -78,7 +108,7 @@ static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
 
 #if defined(_WIN32)
     InitializeCriticalSection(&self->out_mutex);
-#elif defined(__unix__)
+#elif defined(_POSIX_THREADS)
     int sts = pthread_mutex_init(&self->out_mutex);
     if (sts != 0) {
         errno = sts;
@@ -114,7 +144,7 @@ static PyObject * HTMLRenderer_parse(HTMLRendererObject *self, PyObject *args) {
 #if defined(_WIN32)
     Py_UNBLOCK_THREADS
     EnterCriticalSection(&self->out_mutex);
-#elif defined(__unix__)
+#elif defined(_POSIX_THREADS)
     Py_UNBLOCK_THREADS
     mutex_sts = pthread_mutex_lock(&self->out_mutex);
     if (mutex_sts != 0) {
@@ -136,7 +166,7 @@ static PyObject * HTMLRenderer_parse(HTMLRendererObject *self, PyObject *args) {
 #if defined(_WIN32)
     LeaveCriticalSection(&self->out_mutex);
     Py_BLOCK_THREADS
-#elif defined(__unix__)
+#elif defined(_POSIX_THREADS)
     mutex_sts = pthread_mutex_unlock(&self->out_mutex);
     if (mutex_sts != 0) {
         Py_BLOCK_THREADS
@@ -178,7 +208,7 @@ static void HTMLRenderer_dealloc(HTMLRendererObject *self) {
     // Free mutex
 #if defined(_WIN32)
     DeleteCriticalSection(&self->out_mutex);
-#elif defined(__unix__)
+#elif defined(_POSIX_THREADS)
     pthread_mutex_destroy(&self->out_mutex);
 #endif
 
@@ -220,9 +250,6 @@ static PyTypeObject HTMLRendererType = {
  *   produces a MD4CDocument. Call it DocumentParser                           *
  ******************************************************************************/
 
-/* TODO Below is a very basic version of this class. It needs to be reviewed
- * and made into a superclass of MD4C_HTMLRenderer.
-
 typedef struct {
     PyObject_HEAD
     //TODO Parser flags
@@ -240,7 +267,6 @@ statuc PyTypeObject GenericParserType = {
     .tp_flags = Py_TPFLAGS_DEFAULT,
     .tp_new = PyType_GenericNew,
 };
-*/
 
 /******************************************************************************
  * Module-wide code                                                           *
