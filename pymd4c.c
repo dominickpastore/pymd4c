@@ -246,8 +246,6 @@ typedef struct {
     PyObject *enter_span_callback;
     PyObject *leave_span_callback;
     PyObject *text_callback;
-    int exception; // Callback sets to nonzero if exception, zero if stopped
-                   // with StopParsing
 } GenericParserCallbackData;
 
 /*
@@ -283,8 +281,6 @@ static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
             Py_DECREF(list);
             return NULL;
         }
-
-        offset = attr->substr_offsets[i];
     }
 
     return list;
@@ -453,8 +449,6 @@ static int GenericParser_text(MD_TEXTTYPE type, const char *text, MD_SIZE size,
  */
 static PyObject * GenericParser_parse(GenericParserObject *self,
         PyObject *args, PyObject *kwds) {
-    PyThreadState *_save;
-
     // Parse arguments
     const char *input;
     Py_ssize_t in_size;
@@ -528,10 +522,13 @@ static PyObject * GenericParser_parse(GenericParserObject *self,
     if (result != 0) {
         if (PyErr_Occurred()) {
             if (PyErr_ExceptionMatches(StopParsing)) {
+                // StopParsing was raised. No error, just abort.
                 PyErr_Clear();
                 result = 0;
             }
+            // Otherwise, some other exception was raised. Let it propagate.
         } else {
+            // Error from MD4C: Raise an exception.
             PyErr_SetString(PyExc_OSError, "OS Error during parsing. "
                     "Out of memory?");
         }
