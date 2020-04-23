@@ -28,7 +28,8 @@ Class `GenericParser`
 ---------------------
 
 ```python
-md4c.GenericParser(parser_flags)
+import md4c
+generic_parser = md4c.GenericParser(parser_flags)
 ```
 
 Initialize a new `GenericParser`. Parameters:
@@ -47,8 +48,14 @@ code, which will be much faster.
 ### Parse Method
 
 ```python
+import md4c
 generic_parser = md4c.GenericParser(...)
-generic_parser.parse(input, enter_block_callback, leave_block_callback, enter_span_callback,leave_span_callback, text_callback)`
+generic_parser.parse(input,
+                     enter_block_callback,
+                     leave_block_callback,
+                     enter_span_callback,
+                     leave_span_callback,
+                     text_callback)`
 ```
 
 Parse markdown text using the provided callbacks. Parameters:
@@ -65,6 +72,14 @@ Parse markdown text using the provided callbacks. Parameters:
   the parser leaves an inline element in the Markdown source.
 * `text_callback` - A function (or other callable) to be called whenever the
   parser has text to add to the current block or inline element.
+
+The `parse()` method can raise `md4c.ParseError` in the event of a problem
+during parsing, such as running out of memory. This does not signal invalid
+syntax, as there is no such thing in Markdown. It can also emit any exception
+raised by any of the callbacks (except `md4c.StopParsing`, which is caught and
+handled quietly).
+
+#### Callback Details
 
 `enter_block_callback`, `leave_block_callback`, `enter_span_callback`, and
 `leave_span_callback` all must accept two parameters:
@@ -100,17 +115,12 @@ by the `parse()` method and immediately halt parsing quietly. All other
 exceptions raised by callbacks will abort parsing and will be propagated back
 to the caller of `parse()`.
 
-The `parse()` method can raise `md4c.ParseError` in the event of a problem
-during parsing, such as running out of memory. This does not signal invalid
-syntax, as there is no such thing in Markdown. It can also emit any exception
-raised by any of the callbacks (except `md4c.StopParsing`, which is caught and
-handled quietly).
-
 Class `HTMLRenderer`
 --------------------
 
 ```python
-md4c.HTMLRenderer(parser_flags, renderer_flags)
+import md4c
+html_renderer = md4c.HTMLRenderer(parser_flags, renderer_flags)
 ```
 
 Initialize a new `HTMLRenderer`. Parameters:
@@ -127,6 +137,7 @@ Initialize a new `HTMLRenderer`. Parameters:
 ### Parse Method
 
 ```python
+import md4c
 html_renderer = md4c.HTMLRenderer(...)
 html_renderer.parse(input)
 ```
@@ -136,9 +147,9 @@ Parse markdown text and return a `str` with rendered HTML. Parameters:
 * `input` - A `str` or `bytes` containing the Markdown document to parse. If a
   `bytes`, it must be UTF-8 encoded.
 
-Can raise `md4c.ParseError` in the event of a problem during parsing, such as
-running out of memory. This does not signal invalid syntax, as there is no such
-thing in Markdown.
+This method can raise `md4c.ParseError` in the event of a problem during
+parsing, such as running out of memory. This does not signal invalid syntax, as
+there is no such thing in Markdown.
 
 Module-Wide Constants
 ---------------------
@@ -192,6 +203,7 @@ supports):
   additional flags are enabled.
 * `md4c.MD_DIALECT_GITHUB` - Parse GitHub-Flavored Markdown, which enables the
   following flags:
+
   - `MD_FLAG_PERMISSIVEAUTOLINKS`
   - `MD_FLAG_TABLES`
   - `MD_FLAG_STRIKETHROUGH`
