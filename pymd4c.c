@@ -88,7 +88,7 @@ typedef struct {
 } HTMLRendererObject;
 
 /*
- * HTMLRenderer __init__
+ * HTMLRenderer.__init__(parser_flags: int, renderer_flags: int)
  */
 static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
         PyObject *kwds) {
@@ -207,21 +207,19 @@ static PyTypeObject HTMLRendererType = {
  */
 
 /******************************************************************************
- * MD4C parsing-only class. TODO Accept callables for all the callbacks that  *
- *   MD4C accepts and call them when the C callbacks are called.              *
- *                                                                            *
- * TODO Make HTMLRenderer a subclass of this.                                 *
- * TODO Produce another subclass that instead of accepting callables,         *
- *   produces a MD4CDocument. Call it DocumentParser                           *
+ * MD4C generic parsing-only class                                            *
  ******************************************************************************/
 
+/*
+ * GenericParser "class"
+ */
 typedef struct {
     PyObject_HEAD
     unsigned int parser_flags;
 } GenericParserObject;
 
 /*
- * GenericParser __init__
+ * GenericParser.__init__(parser_flags: int)
  */
 static int GenericParser_init(GenericParserObject *self, PyObject *args,
         PyObject *kwds) {
@@ -529,8 +527,8 @@ static PyObject * GenericParser_parse(GenericParserObject *self,
             // Otherwise, some other exception was raised. Let it propagate.
         } else {
             // Error from MD4C: Raise an exception.
-            PyErr_SetString(PyExc_OSError, "OS Error during parsing. "
-                    "Out of memory?");
+            PyErr_SetString(ParseError, "Error during parsing. "
+                    "Perhaps out of memory?");
         }
     }
 
@@ -962,7 +960,8 @@ PyMODINIT_FUNC PyInit_md4c(void)
     }
 
     // Add the ParseError and StopParsing exceptions to the module
-    ParseError = PyErr_NewException("md4c.ParseError", NULL, NULL);
+    ParseError = PyErr_NewExceptionWithDoc("md4c.ParseError",
+            "Raised when an error occurs during parsing.", NULL, NULL);
     Py_XINCREF(ParseError);
     if (PyModule_AddObject(m, "ParseError", ParseError) < 0) {
         Py_XDECREF(ParseError);
@@ -973,7 +972,8 @@ PyMODINIT_FUNC PyInit_md4c(void)
         return NULL;
     }
     // Add the ParseError exception to the module
-    StopParsing = PyErr_NewException("md4c.StopParsing", NULL, NULL);
+    StopParsing = PyErr_NewExceptionWithDoc("md4c.StopParsing",
+            "Raised to stop parsing before complete.", NULL, NULL);
     Py_XINCREF(StopParsing);
     if (PyModule_AddObject(m, "StopParsing", StopParsing) < 0) {
         Py_XDECREF(StopParsing);
