@@ -24,28 +24,32 @@ Build and Install
 Build and install with `setup.py` as you would for any Python source
 repository.
 
-API
----
+Class `GenericParser`
+---------------------
 
-### `GenericParser`
-
-`md4c.GenericParser(parser_flags)`
+```python
+md4c.GenericParser(parser_flags)
+```
 
 Initialize a new `GenericParser`. Parameters:
 
 * `parser_flags` - An `int` made up of some combination of the parser option
   flags or'd together, e.g.
   `md4c.MD_FLAG_TABLES | md4c.MD_FLAG_STRIKETHROUGH`. For the default options,
-  use `0`, which will parse according to the base CommonMark standard. See the
-  "Module-Wide Constants" section below for a full list of parser option flags.
+  use `0`, which will parse according to the base CommonMark specification. See
+  the "Module-Wide Constants" section below for a full list of parser option
+  flags.
 
 **Note:** If the end goal of parsing is to produce HTML, strongly consider
 using an `HTMLRenderer` instead. All rendering will be performed by native C
-code, thus will be much faster.
+code, which will be much faster.
 
-#### Parse Method
+### Parse Method
 
-`parse(input, enter_block_callback, leave_block_callback, enter_span_callback,leave_span_callback, text_callback)`
+```python
+generic_parser = md4c.GenericParser(...)
+generic_parser.parse(input, enter_block_callback, leave_block_callback, enter_span_callback,leave_span_callback, text_callback)`
+```
 
 Parse markdown text using the provided callbacks. Parameters:
 
@@ -102,9 +106,12 @@ syntax, as there is no such thing in Markdown. It can also emit any exception
 raised by any of the callbacks (except `md4c.StopParsing`, which is caught and
 handled quietly).
 
-### `HTMLRenderer`
+Class `HTMLRenderer`
+--------------------
 
-`md4c.HTMLRenderer(parser_flags, renderer_flags)`
+```python
+md4c.HTMLRenderer(parser_flags, renderer_flags)
+```
 
 Initialize a new `HTMLRenderer`. Parameters:
 
@@ -117,9 +124,12 @@ Initialize a new `HTMLRenderer`. Parameters:
   option flags or'd together. These are also listed in the "Module-Wide
   Constants" section below.
 
-#### Parse Method
+### Parse Method
 
-`parse(input)`
+```python
+html_renderer = md4c.HTMLRenderer(...)
+html_renderer.parse(input)
+```
 
 Parse markdown text and return a `str` with rendered HTML. Parameters:
 
@@ -130,7 +140,8 @@ Can raise `md4c.ParseError` in the event of a problem during parsing, such as
 running out of memory. This does not signal invalid syntax, as there is no such
 thing in Markdown.
 
-### Module-Wide Constants
+Module-Wide Constants
+---------------------
 
 Various flags and enum constants from the MD4C library and renderers are
 provided as module-wide constants.
@@ -138,7 +149,7 @@ provided as module-wide constants.
 See the MD4C documentation or code (`md4c.h`, `md4c-html.h`) for more
 information on what these flags and constants mean.
 
-#### Parser Option Flags
+### Parser Option Flags
 
 Basic option flags:
 
@@ -186,7 +197,7 @@ supports):
   - `MD_FLAG_STRIKETHROUGH`
   - `MD_FLAG_TASKLISTS`
 
-#### HTML Renderer Option Flags
+### HTML Renderer Option Flags
 
 * `md4c.MD_HTML_FLAG_DEBUG` - For development use, send MD4C debug output to
   stderr.
@@ -194,7 +205,7 @@ supports):
   actual character (e.g. `&copy;` with ©).
 * `md4c.MD_HTML_FLAG_SKIP_UTF8_BOM` - Omit BOM from start of UTF-8 input.
 
-#### Block Type Constants
+### Block Type Constants
 
 * `md4c.MD_BLOCK_DOC` - Document
 * `md4c.MD_BLOCK_QUOTE` - Block quote
@@ -213,7 +224,7 @@ supports):
 * `md4c.MD_BLOCK_TH` - Table header cell
 * `md4c.MD_BLOCK_TD` - Table cell
 
-#### Span Type Constants
+### Span Type Constants
 
 * `md4c.MD_SPAN_EM` - Emphasis
 * `md4c.MD_SPAN_STRONG` - Strong
@@ -226,7 +237,7 @@ supports):
 * `md4c.MD_SPAN_WIKILINK` - Wiki link
 * `md4c.MD_SPAN_U` - Underline
 
-#### Text Type Constants
+### Text Type Constants
 
 * `md4c.MD_TEXT_NORMAL` - Normal text
 * `md4c.MD_TEXT_NULLCHAR` - NULL character
@@ -237,14 +248,15 @@ supports):
 * `md4c.MD_TEXT_HTML` - Raw HTML (inside an HTML block or simply inline HTML)
 * `md4c.MD_TEXT_LATEXMATH` - Text inside an equation
 
-#### Table Alignment Constants
+### Table Alignment Constants
 
 * `md4c.MD_ALIGN_DEFAULT`
 * `md4c.MD_ALIGN_LEFT`
 * `md4c.MD_ALIGN_CENTER`
 * `md4c.MD_ALIGN_RIGHT`
 
-### Exceptions
+Exceptions
+----------
 
 * `md4c.ParseError` - Raised by one of the `parse()` methods when there is an
   error during parsing, such as running out of memory. *There is no such thing
@@ -253,3 +265,9 @@ supports):
 
 * `md4c.StopParsing` - A callback can raise this to stop parsing early.
   `GenericParser`'s `parse()` method will catch it and abort quietly.
+
+License
+-------
+
+This project is licensed under the MIT license. See the `LICENSE.md` file for
+details.
