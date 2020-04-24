@@ -1,3 +1,28 @@
+/*
+ * PyMD4C
+ * Python bindings for MD4C
+ * 
+ * Copyright (c) 2020 Dominick C. Pastore
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
@@ -195,16 +220,6 @@ static PyTypeObject HTMLRendererType = {
     .tp_clear = (inquiry) HTMLRenderer_clear,
     .tp_methods = HTMLRenderer_methods,
 };
-
-/******************************************************************************
- * TODO Basic inline parser - Provide our own HTML renderer that only renders
- * the first paragraph? This seems like a bad idea. Maybe just implement a
- * basic inline parser ourselves? Not sure. If we do the basic inline parser,
- * only render the first paragraph, or raise an exception if it's more than
- * one paragraph? Not sure.
- *
- * Actually, implement this in flask-md4c.
- */
 
 /******************************************************************************
  * MD4C generic parsing-only class                                            *
