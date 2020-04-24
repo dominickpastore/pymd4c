@@ -31,7 +31,7 @@
 #include <errno.h>
 
 #include <md4c.h>
-#include <md4c_html.h>
+#include <md4c-html.h>
 
 static PyObject *ParseError;
 static PyObject *StopParsing;
@@ -40,7 +40,7 @@ static PyObject *StopParsing;
  * Buffer functions                                                           *
  ******************************************************************************/
 
-#define DYNAMICBUFFER_INITSIZE = 256;
+#define DYNAMICBUFFER_INITSIZE 256
 
 typedef struct {
     char *data;
@@ -167,7 +167,7 @@ static PyObject * HTMLRenderer_parse(HTMLRendererObject *self, PyObject *args) {
         PyErr_SetString(ParseError, "Could not parse markdown");
         return NULL;
     }
-    PyObject *result = Py_BuildValue("s#", buf->data, buf->len);
+    PyObject *result = Py_BuildValue("s#", buf.data, buf.len);
     if (result == NULL) {
         return NULL;
     }
@@ -178,11 +178,11 @@ static PyObject * HTMLRenderer_parse(HTMLRendererObject *self, PyObject *args) {
 /*
  * HTMLRenderer helpers for garbage collection
  */
-static int HTMLRenderer_traverse(HTTPRenderer *self, visitproc visit,
+static int HTMLRenderer_traverse(HTMLRendererObject *self, visitproc visit,
         void *arg) {
     return 0;
 }
-static int HTMLRenderer_clear(HTMLRenderer *self) {
+static int HTMLRenderer_clear(HTMLRendererObject *self) {
     return 0;
 }
 
@@ -200,7 +200,7 @@ static PyMethodDef HTMLRenderer_methods[] = {
         "Parse a Markdown document and return the rendered HTML"
     },
     {NULL}
-}
+};
 
 /*
  * HTMLRenderer type object
@@ -327,7 +327,7 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
                         task_mark_offset);
             break;
         case MD_BLOCK_H:
-            arglist = Py_BuildValue("(i{s:i})", type
+            arglist = Py_BuildValue("(i{s:i})", type,
                     "level", ((MD_BLOCK_H_DETAIL *) detail)->level);
             break;
         case MD_BLOCK_CODE:
@@ -395,8 +395,8 @@ static int GenericParser_span(MD_SPANTYPE type, void *detail,
             break;
         case MD_SPAN_WIKILINK:
             arglist = Py_BuildValue("(i{s:O})", type,
-                    "title", GenericParser_md_attribute(
-                        &((MD_SPAN_WIKILINK_DETAIL *) detail)->title));
+                    "target", GenericParser_md_attribute(
+                        &((MD_SPAN_WIKILINK_DETAIL *) detail)->target));
             break;
         default:
             arglist = Py_BuildValue("(i{})", type);
@@ -475,7 +475,7 @@ static PyObject * GenericParser_parse(GenericParserObject *self,
         "text_callback",
         NULL
     };
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#OOOOO:parse",
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#OOOOO:parse", kwlist,
                 &input, &in_size,
                 &cb_data.enter_block_callback,
                 &cb_data.leave_block_callback,
@@ -566,11 +566,11 @@ static PyObject * GenericParser_parse(GenericParserObject *self,
 /*
  * GenericParser helpers for garbage collection
  */
-static int GenericParser_traverse(GenericParser *self, visitproc visit,
+static int GenericParser_traverse(GenericParserObject *self, visitproc visit,
         void *arg) {
     return 0;
 }
-static int GenericParser_clear(GenericParser *self) {
+static int GenericParser_clear(GenericParserObject *self) {
     return 0;
 }
 
@@ -600,8 +600,9 @@ static PyMethodDef GenericParser_methods[] = {
         "method."
     },
     {NULL}
-}
-statuc PyTypeObject GenericParserType = {
+};
+
+static PyTypeObject GenericParserType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "md4c.GenericParser",
     .tp_doc = "Generic MD4C Parser\n\n"
