@@ -3,14 +3,17 @@ from setuptools import setup, Extension
 with open("README.md", "r") as f:
     long_description = f.read()
 
-class PkgconfigExtensions:
+class PkgconfigExtensionList(list):
+    """A subclass of list that does not require the pkgconfig module for
+    initialization, but imports it and updates the list as soon as it is
+    accessed."""
     def __init__(self, exts):
-        """Create PkgconfigExtensions from the given list of extension info.
+        """Create PkgconfigExtensionList from the given list of extension info.
         Each extension must be a dict where keys are the arguments for
         Extension() with one additional key, 'libs', a string to be passed to
         pkgconfig.parse()."""
+        super().__init__(exts)
         self.pkgconfig_ready = False
-        self.extensions = exts
 
     def _fetch_pkgconfig(self):
         # If pkgconfig already fetched, return
@@ -20,13 +23,14 @@ class PkgconfigExtensions:
         import pkgconfig
 
         # Use 'libs' key to add pkgconfig info to all extensions
-        new_exts = []
-        for extension in self.extensions:
+        orig_extensions = super().copy()
+        super().clear()
+        for extension in orig_extensions:
             # If no 'libs' key, add as-is
             try:
                 libs = extension['libs']
             except KeyError:
-                new_exts.append(Extension(**extension))
+                super().append(Extension(**extension))
 
             # Add pkgconfig info
             del extension['libs']
@@ -35,30 +39,26 @@ class PkgconfigExtensions:
                     extension[k].extend(v)
                 except KeyError:
                     extension[k] = v
-            new_exts.append(Extension(**extension))
+            super().append(Extension(**extension))
 
-        # Store transformed extension list
-        self.extensions = new_exts
+        # Mark pkgconfig fetch complete
         self.pkgconfig_ready = True
 
     def __iter__(self):
         self._fetch_pkgconfig()
-        return iter(self.extensions)
-
-    def __len__(self):
-        return len(self.extensions)
+        return super().__iter__()
 
     def __getitem__(self, key):
         self._fetch_pkgconfig()
-        return self.extensions[key]
+        return super().__getitem__(key)
 
-extensions = PkgconfigExtensions([
+extensions = PkgconfigExtensionList([
     {
         'name': 'md4c',
         'sources': [
             'src/pymd4c.c',
         ],
-        'libs': 'md4c',
+        'libs': 'md4c md4c-html',
     },
 ])
 
