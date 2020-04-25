@@ -643,6 +643,9 @@ PyMODINIT_FUNC PyInit_md4c(void)
     if (PyType_Ready(&HTMLRendererType) < 0) {
         return NULL;
     }
+    if (PyType_Ready(&GenericParserType) < 0) {
+        return NULL;
+    }
 
     // Create the module object
     PyObject *m;
@@ -966,14 +969,13 @@ PyMODINIT_FUNC PyInit_md4c(void)
         Py_DECREF(m);
         return NULL;
     }
-    /*Py_INCREF(&GenericParserType);
+    Py_INCREF(&GenericParserType);
     if (PyModule_AddObject(m, "GenericParser", (PyObject *) &GenericParserType)
             < 0) {
-        Py_DECREF(&HTMLRendererType);
         Py_DECREF(&GenericParserType);
         Py_DECREF(m);
         return NULL;
-    }*/
+    }
 
     // Add the ParseError and StopParsing exceptions to the module
     ParseError = PyErr_NewExceptionWithDoc("md4c.ParseError",
@@ -982,8 +984,6 @@ PyMODINIT_FUNC PyInit_md4c(void)
     if (PyModule_AddObject(m, "ParseError", ParseError) < 0) {
         Py_XDECREF(ParseError);
         Py_CLEAR(ParseError);
-        Py_DECREF(&HTMLRendererType);
-        //Py_DECREF(&GenericParserType);
         Py_DECREF(m);
         return NULL;
     }
@@ -994,10 +994,6 @@ PyMODINIT_FUNC PyInit_md4c(void)
     if (PyModule_AddObject(m, "StopParsing", StopParsing) < 0) {
         Py_XDECREF(StopParsing);
         Py_CLEAR(StopParsing);
-        Py_XDECREF(ParseError);
-        Py_CLEAR(ParseError);
-        Py_DECREF(&HTMLRendererType);
-        //Py_DECREF(&GenericParserType);
         Py_DECREF(m);
         return NULL;
     }

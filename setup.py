@@ -64,7 +64,7 @@ extensions = PkgconfigExtensionList([
 
 setup(
     name="PyMD4C",
-    version="0.4.3.0dev0",
+    version="0.4.3.0dev1",
     author="Dominick C. Pastore",
     author_email="dominickpastore@dcpx.org",
     description="Python bindings for MD4C",
