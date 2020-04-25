@@ -21,8 +21,39 @@ well, similar to the `HTMLRenderer`.
 Build and Install
 -----------------
 
+### Prerequisites
+
+This package depends on the MD4C library. It may be available through your
+package manager. Otherwise, it can be built from source as follows (note that
+the below instructions are for Unix-like systems, but theoretically there are
+ways to build on Windows as well):
+
+1. Download and extract the matching release from
+   [the releases page](https://github.com/mity/md4c/releases) (e.g. for PyMD4C
+   version W.X.Y.Z, download MD4C version W.X.Y).
+2. Inside the extracted file, run the following:
+
+       mkdir build
+       cd build
+       cmake ..
+       make
+       make install
+
+   The last step must be run as root. The library will install to /usr/local
+   by default.
+3. You may need to rebuild the ldconfig cache (also as root): `ldconfig`
+
+In addition, the `pkg-config` tool and the Python `pkgconfig` package must be
+available to build PyMD4C, but they are not required after that. The
+`pkg-config` tool is likely available on your system already, and the Python
+`pkgconfig` package will be fetched automatically by `setup.py`.
+
+### Build/Install
+
 Build and install with `setup.py` as you would for any Python source
-repository.
+repository:
+
+    pip install .
 
 Class `GenericParser`
 ---------------------
@@ -55,7 +86,7 @@ generic_parser.parse(input,
                      leave_block_callback,
                      enter_span_callback,
                      leave_span_callback,
-                     text_callback)`
+                     text_callback)
 ```
 
 Parse markdown text using the provided callbacks. Parameters:
