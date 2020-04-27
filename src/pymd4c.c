@@ -273,44 +273,6 @@ typedef struct {
 } GenericParserCallbackData;
 
 /*
- * GenericParser Attribute Builder
- * Builds a list of 2-tuples (substr_type, substr_text) representing an
- * MD_ATTRIBUTE.
- * substr_type is either MD_TEXT_NORMAL, MD_TEXT_ENTITIY, or MD_TEXT_NULLCHAR
- * and substr_text is a string
- *
- * Return the list on success, NULL on failure
- */
-static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
-    // Init list
-    PyObject *list = PyList_New(0);
-    if (list == NULL) {
-        return NULL;
-    }
-
-    // Add items
-    for (int i = 0; attr->substr_offsets[i] != attr->size; i++) {
-        // Init item
-        PyObject *item = Py_BuildValue("(is#)", attr->substr_types[i],
-                attr->text + attr->substr_offsets[i],
-                attr->substr_offsets[i + 1] - attr->substr_offsets[i]);
-        if (item == NULL) {
-            Py_DECREF(list);
-            return NULL;
-        }
-
-        // Append item
-        if (PyList_Append(list, item) < 0) {
-            Py_DECREF(item);
-            Py_DECREF(list);
-            return NULL;
-        }
-    }
-
-    return list;
-}
-
-/*
  * Helpers to get instances of the various enums
  */
 static PyObject * get_enum_blocktype(int type) {
@@ -396,6 +358,45 @@ static PyObject * get_enum_align(int align) {
     // Clean up and return
     Py_DECREF(align_enum);
     return instance;
+}
+
+/*
+ * GenericParser Attribute Builder
+ * Builds a list of 2-tuples (substr_type, substr_text) representing an
+ * MD_ATTRIBUTE.
+ * substr_type is a md4c.TextType Enum
+ * and substr_text is a string
+ *
+ * Return the list on success, NULL on failure
+ */
+static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
+    // Init list
+    PyObject *list = PyList_New(0);
+    if (list == NULL) {
+        return NULL;
+    }
+
+    // Add items
+    for (int i = 0; attr->substr_offsets[i] != attr->size; i++) {
+        // Init item
+        PyObject *item = Py_BuildValue("(Os#)",
+                get_enum_texttype(attr->substr_types[i]),
+                attr->text + attr->substr_offsets[i],
+                attr->substr_offsets[i + 1] - attr->substr_offsets[i]);
+        if (item == NULL) {
+            Py_DECREF(list);
+            return NULL;
+        }
+
+        // Append item
+        if (PyList_Append(list, item) < 0) {
+            Py_DECREF(item);
+            Py_DECREF(list);
+            return NULL;
+        }
+    }
+
+    return list;
 }
 
 /*
@@ -555,11 +556,11 @@ static int GenericParser_text(MD_TEXTTYPE type, const char *text, MD_SIZE size,
 
 /*
  * GenericParser.parse(input: str,
- *     enter_block_callback: Callable[[int, dict], None]
- *     leave_block_callback: Callable[[int, dict], None],
- *     enter_span_callback: Callable[[int, dict], None],
- *     leave_span_callback: Callable[[int, dict], None],
- *     text_callback: Callable[[int, str], None]) -> None
+ *     enter_block_callback: Callable[[BlockType, dict], None]
+ *     leave_block_callback: Callable[[BlockType, dict], None],
+ *     enter_span_callback: Callable[[SpanType, dict], None],
+ *     leave_span_callback: Callable[[SpanType, dict], None],
+ *     text_callback: Callable[[TextType, str], None]) -> None
  * Parse a Markdown document and call the callbacks
  */
 static PyObject * GenericParser_parse(GenericParserObject *self,
@@ -689,12 +690,11 @@ static PyMethodDef GenericParser_methods[] = {
     {"parse", (PyCFunction) GenericParser_parse, METH_VARARGS | METH_KEYWORDS,
         "Parse a Markdown document using the callbacks for output\n\n"
         "Block and span callbacks must accept two arguments:\n"
-        "type - int representing the block/span type (a MD_BLOCK_* or\n"
-        "       MD_SPAN_* constant)\n"
+        "type - BlockType or SpanType Enum representing the block/span type\n"
         "details - A dict with extra attributes for certain block/span types\n"
         "\n"
         "Text callbacks must accept two different arguments:\n"
-        "type - int representing the text type (a MD_TEXT_* constant)\n"
+        "type - TextType Enum\n"
         "text - str with the text data\n\n"
         "All callbacks should return None but may raise exceptions.\n"
         "Raising StopParsing will abort parsing early with no error.\n"
