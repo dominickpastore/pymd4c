@@ -115,9 +115,8 @@ handled quietly).
 `enter_block_callback`, `leave_block_callback`, `enter_span_callback`, and
 `leave_span_callback` all must accept two parameters:
 
-* `type` - An `int` representing the type of block or span. Will be one of the
-  block type constants or span type constants (listed in "Module-Wide
-  Constants" below).
+* `type` - A `md4c.BlockType` or `md4c.SpanType` representing the type of block
+  or span. See the "Enums" section for more info.
 * `details` - A `dict` that contains extra information for certain types of
   blocks and spans, for example, the level of a heading. Keys are `str`s.
   Values are `int`s, single-character `str`s, or (for `MD_ATTRIBUTE`) lists of
@@ -131,13 +130,13 @@ handled quietly).
   Such attributes may contain multiple text sub-elements (e.g. some regular
   text, an HTML entity, and then some more regular text). Thus, an
   `MD_ATTRIBUTE` value in `details` consists of a list of 2-tuples:
-  `(text_type, text)` where `text_type` is one of the text type constants (see
-  "Module-Wide Constants" below) and `text` is the actual text as a `str`.
+  `(text_type, text)` where `text_type` is a `md4c.TextType` (see "Enums"
+  below) and `text` is the actual text as a `str`.
 
 `text_callback` must also accept two parameters, but they are different:
 
-* `type` - An `int` representing the type of text element (listed in
-  "Module-Wide Constants" below).
+* `type` - A `md4c.TextType` representing the type of text element. See the
+  "Enums" section for more info.
 * `text` - The actual text, as a `str`.
 
 Callbacks need not return anything specific; their return values are ignored.
@@ -185,11 +184,8 @@ there is no such thing in Markdown.
 Module-Wide Constants
 ---------------------
 
-Various flags and enum constants from the MD4C library and renderers are
-provided as module-wide constants.
-
-See the MD4C documentation or code (`md4c.h`, `md4c-html.h`) for more
-information on what these flags and constants mean.
+The MD4C library provides various option flags for parsers and renderers as
+named constants. Those are made available as module-level constants in PyMD4C.
 
 ### Parser Option Flags
 
@@ -248,55 +244,64 @@ supports):
   actual character (e.g. `&copy;` with ©).
 * `md4c.MD_HTML_FLAG_SKIP_UTF8_BOM` - Omit BOM from start of UTF-8 input.
 
-### Block Type Constants
+Enums
+-----
 
-* `md4c.MD_BLOCK_DOC` - Document
-* `md4c.MD_BLOCK_QUOTE` - Block quote
-* `md4c.MD_BLOCK_UL` - Unordered list
-* `md4c.MD_BLOCK_OL` - Ordered list
-* `md4c.MD_BLOCK_LI` - List item
-* `md4c.MD_BLOCK_HR` - Horizontal rule
-* `md4c.MD_BLOCK_H` - Heading
-* `md4c.MD_BLOCK_CODE` - Code block
-* `md4c.MD_BLOCK_HTML` - Raw HTML block
-* `md4c.MD_BLOCK_P` - Paragraph
-* `md4c.MD_BLOCK_TABLE` - Table
-* `md4c.MD_BLOCK_THEAD` - Table header row
-* `md4c.MD_BLOCK_TBODY` - Table body
-* `md4c.MD_BLOCK_TR` - Table row
-* `md4c.MD_BLOCK_TH` - Table header cell
-* `md4c.MD_BLOCK_TD` - Table cell
+The MD4C library uses various enums to provide data to callbacks. PyMD4C uses
+`IntEnum`s to encapsulate these.
 
-### Span Type Constants
+See `md4c.h` from the [MD4C project](https://github.com/mity/md4c/) for more
+information on these enums and associated types.
 
-* `md4c.MD_SPAN_EM` - Emphasis
-* `md4c.MD_SPAN_STRONG` - Strong
-* `md4c.MD_SPAN_A` - Link
-* `md4c.MD_SPAN_IMG` - Image
-* `md4c.MD_SPAN_CODE` - Inline code
-* `md4c.MD_SPAN_DEL` - Strikethrough
-* `md4c.MD_SPAN_LATEXMATH` - Inline math
-* `md4c.MD_SPAN_LATEXMATH_DISPLAY` - Display math
-* `md4c.MD_SPAN_WIKILINK` - Wiki link
-* `md4c.MD_SPAN_U` - Underline
+### Block Types - class `BlockType`
 
-### Text Type Constants
+* `md4c.BlockType.DOC` - Document
+* `md4c.BlockType.QUOTE` - Block quote
+* `md4c.BlockType.UL` - Unordered list
+* `md4c.BlockType.OL` - Ordered list
+* `md4c.BlockType.LI` - List item
+* `md4c.BlockType.HR` - Horizontal rule
+* `md4c.BlockType.H` - Heading
+* `md4c.BlockType.CODE` - Code block
+* `md4c.BlockType.HTML` - Raw HTML block
+* `md4c.BlockType.P` - Paragraph
+* `md4c.BlockType.TABLE` - Table
+* `md4c.BlockType.THEAD` - Table header row
+* `md4c.BlockType.TBODY` - Table body
+* `md4c.BlockType.TR` - Table row
+* `md4c.BlockType.TH` - Table header cell
+* `md4c.BlockType.TD` - Table cell
 
-* `md4c.MD_TEXT_NORMAL` - Normal text
-* `md4c.MD_TEXT_NULLCHAR` - NULL character
-* `md4c.MD_TEXT_BR` - Line break
-* `md4c.MD_TEXT_SOFTBR` - Soft line break
-* `md4c.MD_TEXT_ENTITY` - HTML Entity
-* `md4c.MD_TEXT_CODE` - Text inside a code block or inline code
-* `md4c.MD_TEXT_HTML` - Raw HTML (inside an HTML block or simply inline HTML)
-* `md4c.MD_TEXT_LATEXMATH` - Text inside an equation
+### Span Types - class `SpanType`
 
-### Table Alignment Constants
+* `md4c.SpanType.EM` - Emphasis
+* `md4c.SpanType.STRONG` - Strong
+* `md4c.SpanType.A` - Link
+* `md4c.SpanType.IMG` - Image
+* `md4c.SpanType.CODE` - Inline code
+* `md4c.SpanType.DEL` - Strikethrough
+* `md4c.SpanType.LATEXMATH` - Inline math
+* `md4c.SpanType.LATEXMATH_DISPLAY` - Display math
+* `md4c.SpanType.WIKILINK` - Wiki link
+* `md4c.SpanType.U` - Underline
 
-* `md4c.MD_ALIGN_DEFAULT`
-* `md4c.MD_ALIGN_LEFT`
-* `md4c.MD_ALIGN_CENTER`
-* `md4c.MD_ALIGN_RIGHT`
+### Text Types - class `TextType`
+
+* `md4c.TextType.NORMAL` - Normal text
+* `md4c.TextType.NULLCHAR` - NULL character
+* `md4c.TextType.BR` - Line break
+* `md4c.TextType.SOFTBR` - Soft line break
+* `md4c.TextType.ENTITY` - HTML Entity
+* `md4c.TextType.CODE` - Text inside a code block or inline code
+* `md4c.TextType.HTML` - Raw HTML (inside an HTML block or simply inline HTML)
+* `md4c.TextType.LATEXMATH` - Text inside an equation
+
+### Table Alignments - class `Align`
+
+* `md4c.Align.DEFAULT`
+* `md4c.Align.LEFT`
+* `md4c.Align.CENTER`
+* `md4c.Align.RIGHT`
 
 Exceptions
 ----------
