@@ -727,6 +727,102 @@ static PyTypeObject GenericParserType = {
  ******************************************************************************/
 
 /*
+ * Add the flag constants to the provided module. Return 0 on success, -1 on
+ * error.
+ */
+static int md4c_add_flags(PyObject *m) {
+    // Add the parser option flags
+    if (PyModule_AddIntConstant(m, "MD_FLAG_COLLAPSEWHITESPACE",
+                MD_FLAG_COLLAPSEWHITESPACE) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEATXHEADERS",
+                MD_FLAG_PERMISSIVEATXHEADERS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEURLAUTOLINKS",
+                MD_FLAG_PERMISSIVEURLAUTOLINKS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEEMAILAUTOLINKS",
+                MD_FLAG_PERMISSIVEEMAILAUTOLINKS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_NOINDENTEDCODEBLOCKS",
+                MD_FLAG_NOINDENTEDCODEBLOCKS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTMLBLOCKS",
+                MD_FLAG_NOHTMLBLOCKS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTMLSPANS",
+                MD_FLAG_NOHTMLSPANS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_TABLES",
+                MD_FLAG_TABLES) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_STRIKETHROUGH",
+                MD_FLAG_STRIKETHROUGH) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEWWWAUTOLINKS",
+                MD_FLAG_PERMISSIVEWWWAUTOLINKS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_TASKLISTS",
+                MD_FLAG_TASKLISTS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_LATEXMATHSPANS",
+                MD_FLAG_LATEXMATHSPANS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_WIKILINKS",
+                MD_FLAG_WIKILINKS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_UNDERLINE",
+                MD_FLAG_UNDERLINE) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEAUTOLINKS",
+                MD_FLAG_PERMISSIVEAUTOLINKS) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTML",
+                MD_FLAG_NOHTML) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_DIALECT_COMMONMARK",
+                MD_DIALECT_COMMONMARK) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_DIALECT_GITHUB",
+                MD_DIALECT_GITHUB) < 0) {
+        return -1;
+    }
+
+    // Add the HTML renderer option flags
+    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_DEBUG",
+                MD_HTML_FLAG_DEBUG) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_VERBATIM_ENTITIES",
+                MD_HTML_FLAG_VERBATIM_ENTITIES) < 0) {
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_SKIP_UTF8_BOM",
+                MD_HTML_FLAG_SKIP_UTF8_BOM) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/*
  * Module Definition
  */
 static PyModuleDef md4c_module = {
@@ -756,111 +852,8 @@ PyMODINIT_FUNC PyInit__md4c(void)
         return NULL;
     }
 
-    // Add the parser option flags to the module
-    if (PyModule_AddIntConstant(m, "MD_FLAG_COLLAPSEWHITESPACE",
-                MD_FLAG_COLLAPSEWHITESPACE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEATXHEADERS",
-                MD_FLAG_PERMISSIVEATXHEADERS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEURLAUTOLINKS",
-                MD_FLAG_PERMISSIVEURLAUTOLINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEEMAILAUTOLINKS",
-                MD_FLAG_PERMISSIVEEMAILAUTOLINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_NOINDENTEDCODEBLOCKS",
-                MD_FLAG_NOINDENTEDCODEBLOCKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTMLBLOCKS",
-                MD_FLAG_NOHTMLBLOCKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTMLSPANS",
-                MD_FLAG_NOHTMLSPANS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_TABLES",
-                MD_FLAG_TABLES) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_STRIKETHROUGH",
-                MD_FLAG_STRIKETHROUGH) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEWWWAUTOLINKS",
-                MD_FLAG_PERMISSIVEWWWAUTOLINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_TASKLISTS",
-                MD_FLAG_TASKLISTS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_LATEXMATHSPANS",
-                MD_FLAG_LATEXMATHSPANS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_WIKILINKS",
-                MD_FLAG_WIKILINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_UNDERLINE",
-                MD_FLAG_UNDERLINE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEAUTOLINKS",
-                MD_FLAG_PERMISSIVEAUTOLINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTML",
-                MD_FLAG_NOHTML) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_DIALECT_COMMONMARK",
-                MD_DIALECT_COMMONMARK) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_DIALECT_GITHUB",
-                MD_DIALECT_GITHUB) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    // Add the HTML renderer option flags to the module
-    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_DEBUG",
-                MD_HTML_FLAG_DEBUG) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_VERBATIM_ENTITIES",
-                MD_HTML_FLAG_VERBATIM_ENTITIES) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_SKIP_UTF8_BOM",
-                MD_HTML_FLAG_SKIP_UTF8_BOM) < 0) {
+    // Add the option flag constants to the module
+    if (md4c_add_flags(m) < 0) {
         Py_DECREF(m);
         return NULL;
     }

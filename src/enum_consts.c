@@ -101,6 +101,7 @@ int add_blocktype_consts(PyObject *m) {
                 MD_BLOCK_TD) < 0) {
         return -1;
     }
+    return 0;
 }
 
 /*
@@ -147,6 +148,7 @@ int add_spantype_consts(PyObject *m) {
                 MD_SPAN_U) < 0) {
         return -1;
     }
+    return 0;
 }
 
 /*
@@ -185,6 +187,7 @@ int add_texttype_consts(PyObject *m) {
                 MD_TEXT_LATEXMATH) < 0) {
         return -1;
     }
+    return 0;
 }
 
 /*
@@ -207,6 +210,7 @@ int add_align_consts(PyObject *m) {
                 MD_ALIGN_RIGHT) < 0) {
         return -1;
     }
+    return 0;
 }
 
 /******************************************************************************
