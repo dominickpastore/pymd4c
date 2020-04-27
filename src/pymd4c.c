@@ -1,6 +1,9 @@
 /*
  * PyMD4C
  * Python bindings for MD4C
+ *
+ * pymd4c.c - md4c._md4c module
+ * Contains the parser and renderer classes that interface directly with MD4C
  * 
  * Copyright (c) 2020 Dominick C. Pastore
  *
@@ -33,6 +36,14 @@
 #include <md4c.h>
 #include <md4c-html.h>
 
+/*
+ * Name of enums module to import
+ */
+static const char *enums_module = "md4c._enums";
+
+/*
+ * Exception objects
+ */
 static PyObject *ParseError;
 static PyObject *StopParsing;
 
@@ -207,7 +218,7 @@ static PyMethodDef HTMLRenderer_methods[] = {
  */
 static PyTypeObject HTMLRendererType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "md4c.HTMLRenderer",
+    .tp_name = "md4c._md4c.HTMLRenderer",
     .tp_doc = "HTML MD4C Parser\n\n"
         "Parse markdown documents with MD4C and render them in HTML",
     .tp_basicsize = sizeof(HTMLRendererObject),
@@ -300,6 +311,94 @@ static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
 }
 
 /*
+ * Helpers to get instances of the various enums
+ */
+static PyObject * get_enum_blocktype(int type) {
+    // Get the module
+    PyObject *enums = PyImport_AddModule(enums_module);
+    if (enums == NULL) {
+        return NULL;
+    }
+    // Get the enum class
+    PyObject *type_enum = PyObject_GetAttrString(enums, "BlockType");
+    if (type_enum == NULL) {
+        return NULL;
+    }
+    // Instantiate the enum
+    PyObject *instance = PyObject_CallFunction(type_enum, "(i)", type);
+    if (instance == NULL) {
+        Py_DECREF(type_enum);
+        return NULL;
+    }
+    // Clean up and return
+    Py_DECREF(type_enum);
+    return instance;
+}
+static PyObject * get_enum_spantype(int type) {
+    // Get the module
+    PyObject *enums = PyImport_AddModule(enums_module);
+    if (enums == NULL) {
+        return NULL;
+    }
+    // Get the enum class
+    PyObject *type_enum = PyObject_GetAttrString(enums, "SpanType");
+    if (type_enum == NULL) {
+        return NULL;
+    }
+    // Instantiate the enum
+    PyObject *instance = PyObject_CallFunction(type_enum, "(i)", type);
+    if (instance == NULL) {
+        Py_DECREF(type_enum);
+        return NULL;
+    }
+    // Clean up and return
+    Py_DECREF(type_enum);
+    return instance;
+}
+static PyObject * get_enum_texttype(int type) {
+    // Get the module
+    PyObject *enums = PyImport_AddModule(enums_module);
+    if (enums == NULL) {
+        return NULL;
+    }
+    // Get the enum class
+    PyObject *type_enum = PyObject_GetAttrString(enums, "TextType");
+    if (type_enum == NULL) {
+        return NULL;
+    }
+    // Instantiate the enum
+    PyObject *instance = PyObject_CallFunction(type_enum, "(i)", type);
+    if (instance == NULL) {
+        Py_DECREF(type_enum);
+        return NULL;
+    }
+    // Clean up and return
+    Py_DECREF(type_enum);
+    return instance;
+}
+static PyObject * get_enum_align(int align) {
+    // Get the module
+    PyObject *enums = PyImport_AddModule(enums_module);
+    if (enums == NULL) {
+        return NULL;
+    }
+    // Get the enum class
+    PyObject *align_enum = PyObject_GetAttrString(enums, "Align");
+    if (align_enum == NULL) {
+        return NULL;
+    }
+    // Instantiate the enum
+    PyObject *instance = PyObject_CallFunction(align_enum, "(i)", align);
+    if (instance == NULL) {
+        Py_DECREF(align_enum);
+        return NULL;
+    }
+    // Clean up and return
+    Py_DECREF(align_enum);
+    return instance;
+}
+
+/*
  * GenericParser C callbacks
  */
 static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
@@ -308,30 +407,31 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
     PyObject *arglist;
     switch(type) {
         case MD_BLOCK_UL:
-            arglist = Py_BuildValue("(i{s:i,s:C})", type,
+            arglist = Py_BuildValue("(O{s:i,s:C})", get_enum_blocktype(type),
                     "is_tight", ((MD_BLOCK_UL_DETAIL *) detail)->is_tight,
                     "mark", ((MD_BLOCK_UL_DETAIL *) detail)->mark);
             break;
         case MD_BLOCK_OL:
-            arglist = Py_BuildValue("(i{s:i,s:i,s:C})", type,
+            arglist = Py_BuildValue("(O{s:i,s:i,s:C})",
+                    get_enum_blocktype(type),
                     "start", ((MD_BLOCK_OL_DETAIL *) detail)->start,
                     "is_tight", ((MD_BLOCK_OL_DETAIL *) detail)->is_tight,
                     "mark_delimiter", ((MD_BLOCK_OL_DETAIL *) detail)->
                         mark_delimiter);
             break;
         case MD_BLOCK_LI:
-            arglist = Py_BuildValue("(i{s:i,s:C,s:i})", type,
+            arglist = Py_BuildValue("(O{s:i,s:C,s:i})", get_enum_blocktype(type),
                     "is_task", ((MD_BLOCK_LI_DETAIL *) detail)->is_task,
                     "task_mark", ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
                     "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
                         task_mark_offset);
             break;
         case MD_BLOCK_H:
-            arglist = Py_BuildValue("(i{s:i})", type,
+            arglist = Py_BuildValue("(O{s:i})", get_enum_blocktype(type),
                     "level", ((MD_BLOCK_H_DETAIL *) detail)->level);
             break;
         case MD_BLOCK_CODE:
-            arglist = Py_BuildValue("(i{s:O,s:O,s:C})", type,
+            arglist = Py_BuildValue("(O{s:O,s:O,s:C})", get_enum_blocktype(type),
                     "info", GenericParser_md_attribute(
                         &((MD_BLOCK_CODE_DETAIL *) detail)->info),
                     "lang", GenericParser_md_attribute(
@@ -341,11 +441,12 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
             break;
         case MD_BLOCK_TH:
         case MD_BLOCK_TD:
-            arglist = Py_BuildValue("(i{s:i})", type,
-                    "align", ((MD_BLOCK_TD_DETAIL *) detail)->align);
+            arglist = Py_BuildValue("(O{s:O})", get_enum_blocktype(type),
+                    "align", get_enum_align(
+                        ((MD_BLOCK_TD_DETAIL *) detail)->align));
             break;
         default:
-            arglist = Py_BuildValue("(i{})", type);
+            arglist = Py_BuildValue("(O{})", get_enum_blocktype(type));
     }
     if (arglist == NULL) {
         return -1;
@@ -380,26 +481,26 @@ static int GenericParser_span(MD_SPANTYPE type, void *detail,
     PyObject *arglist;
     switch(type) {
         case MD_SPAN_A:
-            arglist = Py_BuildValue("(i{s:O,s:O})", type,
+            arglist = Py_BuildValue("(O{s:O,s:O})", get_enum_spantype(type),
                     "href", GenericParser_md_attribute(
                         &((MD_SPAN_A_DETAIL *) detail)->href),
                     "title", GenericParser_md_attribute(
                         &((MD_SPAN_A_DETAIL *) detail)->title));
             break;
         case MD_SPAN_IMG:
-            arglist = Py_BuildValue("(i{s:O,s:O})", type,
+            arglist = Py_BuildValue("(O{s:O,s:O})", get_enum_spantype(type),
                     "src", GenericParser_md_attribute(
                         &((MD_SPAN_IMG_DETAIL *) detail)->src),
                     "title", GenericParser_md_attribute(
                         &((MD_SPAN_IMG_DETAIL *) detail)->title));
             break;
         case MD_SPAN_WIKILINK:
-            arglist = Py_BuildValue("(i{s:O})", type,
+            arglist = Py_BuildValue("(O{s:O})", get_enum_spantype(type),
                     "target", GenericParser_md_attribute(
                         &((MD_SPAN_WIKILINK_DETAIL *) detail)->target));
             break;
         default:
-            arglist = Py_BuildValue("(i{})", type);
+            arglist = Py_BuildValue("(O{})", get_enum_spantype(type));
     }
     if (arglist == NULL) {
         return -1;
@@ -431,7 +532,8 @@ static int GenericParser_leave_span(MD_SPANTYPE type, void *detail,
 static int GenericParser_text(MD_TEXTTYPE type, const char *text, MD_SIZE size,
         void *cb_data) {
     // Construct arguments
-    PyObject *arglist = Py_BuildValue("(is#)", type, text, size);
+    PyObject *arglist = Py_BuildValue("(Os#)", get_enum_texttype(type),
+            text, size);
     if (arglist == NULL) {
         return -1;
     }
@@ -604,7 +706,7 @@ static PyMethodDef GenericParser_methods[] = {
 
 static PyTypeObject GenericParserType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "md4c.GenericParser",
+    .tp_name = "md4c._md4c.GenericParser",
     .tp_doc = "Generic MD4C Parser\n\n"
         "Parse Markdown documents using MD4C. This is the base parser-only\n"
         "class that requires callables to be used as callbacks. This is\n"
@@ -629,15 +731,15 @@ static PyTypeObject GenericParserType = {
  */
 static PyModuleDef md4c_module = {
     PyModuleDef_HEAD_INIT,
-    .m_name = "md4c",
-    .m_doc = "Python bindings for MD4C (https://github.com/mity/md4c)",
+    .m_name = "_md4c",
+    .m_doc = "Python bindings for MD4C parsers and renderers",
     .m_size = -1,
 };
 
 /*
  * Module initialization function
  */
-PyMODINIT_FUNC PyInit_md4c(void)
+PyMODINIT_FUNC PyInit__md4c(void)
 {
     // Initialize the types in the module
     if (PyType_Ready(&HTMLRendererType) < 0) {
@@ -651,313 +753,6 @@ PyMODINIT_FUNC PyInit_md4c(void)
     PyObject *m;
     m = PyModule_Create(&md4c_module);
     if (m == NULL) {
-        return NULL;
-    }
-
-    // Add the flag constants to the module
-    if (PyModule_AddIntConstant(m, "MD_FLAG_COLLAPSEWHITESPACE",
-                MD_FLAG_COLLAPSEWHITESPACE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEATXHEADERS",
-                MD_FLAG_PERMISSIVEATXHEADERS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEURLAUTOLINKS",
-                MD_FLAG_PERMISSIVEURLAUTOLINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEEMAILAUTOLINKS",
-                MD_FLAG_PERMISSIVEEMAILAUTOLINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_NOINDENTEDCODEBLOCKS",
-                MD_FLAG_NOINDENTEDCODEBLOCKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTMLBLOCKS",
-                MD_FLAG_NOHTMLBLOCKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTMLSPANS",
-                MD_FLAG_NOHTMLSPANS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_TABLES",
-                MD_FLAG_TABLES) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_STRIKETHROUGH",
-                MD_FLAG_STRIKETHROUGH) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEWWWAUTOLINKS",
-                MD_FLAG_PERMISSIVEWWWAUTOLINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_TASKLISTS",
-                MD_FLAG_TASKLISTS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_LATEXMATHSPANS",
-                MD_FLAG_LATEXMATHSPANS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_WIKILINKS",
-                MD_FLAG_WIKILINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_UNDERLINE",
-                MD_FLAG_UNDERLINE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_PERMISSIVEAUTOLINKS",
-                MD_FLAG_PERMISSIVEAUTOLINKS) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_FLAG_NOHTML",
-                MD_FLAG_NOHTML) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_DIALECT_COMMONMARK",
-                MD_DIALECT_COMMONMARK) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_DIALECT_GITHUB",
-                MD_DIALECT_GITHUB) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    // Add the HTML renderer flags to the module
-    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_DEBUG",
-                MD_HTML_FLAG_DEBUG) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_VERBATIM_ENTITIES",
-                MD_HTML_FLAG_VERBATIM_ENTITIES) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_SKIP_UTF8_BOM",
-                MD_HTML_FLAG_SKIP_UTF8_BOM) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    // Add the MD_BLOCKTYPE enum constants to the module
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_DOC",
-                MD_BLOCK_DOC) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_QUOTE",
-                MD_BLOCK_QUOTE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_UL",
-                MD_BLOCK_UL) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_OL",
-                MD_BLOCK_OL) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_LI",
-                MD_BLOCK_LI) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_HR",
-                MD_BLOCK_HR) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_H",
-                MD_BLOCK_H) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_CODE",
-                MD_BLOCK_CODE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_HTML",
-                MD_BLOCK_HTML) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_P",
-                MD_BLOCK_P) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_TABLE",
-                MD_BLOCK_TABLE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_THEAD",
-                MD_BLOCK_THEAD) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_TBODY",
-                MD_BLOCK_TBODY) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_TR",
-                MD_BLOCK_TR) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_TH",
-                MD_BLOCK_TH) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_BLOCK_TD",
-                MD_BLOCK_TD) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    // Add the MD_SPANTYPE enum constants to the module
-    if (PyModule_AddIntConstant(m, "MD_SPAN_EM",
-                MD_SPAN_EM) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_STRONG",
-                MD_SPAN_STRONG) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_A",
-                MD_SPAN_A) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_IMG",
-                MD_SPAN_IMG) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_CODE",
-                MD_SPAN_CODE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_DEL",
-                MD_SPAN_DEL) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_LATEXMATH",
-                MD_SPAN_LATEXMATH) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_LATEXMATH_DISPLAY",
-                MD_SPAN_LATEXMATH_DISPLAY) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_WIKILINK",
-                MD_SPAN_WIKILINK) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_SPAN_U",
-                MD_SPAN_U) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    // Add the MD_TEXTTYPE enum constants to the module
-    if (PyModule_AddIntConstant(m, "MD_TEXT_NORMAL",
-                MD_TEXT_NORMAL) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_TEXT_NULLCHAR",
-                MD_TEXT_NULLCHAR) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_TEXT_BR",
-                MD_TEXT_BR) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_TEXT_SOFTBR",
-                MD_TEXT_SOFTBR) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_TEXT_ENTITY",
-                MD_TEXT_ENTITY) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_TEXT_CODE",
-                MD_TEXT_CODE) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_TEXT_HTML",
-                MD_TEXT_HTML) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_TEXT_LATEXMATH",
-                MD_TEXT_LATEXMATH) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    // Add the MD_ALIGN enum constants to the module
-    if (PyModule_AddIntConstant(m, "MD_ALIGN_DEFAULT",
-                MD_ALIGN_DEFAULT) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_ALIGN_LEFT",
-                MD_ALIGN_LEFT) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_ALIGN_CENTER",
-                MD_ALIGN_CENTER) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    if (PyModule_AddIntConstant(m, "MD_ALIGN_RIGHT",
-                MD_ALIGN_RIGHT) < 0) {
-        Py_DECREF(m);
         return NULL;
     }
 
@@ -978,7 +773,7 @@ PyMODINIT_FUNC PyInit_md4c(void)
     }
 
     // Add the ParseError and StopParsing exceptions to the module
-    ParseError = PyErr_NewExceptionWithDoc("md4c.ParseError",
+    ParseError = PyErr_NewExceptionWithDoc("md4c._md4c.ParseError",
             "Raised when an error occurs during parsing.", NULL, NULL);
     Py_XINCREF(ParseError);
     if (PyModule_AddObject(m, "ParseError", ParseError) < 0) {
@@ -988,7 +783,7 @@ PyMODINIT_FUNC PyInit_md4c(void)
         return NULL;
     }
     // Add the ParseError exception to the module
-    StopParsing = PyErr_NewExceptionWithDoc("md4c.StopParsing",
+    StopParsing = PyErr_NewExceptionWithDoc("md4c._md4c.StopParsing",
             "Raised to stop parsing before complete.", NULL, NULL);
     Py_XINCREF(StopParsing);
     if (PyModule_AddObject(m, "StopParsing", StopParsing) < 0) {
@@ -997,6 +792,14 @@ PyMODINIT_FUNC PyInit_md4c(void)
         Py_DECREF(m);
         return NULL;
     }
+
+    // Import the md4c._enums module
+    PyObject *enums = PyImport_ImportModule(enums_module);
+    if (enums == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    Py_DECREF(enums);
 
     return m;
 }

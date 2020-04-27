@@ -54,17 +54,24 @@ class PkgconfigExtensionList(list):
 
 extensions = PkgconfigExtensionList([
     {
-        'name': 'md4c',
+        'name': 'md4c._md4c',
         'sources': [
             'src/pymd4c.c',
         ],
         'libs': 'md4c md4c-html',
     },
+    {
+        'name': 'md4c._enum_consts',
+        'sources': [
+            'src/enum_consts.c',
+        ],
+        'libs': 'md4c',
+    },
 ])
 
 setup(
     name="PyMD4C",
-    version="0.4.3.0dev1",
+    version="0.4.3.0dev2",
     author="Dominick C. Pastore",
     author_email="dominickpastore@dcpx.org",
     description="Python bindings for MD4C",
@@ -73,6 +80,9 @@ setup(
     url="https://github.com/dominickpastore/pymd4c",
     setup_requires=[
         'pkgconfig',
+    ],
+    packages=[
+        'md4c',
     ],
     ext_modules=extensions,
     classifiers=[
