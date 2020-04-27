@@ -104,7 +104,7 @@ Parse markdown text using the provided callbacks. Parameters:
 * `text_callback` - A function (or other callable) to be called whenever the
   parser has text to add to the current block or inline element.
 
-The `parse()` method can raise `md4c.ParseError` in the event of a problem
+The `parse()` method will raise `md4c.ParseError` in the event of a problem
 during parsing, such as running out of memory. This does not signal invalid
 syntax, as there is no such thing in Markdown. It can also emit any exception
 raised by any of the callbacks (except `md4c.StopParsing`, which is caught and
@@ -115,8 +115,8 @@ handled quietly).
 `enter_block_callback`, `leave_block_callback`, `enter_span_callback`, and
 `leave_span_callback` all must accept two parameters:
 
-* `type` - A `md4c.BlockType` or `md4c.SpanType` representing the type of block
-  or span. See the "Enums" section for more info.
+* `type` - An `md4c.BlockType` or `md4c.SpanType` representing the type of
+  block or span. See the "Enums" section for more info.
 * `details` - A `dict` that contains extra information for certain types of
   blocks and spans, for example, the level of a heading. Keys are `str`s.
   Values are `int`s, single-character `str`s, or (for `MD_ATTRIBUTE`) lists of
@@ -130,12 +130,12 @@ handled quietly).
   Such attributes may contain multiple text sub-elements (e.g. some regular
   text, an HTML entity, and then some more regular text). Thus, an
   `MD_ATTRIBUTE` value in `details` consists of a list of 2-tuples:
-  `(text_type, text)` where `text_type` is a `md4c.TextType` (see "Enums"
+  `(text_type, text)` where `text_type` is an `md4c.TextType` (see "Enums"
   below) and `text` is the actual text as a `str`.
 
 `text_callback` must also accept two parameters, but they are different:
 
-* `type` - A `md4c.TextType` representing the type of text element. See the
+* `type` - An `md4c.TextType` representing the type of text element. See the
   "Enums" section for more info.
 * `text` - The actual text, as a `str`.
 
@@ -177,7 +177,7 @@ Parse markdown text and return a `str` with rendered HTML. Parameters:
 * `input` - A `str` or `bytes` containing the Markdown document to parse. If a
   `bytes`, it must be UTF-8 encoded.
 
-This method can raise `md4c.ParseError` in the event of a problem during
+This method will raise `md4c.ParseError` in the event of a problem during
 parsing, such as running out of memory. This does not signal invalid syntax, as
 there is no such thing in Markdown.
 
@@ -185,7 +185,7 @@ Module-Wide Constants
 ---------------------
 
 The MD4C library provides various option flags for parsers and renderers as
-named constants. Those are made available as module-level constants in PyMD4C.
+named constants. These are made available as module-level constants in PyMD4C.
 
 ### Parser Option Flags
 
