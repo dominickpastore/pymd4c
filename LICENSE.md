@@ -29,7 +29,7 @@ SOFTWARE.
 MD4C
 ----
 
-Parts of this project may originate from the [MD4C project](https://github.com/mity/md4c/), whose license is reproduced below.
+Parts of this project may derive from the [MD4C project](https://github.com/mity/md4c/), whose license is reproduced below.
 
 ### The MIT License (MIT)
 
