@@ -137,6 +137,8 @@ static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
         return -1;
     }
 
+    self->parser_flags = parser_flags;
+    self->renderer_flags = renderer_flags;
     return 0;
 }
 
@@ -256,6 +258,7 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
         return -1;
     }
 
+    self->parser_flags = parser_flags;
     return 0;
 }
 
