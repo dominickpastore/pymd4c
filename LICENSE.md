@@ -1,8 +1,8 @@
 License
 =======
 
-PyMD4C
-------
+PyMD4C (This Project)
+---------------------
 
 MIT License
 
