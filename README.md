@@ -4,14 +4,14 @@ PyMD4C
 Python bindings for the very fast [MD4C](https://github.com/mity/md4c) Markdown
 parsing and rendering library.
 
-The MD4C C library provides a generic parser that uses callbacks to return the
+The MD4C C library provides a SAX-like parser that uses callbacks to return the
 various blocks, inlines, and text it parses from the Markdown input. In
 addition, it provides an HTML renderer that wraps the generic parser to provide
 HTML output directly.
 
 Accordingly, this Python module provides two classes:
 
-* `md4c.GenericParser` - Wraps the generic MD4C parser. Requires Python
+* `md4c.GenericParser` - Wraps the generic SAX-like MD4C parser. Requires Python
   functions (or other callables) as callbacks.
 * `md4c.HTMLRenderer` - Wraps the HTML renderer. Produces HTML output directly.
 
