@@ -15,41 +15,47 @@ class PkgconfigExtensionList(list):
         super().__init__(exts)
         self.pkgconfig_ready = False
 
-    def _fetch_pkgconfig(self):
+    def _fetch_pkgconfig(self, extension):
+        """Convert the pkgconfig keys in the dict to the proper arguments for
+        Extension and then create the actual Extension"""
+        # If no 'pkgconfig' key, add as-is
+        try:
+            libs = extension['pkgconfig']
+        except KeyError:
+            return Extension(**extension)
+
+        import pkgconfig
+
+        # Add pkgconfig info
+        del extension['pkgconfig']
+        for k, v in pkgconfig.parse(libs).items():
+            try:
+                extension[k].extend(v)
+            except KeyError:
+                extension[k] = v
+        return Extension(**extension)
+
+    def _fetch_pkgconfig_all(self):
+        """Fetch all the pkgconfig info for all the extensions"""
         # If pkgconfig already fetched, return
         if self.pkgconfig_ready:
             return
-
-        import pkgconfig
 
         # Use 'libs' key to add pkgconfig info to all extensions
         orig_extensions = super().copy()
         super().clear()
         for extension in orig_extensions:
-            # If no 'libs' key, add as-is
-            try:
-                libs = extension['libs']
-            except KeyError:
-                super().append(Extension(**extension))
-
-            # Add pkgconfig info
-            del extension['libs']
-            for k, v in pkgconfig.parse(libs).items():
-                try:
-                    extension[k].extend(v)
-                except KeyError:
-                    extension[k] = v
-            super().append(Extension(**extension))
+            super().append(self._fetch_pkgconfig(extension))
 
         # Mark pkgconfig fetch complete
         self.pkgconfig_ready = True
 
     def __iter__(self):
-        self._fetch_pkgconfig()
+        self._fetch_pkgconfig_all()
         return super().__iter__()
 
     def __getitem__(self, key):
-        self._fetch_pkgconfig()
+        self._fetch_pkgconfig_all()
         return super().__getitem__(key)
 
 extensions = PkgconfigExtensionList([
@@ -58,20 +64,20 @@ extensions = PkgconfigExtensionList([
         'sources': [
             'src/pymd4c.c',
         ],
-        'libs': 'md4c md4c-html',
+        'pkgconfig': 'md4c md4c-html',
     },
     {
         'name': 'md4c._enum_consts',
         'sources': [
             'src/enum_consts.c',
         ],
-        'libs': 'md4c',
+        'pkgconfig': 'md4c',
     },
 ])
 
 setup(
     name="PyMD4C",
-    version="0.4.3.0b1",
+    version="0.4.3.0b2",
     author="Dominick C. Pastore",
     author_email="dominickpastore@dcpx.org",
     description="Python bindings for MD4C",
