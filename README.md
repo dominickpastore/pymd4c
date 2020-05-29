@@ -44,9 +44,10 @@ ways to build on Windows as well):
 3. You may need to rebuild the ldconfig cache (also as root): `ldconfig`
 
 In addition, the `pkg-config` tool and the Python `pkgconfig` package must be
-available to build PyMD4C, but they are not required after that. The
-`pkg-config` tool is likely available on your system already, and the Python
-`pkgconfig` package will be fetched automatically by `setup.py`.
+available to build PyMD4C, but they are not required after that (i.e., they are
+not a prerequisite for actually *using* PyMD4C). The `pkg-config` tool is
+likely available on your system already, and the Python `pkgconfig` package
+will be fetched automatically by `setup.py`.
 
 ### Build/Install
 

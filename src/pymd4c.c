@@ -821,6 +821,10 @@ static int md4c_add_flags(PyObject *m) {
                 MD_HTML_FLAG_SKIP_UTF8_BOM) < 0) {
         return -1;
     }
+    if (PyModule_AddIntConstant(m, "MD_HTML_FLAG_XHTML",
+                MD_HTML_FLAG_XHTML) < 0) {
+        return -1;
+    }
 
     return 0;
 }
