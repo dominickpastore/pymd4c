@@ -244,6 +244,7 @@ supports):
 * `md4c.MD_HTML_FLAG_VERBATIM_ENTITIES` - Do not replace HTML entities with the
   actual character (e.g. `&copy;` with ©).
 * `md4c.MD_HTML_FLAG_SKIP_UTF8_BOM` - Omit BOM from start of UTF-8 input.
+* `md4c.MD_HTML_FLAG_XHTML` - Generate XHTML instead of HTML.
 
 Enums
 -----
