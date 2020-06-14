@@ -18,8 +18,20 @@ Accordingly, this Python module provides two classes:
 If other renderers are added to MD4C, they will get their own Python class as
 well, similar to the `HTMLRenderer`.
 
-Build and Install
+Install from PyPI
 -----------------
+
+PyMD4C is available on PyPI under the name `pymd4c`. Install it with pip like
+this:
+
+    pip install pymd4c
+
+This is the recommended method to obtain PyMD4C. However, if a build is not
+available for your platform (or you simply want to), you can build and install
+from source using the instructions below.
+
+Build and Install from Source
+-----------------------------
 
 ### Prerequisites
 
