@@ -15,7 +15,7 @@ function repair_wheel {
 
 # Install MD4C
 (
-    cp -r /io/md4c /tmp/md4c
+    cp -r /io/md4c-lib /tmp/md4c
     mkdir /tmp/md4c/build
     cd /tmp/md4c/build
     cmake ..
