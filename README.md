@@ -224,7 +224,7 @@ Combination option flags:
   and `MD_FLAG_NOHTMLSPANS`
 
 Dialect option flags (note that not all features of a dialect may be supported,
-but these flags will cause MD4C to parse as many features of the dialect it
+but these flags will cause MD4C to parse as many features of the dialect as it
 supports):
 
 * `md4c.MD_DIALECT_COMMONMARK` - This is the default behavior of MD4C, so no

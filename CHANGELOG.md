@@ -20,6 +20,6 @@ This is the initial release.
 
 - `GenericParser` class wrapping the MD4C core parser
 - `HTMLRenderer` class wrapping the MD4C HTML renderer
-- Written for the upcoming version of MD4C following 0.4.3
+- Written for the MD4C version 0.4.4
 
 [Unreleased]: https://github.com/dominickpastore/pymd4c
