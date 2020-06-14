@@ -37,9 +37,10 @@ ways to build on Windows as well):
        cd build
        cmake ..
        make
+       # Do as root:
        make install
 
-   The last step must be run as root. The library will install to /usr/local
+   The install step must be run as root. The library will install to /usr/local
    by default.
 3. You may need to rebuild the ldconfig cache (also as root): `ldconfig`
 
@@ -48,6 +49,11 @@ available to build PyMD4C, but they are not required after that (i.e., they are
 not a prerequisite for actually *using* PyMD4C). The `pkg-config` tool is
 likely available on your system already, and the Python `pkgconfig` package
 will be fetched automatically by `setup.py`.
+
+Finally, note that since this package uses C extensions, development headers
+for Python must be installed for the build to succeed. If you are using Linux,
+some distributions split these off from the main Python package. Install
+`python-dev` or `python-devel` to get them.
 
 ### Build/Install
 
