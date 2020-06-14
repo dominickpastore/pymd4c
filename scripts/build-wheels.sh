@@ -2,6 +2,7 @@
 # See https://github.com/pypa/python-manylinux-demo
 
 set -e -u -x
+shopt -s nullglob
 
 function repair_wheel {
     wheel="$1"
@@ -13,20 +14,24 @@ function repair_wheel {
 }
 
 
+
 # Install MD4C
+yum install -y cmake3
+cp -r /io/md4c-lib /tmp/md4c
 (
-    cp -r /io/md4c-lib /tmp/md4c
     mkdir /tmp/md4c/build
     cd /tmp/md4c/build
-    cmake ..
+    cmake3 ..
     make
     make install
     #ldconfig
 )
 
 # Compile wheels
-for PYBIN in /opt/python/*/bin; do
-    "${PYBIN}/pip" wheel /io/ --no-deps -w wheelhouse/
+all_pybins=/opt/python/cp[^2][6-9]-*/bin /opt/python/cp[^2][0-9][0-9]*-*/bin
+ls -d $all_pybins
+for pybin in $all_pybins; do
+    "${pybin}/pip" wheel /io/ --no-deps -w wheelhouse/
 done
 
 # Bundle external shared libraries into the wheels

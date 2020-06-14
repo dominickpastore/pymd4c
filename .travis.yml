@@ -30,5 +30,5 @@ install:
   - git clone --branch release-0.4.4 --depth 1 https://github.com/mity/md4c.git md4c-lib
 
 script:
-  - docker run --rm -e PLAT=$PLAT -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/build-wheels.sh
+  - docker run --rm -e PLAT=$PLAT -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/scripts/build-wheels.sh
   - ls wheelhouse/
