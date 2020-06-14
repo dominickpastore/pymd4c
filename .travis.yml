@@ -1,0 +1,32 @@
+# See https://github.com/pypa/python-manylinux-demo
+#TODO Add a testing stage, and then this becomes deployment stage
+branches:
+  only:
+    - master
+
+notifications:
+  email: false
+
+jobs:
+  include:
+    - services:
+        - docker
+      env: DOCKER_IMAGE=quay.io/pypa/manylinux2010_x86_64
+           PLAT=manylinux2010_x86_64
+    - services:
+        - docker
+      env: DOCKER_IMAGE=quay.io/pypa/manylinux2010_i686
+           PRE_CMD=linux32
+           PLAT=manylinux2010_i686
+    - services:
+        - docker
+      env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_x86_64
+           PLAT=manylinux2014_x86_64
+
+install:
+  - docker pull $DOCKER_IMAGE
+  - git clone --branch release-0.4.4 --depth 1 https://github.com/mity/md4c.git
+
+script:
+  - docker run --rm -e PLAT=$PLAT -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/build-wheels.sh
+  - ls wheelhouse/
