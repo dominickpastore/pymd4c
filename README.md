@@ -1,6 +1,8 @@
 PyMD4C
 ======
 
+[![Build Status](https://travis-ci.com/dominickpastore/pymd4c.svg?branch=master)](https://travis-ci.com/dominickpastore/pymd4c)
+
 Python bindings for the very fast [MD4C](https://github.com/mity/md4c) Markdown
 parsing and rendering library.
 
