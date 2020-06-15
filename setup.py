@@ -7,22 +7,6 @@ with open("about.json", "r") as f:
 with open("README.md", "r") as f:
     long_description = f.read()
 
-class WrappedVersionCommand(Command):
-    """Provides wrapped_version command"""
-    description = "Print the version of the C library wrapped by these bindings"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        global about
-        version_components = about['version'].split('.')
-        print('.'.join(version_components[0:3]))
-
 class PkgconfigExtensionList(list):
     """A subclass of list that does not require the pkgconfig module for
     initialization, but imports it and updates the list as soon as it is
@@ -108,11 +92,6 @@ setup(
     ext_modules=extensions,
     python_requires='>=3.6',
     zip_safe=False,
-    # Note: The following doesn't work because setuptools prints
-    # "running wrapped_version" automatically, and --quiet/-q does not turn it
-    # off.
-    #cmdclass={
-    #    'wrapped_version': WrappedVersionCommand,
-    #},
+    include_package_data=True,
     **about
 )

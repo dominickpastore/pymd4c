@@ -42,7 +42,7 @@ jobs:
       os: windows
       before_install:
         - choco install python3 --version=3.6
-        - python3 -m pip install --upgrade pip setuptools wheel twine
+        - python3 -m pip install --upgrade pip setuptools wheel
       env: PATH=/c/Python36:/c/Python36/Scripts:$PATH
       script:
         - scripts/build-win.sh
