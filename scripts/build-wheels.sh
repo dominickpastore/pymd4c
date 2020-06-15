@@ -17,20 +17,16 @@ function repair_wheel {
 
 # Install MD4C
 yum install -y cmake3
-cp -r /io/md4c-lib /tmp/md4c
+mkdir /io/md4c-lib/build
 (
-    mkdir /tmp/md4c/build
-    cd /tmp/md4c/build
-    cmake3 -DCMAKE_INSTALL_LIBDIR=/usr/local/lib ..
+    cd /io/md4c-lib/build
+    cmake3 -DCMAKE_INSTALL_LIBDIR:PATH=/usr/local/lib ..
     make
     make install
-    #ldconfig
 )
+#ldconfig
 
 # Compile wheels
-#pkg-config --variable pc_path pkg-config
-#export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH
-pkg-config --cflags --libs md4c
 all_pybins=/opt/python/cp[^2][6-9]-*/bin /opt/python/cp[^2][0-9][0-9]*-*/bin
 ls -d $all_pybins
 for pybin in $all_pybins; do

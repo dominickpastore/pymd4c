@@ -1,7 +1,27 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, Command
+import json
+
+with open("about.json", "r") as f:
+    about = json.load(f)
 
 with open("README.md", "r") as f:
     long_description = f.read()
+
+class WrappedVersionCommand(Command):
+    """Provides wrapped_version command"""
+    description = "Print the version of the C library wrapped by these bindings"
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        global about
+        version_components = about['version'].split('.')
+        print('.'.join(version_components[0:3]))
 
 class PkgconfigExtensionList(list):
     """A subclass of list that does not require the pkgconfig module for
@@ -76,14 +96,9 @@ extensions = PkgconfigExtensionList([
 ])
 
 setup(
-    name="pymd4c",
-    version="0.4.4.0b1",
-    author="Dominick C. Pastore",
-    author_email="dominickpastore@dcpx.org",
-    description="Python bindings for MD4C",
+    # Most package metadata is in about.json (added below via **about)
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/dominickpastore/pymd4c",
     setup_requires=[
         'pkgconfig',
     ],
@@ -91,12 +106,13 @@ setup(
         'md4c',
     ],
     ext_modules=extensions,
-    classifiers=[
-        "Programming Language :: C",
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Topic :: Text Processing :: Markup",
-    ],
     python_requires='>=3.6',
     zip_safe=False,
+    # Note: The following doesn't work because setuptools prints
+    # "running wrapped_version" automatically, and --quiet/-q does not turn it
+    # off.
+    #cmdclass={
+    #    'wrapped_version': WrappedVersionCommand,
+    #},
+    **about
 )

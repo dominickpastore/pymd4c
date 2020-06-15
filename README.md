@@ -28,9 +28,34 @@ this:
 
     pip install pymd4c
 
-This is the recommended method to obtain PyMD4C. However, if a build is not
-available for your platform (or you simply want to), you can build and install
-from source using the instructions below.
+This is the recommended method to obtain PyMD4C. It should work well on most
+Linux distributions. It will probably work well on Windows and macOS (but these
+platforms are more difficult to test).
+
+If this does not work, there are a couple potential reasons:
+
+1. You do not have pip installed. See [Installing Packages - Python Packaging
+   User Guide](https://packaging.python.org/tutorials/installing-packages/).
+2. Your version of Python is too old. This is a platform wheel, so it is built
+   for each Python version separately. Python versions older than 3.6 are not
+   supported. If your Python version is older than that, try upgrading.
+3. Your platform is incompatible. Again, since it is a platform wheel, it is
+   built for each supported platform separately.
+   - If you are on Windows or macOS and your Python version is 3.6 or newer,
+     there is a problem with the automated build process. Please consider
+     opening a new [GitHub
+     issue](https://github.com/dominickpastore/pymd4c/issues).
+   - If you are on Linux, you may be running a more esoteric distribution or
+     architecture unsupported by [manylinux](https://github.com/pypa/manylinux).
+     (Note that some architectures are supported by manylinux but are not built
+     at this time, including arm64, ppc64le, and s390x. If that affects you,
+     consider opening a new [GitHub
+     issue](https://github.com/dominickpastore/pymd4c/issues) and your
+     architecture can be added.)
+   - If you are on some other platform, unfortunately, it is not supported.
+
+If a build is not available for your platform (or you simply want to), you can
+build and install from source using the instructions below.
 
 Build and Install from Source
 -----------------------------
