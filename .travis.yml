@@ -35,18 +35,6 @@ jobs:
            PLAT=manylinux2010_i686
       before_install:
         - docker pull $DOCKER_IMAGE
-    #- name: "Build for macOS"
-      #os: osx
-      #TODO
-    - name: "Build for Windows"
-      os: windows
-      before_install:
-        - choco install python3 --version=3.6
-        - python3 -m pip install --upgrade pip setuptools wheel
-      env: PATH=/c/Python36:/c/Python36/Scripts:$PATH
-      script:
-        - scripts/build-win.sh
-        - ls wheelhouse/
 
 install:
   - scripts/fetch-md4c.sh md4c-lib
