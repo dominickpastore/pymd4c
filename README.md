@@ -1,10 +1,18 @@
+[![Build Status](https://travis-ci.com/dominickpastore/pymd4c.svg?branch=master)](https://travis-ci.com/dominickpastore/pymd4c)
+
 PyMD4C
 ======
 
-[![Build Status](https://travis-ci.com/dominickpastore/pymd4c.svg?branch=master)](https://travis-ci.com/dominickpastore/pymd4c)
+Python bindings for the very fast [MD4C] Markdown parsing and rendering
+library.
 
-Python bindings for the very fast [MD4C](https://github.com/mity/md4c) Markdown
-parsing and rendering library.
+- GitHub: [https://github.com/dominickpastore/pymd4c][GitHub]
+- PyPI: [https://pypi.org/project/pymd4c/][PyPI]
+- Changelog: [https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md][changelog]
+- Issues: [https://github.com/dominickpastore/pymd4c/issues][issues]
+
+Introduction
+------------
 
 The MD4C C library provides a SAX-like parser that uses callbacks to return the
 various blocks, inlines, and text it parses from the Markdown input. In
@@ -13,8 +21,8 @@ HTML output directly.
 
 Accordingly, this Python module provides two classes:
 
-* `md4c.GenericParser` - Wraps the generic SAX-like MD4C parser. Requires Python
-  functions (or other callables) as callbacks.
+* `md4c.GenericParser` - Wraps the generic SAX-like MD4C parser. Requires
+  Python functions (or other callables) as callbacks.
 * `md4c.HTMLRenderer` - Wraps the HTML renderer. Produces HTML output directly.
 
 If other renderers are added to MD4C, they will get their own Python class as
@@ -23,39 +31,39 @@ well, similar to the `HTMLRenderer`.
 Install from PyPI
 -----------------
 
-PyMD4C is available on PyPI under the name `pymd4c`. Install it with pip like
-this:
+PyMD4C is available on PyPI under the name [`pymd4c`][PyPI]. Install it with
+pip like this:
 
     pip install pymd4c
 
 This is the recommended method to obtain PyMD4C. It should work well on most
-Linux distributions. It will probably work well on Windows and macOS (but these
-platforms are more difficult to test).
+Linux distributions. It will probably work well on Windows and macOS (but
+these platforms are not as well-tested).
 
 If this does not work, there are a couple potential reasons:
 
-1. You do not have pip installed. See [Installing Packages - Python Packaging
-   User Guide](https://packaging.python.org/tutorials/installing-packages/).
+1. You do not have pip installed, or your version is too old. See [Installing
+   Packages - Python Packaging User Guide][python-packaging].
+
 2. Your version of Python is too old. This is a platform wheel, so it is built
    for each Python version separately. Python versions older than 3.6 are not
    supported. If your Python version is older than that, try upgrading.
+
 3. Your platform is incompatible. Again, since it is a platform wheel, it is
    built for each supported platform separately.
    - If you are on Windows or macOS and your Python version is 3.6 or newer,
      there is a problem with the automated build process. Please consider
-     opening a new [GitHub
-     issue](https://github.com/dominickpastore/pymd4c/issues).
+     opening a new [GitHub issue][issues].
    - If you are on Linux, you may be running a more esoteric distribution or
-     architecture unsupported by [manylinux](https://github.com/pypa/manylinux).
-     (Note that some architectures are supported by manylinux but are not built
-     at this time, including arm64, ppc64le, and s390x. If that affects you,
-     consider opening a new [GitHub
-     issue](https://github.com/dominickpastore/pymd4c/issues) and your
-     architecture can be added.)
-   - If you are on some other platform, unfortunately, it is not supported.
+     architecture unsupported by [manylinux]. (Note that some architectures are
+     supported by manylinux but are not built at this time, including arm64,
+     ppc64le, and s390x. If that affects you, consider opening a new [GitHub
+     issue][issues] and your architecture can be added.)
+   - If you are on some other platform, unfortunately, it is not supported by
+     the pre-built packages.
 
 If a build is not available for your platform (or you simply want to), you can
-build and install from source using the instructions below.
+build and install from source. The instructions below should assist.
 
 Build and Install from Source
 -----------------------------
@@ -67,9 +75,9 @@ package manager. Otherwise, it can be built from source as follows (note that
 the below instructions are for Unix-like systems, but theoretically there are
 ways to build on Windows as well):
 
-1. Download and extract the matching release from
-   [the releases page](https://github.com/mity/md4c/releases) (e.g. for PyMD4C
-   version W.X.Y.Z, download MD4C version W.X.Y).
+1. Download and extract the matching release from the [MD4C releases
+   page][md4c-releases] (e.g. for PyMD4C version W.X.Y.Z, download MD4C version
+   W.X.Y).
 2. Inside the extracted file, run the following:
 
        mkdir build
@@ -297,8 +305,8 @@ Enums
 The MD4C library uses various enums to provide data to callbacks. PyMD4C uses
 `IntEnum`s to encapsulate these.
 
-See `md4c.h` from the [MD4C project](https://github.com/mity/md4c/) for more
-information on these enums and associated types.
+See `md4c.h` from the [MD4C project][MD4C] for more information on these enums
+and associated types.
 
 ### Block Types - class `BlockType`
 
@@ -366,3 +374,12 @@ License
 
 This project is licensed under the MIT license. See the `LICENSE.md` file for
 details.
+
+[MD4C]: https://github.com/mity/md4c
+[GitHub]: https://github.com/dominickpastore/pymd4c
+[PyPI]: https://pypi.org/project/pymd4c/
+[changelog]: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
+[issues]: https://github.com/dominickpastore/pymd4c/issues
+[python-packaging]: https://packaging.python.org/tutorials/installing-packages/
+[manylinux]: https://github.com/pypa/manylinux
+[md4c-releases]: https://github.com/mity/md4c/releases

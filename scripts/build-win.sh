@@ -11,4 +11,4 @@ mkdir md4c-lib/build
     make install
 )
 
-python3 -m pip wheel . --no-deps -w wheelhouse/
+python3 -m pip wheel . --no-deps -w dist/
