@@ -2,6 +2,9 @@
 
 set -e -u -x
 
+python_versions="3.6 3.7 3.8"
+full_versions=""
+
 # Install MD4C
 mkdir md4c-lib/build
 (
@@ -12,35 +15,29 @@ mkdir md4c-lib/build
 )
 
 # Install python versions
-brew install pyenv
-pyenv install --list
-exit
-
-for ver in 3.6 3.7 3.8
+eval "$(pyenv init -)"
+for ver in $python_versions
 do
-    #TODO
+    full_ver=$(
+        pyenv install --list |
+        grep "^ *${ver}\\.[0-9]* *\$" |
+        sort -t. -k3 |
+        tail -n1
+    )
+
+    pyenv install -v $full_ver
+    full_versions="${full_versions} ${full_ver}"
 done
+pyenv global $full_versions
 
-(
-    python3.6 -m venv venv36
-    source venv36/bin/activate
-    python3 -m pip install --upgrade pip setuptools wheel
-    python3 -m pip wheel . --no-deps -w dist/
-    deactivate
-)
-
-(
-    python3.7 -m venv venv37
-    source venv37/bin/activate
-    python3 -m pip install --upgrade pip setuptools wheel
-    python3 -m pip wheel . --no-deps -w dist/
-    deactivate
-)
-
-(
-    python3.8 -m venv venv38
-    source venv38/bin/activate
-    python3 -m pip install --upgrade pip setuptools wheel
-    python3 -m pip wheel . --no-deps -w dist/
-    deactivate
-)
+# Build wheels
+for ver in $python_versions
+do
+    (
+        python${ver} -m venv venv${ver}
+        source venv${ver}/bin/activate
+        python -m pip install --upgrade pip setuptools wheel
+        python -m pip wheel . --no-deps -w dist/
+        deactivate ""
+    )
+done

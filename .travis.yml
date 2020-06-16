@@ -50,6 +50,7 @@ jobs:
       #DEBUG ^
       name: "Build for macOS"
       os: osx
+      language: generic
       script:
         - scripts/build-mac.sh
         - ls dist/
