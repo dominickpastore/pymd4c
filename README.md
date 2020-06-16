@@ -1,10 +1,18 @@
+[![Build Status](https://travis-ci.com/dominickpastore/pymd4c.svg?branch=master)](https://travis-ci.com/dominickpastore/pymd4c)
+
 PyMD4C
 ======
 
-[![Build Status](https://travis-ci.com/dominickpastore/pymd4c.svg?branch=master)](https://travis-ci.com/dominickpastore/pymd4c)
-
 Python bindings for the very fast [MD4C](https://github.com/mity/md4c) Markdown
 parsing and rendering library.
+
+- GitHub: [https://github.com/dominickpastore/pymd4c](https://github.com/dominickpastore/pymd4c)
+- PyPI: [https://pypi.org/project/pymd4c/](https://pypi.org/project/pymd4c/)
+- Changelog: [https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md](https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md)
+- Issues: [https://github.com/dominickpastore/pymd4c/issues](https://github.com/dominickpastore/pymd4c/issues)
+
+Introduction
+------------
 
 The MD4C C library provides a SAX-like parser that uses callbacks to return the
 various blocks, inlines, and text it parses from the Markdown input. In
@@ -23,8 +31,8 @@ well, similar to the `HTMLRenderer`.
 Install from PyPI
 -----------------
 
-PyMD4C is available on PyPI under the name `pymd4c`. Install it with pip like
-this:
+PyMD4C is available on PyPI under the name [`pymd4c`](
+https://pypi.org/project/pymd4c/). Install it with pip like this:
 
     pip install pymd4c
 
@@ -37,8 +45,8 @@ Note that some more esoteric distributions or non-x86/x86\_64 architectures may
 not be supported by the manylinux packages. If either of those apply to your
 system, you may also need to build from source. (However, if you are running
 Linux on arm64, ppc64le, or s390x, consider opening a new [GitHub
-issue](https://github.com/dominickpastore/pymd4c/issues)--it may be possible to
-add your architecture.)
+issue](https://github.com/dominickpastore/pymd4c/issues)&ndash;it may be
+possible to add your architecture.)
 
 Build and Install from Source
 -----------------------------
