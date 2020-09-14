@@ -370,9 +370,18 @@ static PyObject * get_enum_align(int align) {
  * substr_type is a md4c.TextType Enum
  * and substr_text is a string
  *
- * Return the list on success, NULL on failure
+ * If no MD_ATTRIBUTE is provided, that is, attr is NULL (can happen e.g. when
+ * parsing an indented code block, which has no info string), returns None
+ * instead.
+ *
+ * Return the list or None on success, NULL on failure
  */
 static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
+    // If no MD_ATTRIBUTE, return None
+    if (attr->text == NULL) {
+        Py_RETURN_NONE;
+    }
+
     // Init list
     PyObject *list = PyList_New(0);
     if (list == NULL) {

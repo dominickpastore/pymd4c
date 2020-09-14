@@ -157,7 +157,7 @@ handled quietly).
 * `details` - A `dict` that contains extra information for certain types of
   blocks and spans, for example, the level of a heading. Keys are `str`s.
   Values are `int`s, single-character `str`s, or (for `MD_ATTRIBUTE`) lists of
-  tuples.
+  tuples or None.
 
   See the `MD_BLOCK_*_DETAIL` and `MD_SPAN_*_DETAIL` structs in MD4C's `md4c.h`
   for information on exactly what this `dict` will contain.
@@ -169,6 +169,10 @@ handled quietly).
   `MD_ATTRIBUTE` value in `details` consists of a list of 2-tuples:
   `(text_type, text)` where `text_type` is an `md4c.TextType` (see "Enums"
   below) and `text` is the actual text as a `str`.
+
+  Note that attributes may not always be provided. For example, an indented
+  code block will not contain `info` or `lang` attributes. In those cases, the
+  value will be `None`.
 
 `text_callback` must also accept two parameters, but they are different:
 
