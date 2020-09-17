@@ -433,11 +433,20 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
                         mark_delimiter);
             break;
         case MD_BLOCK_LI:
-            arglist = Py_BuildValue("(O{s:i,s:C,s:i})", get_enum_blocktype(type),
-                    "is_task", ((MD_BLOCK_LI_DETAIL *) detail)->is_task,
-                    "task_mark", ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
-                    "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
-                        task_mark_offset);
+            // Tasks can have marks, but marks in non tasks are undefined
+            if (((MD_BLOCK_LI_DETAIL *) detail)->is_task) {
+                arglist = Py_BuildValue("(O{s:i,s:C,s:i})", get_enum_blocktype(type),
+                        "is_task", ((MD_BLOCK_LI_DETAIL *) detail)->is_task,
+                        "task_mark", ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
+                        "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
+                            task_mark_offset);
+            } else {
+                arglist = Py_BuildValue("(O{s:i,s:O,s:i})", get_enum_blocktype(type),
+                        "is_task", ((MD_BLOCK_LI_DETAIL *) detail)->is_task,
+                        "task_mark", Py_None,
+                        "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
+                            task_mark_offset);
+            }
             break;
         case MD_BLOCK_H:
             arglist = Py_BuildValue("(O{s:i})", get_enum_blocktype(type),
