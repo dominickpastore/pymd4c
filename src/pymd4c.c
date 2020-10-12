@@ -420,12 +420,12 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
     PyObject *arglist;
     switch(type) {
         case MD_BLOCK_UL:
-            arglist = Py_BuildValue("(O{s:O,s:C})", get_enum_blocktype(type),
+            arglist = Py_BuildValue("(O{s:N,s:C})", get_enum_blocktype(type),
                     "is_tight", PyBool_FromLong(((MD_BLOCK_UL_DETAIL *) detail)->is_tight),
                     "mark", ((MD_BLOCK_UL_DETAIL *) detail)->mark);
             break;
         case MD_BLOCK_OL:
-            arglist = Py_BuildValue("(O{s:i,s:O,s:C})",
+            arglist = Py_BuildValue("(O{s:i,s:N,s:C})",
                     get_enum_blocktype(type),
                     "start", ((MD_BLOCK_OL_DETAIL *) detail)->start,
                     "is_tight", PyBool_FromLong(((MD_BLOCK_OL_DETAIL *) detail)->is_tight),
