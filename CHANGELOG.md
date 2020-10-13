@@ -14,12 +14,31 @@ PyMD4C version numbers track MD4C version numbers:
 [Unreleased]
 ------------
 
-This is the initial release.
+### Changed
 
-### Features:
+- Compatible with MD4C version 0.4.5
+- Omit keys from the `details` dict when they are irrelevant: No `task_mark` or
+  `task_mark_offset` for non-task-lists, no `fence_char` for indented code
+  blocks. (Credit to @mondeja on GitHub for implementing)
+- Use a bool for appropriate keys in `details`: `is_tight`, `is_task` (Credit
+  to @mondeja on GitHub for implementing)
+
+### Fixed
+
+- No more segmentation fault in `GenericParser` when an `MD_ATTRIBUTE` is
+  missing, e.g. info string for indented code blocks. (Thanks to @mondeja on
+  GitHub for reporting)
+
+[0.4.4.0b1] - 2020-06-16
+------------------------
+
+This is the initial beta release.
+
+### Added
 
 - `GenericParser` class wrapping the MD4C core parser
 - `HTMLRenderer` class wrapping the MD4C HTML renderer
 - Written for the MD4C version 0.4.4
 
-[Unreleased]: https://github.com/dominickpastore/pymd4c
+[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/release-0.4.4.0b1..HEAD
+[0.4.4.0b1]: https://github.com/dominickpastore/pymd4c/releases/tag/release-0.4.4.0b1
