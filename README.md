@@ -159,8 +159,12 @@ handled quietly).
   Values are `int`s, single-character `str`s, or (for `MD_ATTRIBUTE`) lists of
   tuples or None.
 
-  See the `MD_BLOCK_*_DETAIL` and `MD_SPAN_*_DETAIL` structs in MD4C's `md4c.h`
-  for information on exactly what this `dict` will contain.
+  This dict will contain the information provided by `MD_BLOCK_*_DETAIL` and
+  `MD_SPAN_*_DETAIL` structs in MD4C's `md4c.h`, with following exceptions:
+
+  * Non tasks `MD_BLOCK_LI` blocks (when `is_task` detail is `False`) do not
+    include `task_mark` and `task_mark_offset` attributes.
+  * Indented `MD_BLOCK_CODE` blocks do not include the `fence_char` attribute.
 
   Regarding `MD_ATTRIBUTE`s: These are used where a block or span can contain
   some associated text, such as link titles and code block language references.

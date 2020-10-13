@@ -420,37 +420,50 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
     PyObject *arglist;
     switch(type) {
         case MD_BLOCK_UL:
-            arglist = Py_BuildValue("(O{s:i,s:C})", get_enum_blocktype(type),
-                    "is_tight", ((MD_BLOCK_UL_DETAIL *) detail)->is_tight,
+            arglist = Py_BuildValue("(O{s:N,s:C})", get_enum_blocktype(type),
+                    "is_tight", PyBool_FromLong(((MD_BLOCK_UL_DETAIL *) detail)->is_tight),
                     "mark", ((MD_BLOCK_UL_DETAIL *) detail)->mark);
             break;
         case MD_BLOCK_OL:
-            arglist = Py_BuildValue("(O{s:i,s:i,s:C})",
+            arglist = Py_BuildValue("(O{s:i,s:N,s:C})",
                     get_enum_blocktype(type),
                     "start", ((MD_BLOCK_OL_DETAIL *) detail)->start,
-                    "is_tight", ((MD_BLOCK_OL_DETAIL *) detail)->is_tight,
+                    "is_tight", PyBool_FromLong(((MD_BLOCK_OL_DETAIL *) detail)->is_tight),
                     "mark_delimiter", ((MD_BLOCK_OL_DETAIL *) detail)->
                         mark_delimiter);
             break;
         case MD_BLOCK_LI:
-            arglist = Py_BuildValue("(O{s:i,s:C,s:i})", get_enum_blocktype(type),
-                    "is_task", ((MD_BLOCK_LI_DETAIL *) detail)->is_task,
-                    "task_mark", ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
-                    "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
-                        task_mark_offset);
+            if (((MD_BLOCK_LI_DETAIL *) detail)->is_task) {
+                arglist = Py_BuildValue("(O{s:O,s:C,s:i})", get_enum_blocktype(type),
+                        "is_task", Py_True,
+                        "task_mark", ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
+                        "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
+                            task_mark_offset);
+            } else {
+                arglist = Py_BuildValue("(O{s:O})", get_enum_blocktype(type),
+                        "is_task", Py_False);
+            }
             break;
         case MD_BLOCK_H:
             arglist = Py_BuildValue("(O{s:i})", get_enum_blocktype(type),
                     "level", ((MD_BLOCK_H_DETAIL *) detail)->level);
             break;
         case MD_BLOCK_CODE:
-            arglist = Py_BuildValue("(O{s:O,s:O,s:C})", get_enum_blocktype(type),
-                    "info", GenericParser_md_attribute(
-                        &((MD_BLOCK_CODE_DETAIL *) detail)->info),
-                    "lang", GenericParser_md_attribute(
-                        &((MD_BLOCK_CODE_DETAIL *) detail)->lang),
-                    "fence_char", ((MD_BLOCK_CODE_DETAIL *) detail)->
-                        fence_char);
+            if (((MD_BLOCK_CODE_DETAIL *) detail)->fence_char == NULL) {
+                arglist = Py_BuildValue("(O{s:O,s:O})", get_enum_blocktype(type),
+                        "info", GenericParser_md_attribute(
+                            &((MD_BLOCK_CODE_DETAIL *) detail)->info),
+                        "lang", GenericParser_md_attribute(
+                            &((MD_BLOCK_CODE_DETAIL *) detail)->lang));
+            } else {
+                arglist = Py_BuildValue("(O{s:O,s:O,s:C})", get_enum_blocktype(type),
+                        "info", GenericParser_md_attribute(
+                            &((MD_BLOCK_CODE_DETAIL *) detail)->info),
+                        "lang", GenericParser_md_attribute(
+                            &((MD_BLOCK_CODE_DETAIL *) detail)->lang),
+                        "fence_char", ((MD_BLOCK_CODE_DETAIL *) detail)->
+                            fence_char);
+            }
             break;
         case MD_BLOCK_TH:
         case MD_BLOCK_TD:
