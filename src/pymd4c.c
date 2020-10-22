@@ -252,21 +252,21 @@ typedef struct {
 static int GenericParser_init(GenericParserObject *self, PyObject *args,
         PyObject *kwds) {
     unsigned int parser_flags = 0;
-    unsigned short int collapse_whitespace = 0;
-    unsigned short int permissive_atx_headers = 0;
-    unsigned short int permissive_url_autolinks = 0;
-    unsigned short int permissive_email_autolinks = 0;
-    unsigned short int no_indented_code_blocks = 0;
-    unsigned short int no_html_blocks = 0;
-    unsigned short int no_html_spans = 0;
-    unsigned short int tables = 0;
-    unsigned short int strikethrough = 0;
-    unsigned short int permissive_www_autolinks = 0;
-    unsigned short int tasklists = 0;
-    unsigned short int latex_math_spans = 0;
-    unsigned short int wikilinks = 0;
-    unsigned short int underline = 0;
-    
+    unsigned int collapse_whitespace = 0;
+    unsigned int permissive_atx_headers = 0;
+    unsigned int permissive_url_autolinks = 0;
+    unsigned int permissive_email_autolinks = 0;
+    unsigned int no_indented_code_blocks = 0;
+    unsigned int no_html_blocks = 0;
+    unsigned int no_html_spans = 0;
+    unsigned int tables = 0;
+    unsigned int strikethrough = 0;
+    unsigned int permissive_www_autolinks = 0;
+    unsigned int tasklists = 0;
+    unsigned int latex_math_spans = 0;
+    unsigned int wikilinks = 0;
+    unsigned int underline = 0;
+
     static char *kwlist[] = {
         "parser_flags",
         "collapse_whitespace",
@@ -296,61 +296,61 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
                                      &latex_math_spans, &wikilinks, &underline)) {
         return -1;
     }
-    
-    if (collapse_whitespace && !(parser_flags & MD_FLAG_COLLAPSEWHITESPACE)) {
-        parser_flags += MD_FLAG_COLLAPSEWHITESPACE;
-    }
-    
-    if (permissive_atx_headers && !(parser_flags & MD_FLAG_PERMISSIVEATXHEADERS)) {
-        parser_flags += MD_FLAG_PERMISSIVEATXHEADERS;
-    }
-    
-    if (permissive_url_autolinks && !(parser_flags & MD_FLAG_PERMISSIVEURLAUTOLINKS)) {
-        parser_flags += MD_FLAG_PERMISSIVEURLAUTOLINKS;
-    }
-    
-    if (permissive_email_autolinks && !(parser_flags & MD_FLAG_PERMISSIVEEMAILAUTOLINKS)) {
-        parser_flags += MD_FLAG_PERMISSIVEEMAILAUTOLINKS;
-    }
-    
-    if (no_indented_code_blocks && !(parser_flags & MD_FLAG_NOINDENTEDCODEBLOCKS)) {
-        parser_flags += MD_FLAG_NOINDENTEDCODEBLOCKS;
-    }
-    
-    if (no_html_blocks && !(parser_flags & MD_FLAG_NOHTMLBLOCKS)) {
-        parser_flags += MD_FLAG_NOHTMLBLOCKS;
-    }
-    
-    if (no_html_spans && !(parser_flags & MD_FLAG_NOHTMLSPANS)) {
-        parser_flags += MD_FLAG_NOHTMLSPANS;
-    }
-    
-    if (tables && !(parser_flags & MD_FLAG_TABLES)) {
-        parser_flags += MD_FLAG_TABLES;
-    }
-    
-    if (strikethrough && !(parser_flags & MD_FLAG_STRIKETHROUGH)) {
-        parser_flags += MD_FLAG_STRIKETHROUGH;
-    }
-    
-    if (permissive_www_autolinks && !(parser_flags & MD_FLAG_PERMISSIVEWWWAUTOLINKS)) {
-        parser_flags += MD_FLAG_PERMISSIVEWWWAUTOLINKS;
+
+    if (collapse_whitespace) {
+        parser_flags |= MD_FLAG_COLLAPSEWHITESPACE;
     }
 
-    if (tasklists && !(parser_flags & MD_FLAG_TASKLISTS)) {
-        parser_flags += MD_FLAG_TASKLISTS;
+    if (permissive_atx_headers) {
+        parser_flags |= MD_FLAG_PERMISSIVEATXHEADERS;
     }
-    
-    if (latex_math_spans && !(parser_flags & MD_FLAG_LATEXMATHSPANS)) {
-        parser_flags += MD_FLAG_LATEXMATHSPANS;
+
+    if (permissive_url_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEURLAUTOLINKS;
     }
-    
-    if (wikilinks && !(parser_flags & MD_FLAG_WIKILINKS)) {
-        parser_flags += MD_FLAG_WIKILINKS;
+
+    if (permissive_email_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEEMAILAUTOLINKS;
     }
-    
-    if (underline && !(parser_flags & MD_FLAG_UNDERLINE)) {
-        parser_flags += MD_FLAG_UNDERLINE;
+
+    if (no_indented_code_blocks) {
+        parser_flags |= MD_FLAG_NOINDENTEDCODEBLOCKS;
+    }
+
+    if (no_html_blocks) {
+        parser_flags |= MD_FLAG_NOHTMLBLOCKS;
+    }
+
+    if (no_html_spans) {
+        parser_flags |= MD_FLAG_NOHTMLSPANS;
+    }
+
+    if (tables) {
+        parser_flags |= MD_FLAG_TABLES;
+    }
+
+    if (strikethrough) {
+        parser_flags |= MD_FLAG_STRIKETHROUGH;
+    }
+
+    if (permissive_www_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEWWWAUTOLINKS;
+    }
+
+    if (tasklists) {
+        parser_flags |= MD_FLAG_TASKLISTS;
+    }
+
+    if (latex_math_spans) {
+        parser_flags |= MD_FLAG_LATEXMATHSPANS;
+    }
+
+    if (wikilinks) {
+        parser_flags |= MD_FLAG_WIKILINKS;
+    }
+
+    if (underline) {
+        parser_flags |= MD_FLAG_UNDERLINE;
     }
 
     self->parser_flags = parser_flags;
