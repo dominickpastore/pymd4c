@@ -266,6 +266,8 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
     unsigned int latex_math_spans = 0;
     unsigned int wikilinks = 0;
     unsigned int underline = 0;
+    unsigned int permissive_auto_links = 0;
+    unsigned int no_html = 0;
 
     static char *kwlist[] = {
         "parser_flags",
@@ -283,9 +285,11 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
         "latex_math_spans",
         "wikilinks",
         "underline",
+        "permissive_auto_links",
+        "no_html",
         NULL
     };
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I$pppppppppppppp", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I$pppppppppppppppp", kwlist,
                                      &parser_flags, &collapse_whitespace,
                                      &permissive_atx_headers,
                                      &permissive_url_autolinks,
@@ -293,7 +297,8 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
                                      &no_indented_code_blocks, &no_html_blocks,
                                      &no_html_spans, &tables, &strikethrough,
                                      &permissive_www_autolinks, &tasklists,
-                                     &latex_math_spans, &wikilinks, &underline)) {
+                                     &latex_math_spans, &wikilinks, &underline,
+                                     &permissive_auto_links, &no_html)) {
         return -1;
     }
 
@@ -351,6 +356,14 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
 
     if (underline) {
         parser_flags |= MD_FLAG_UNDERLINE;
+    }
+
+    if (permissive_auto_links) {
+        parser_flags |= MD_FLAG_PERMISSIVEAUTOLINKS;
+    }
+
+    if (no_html) {
+        parser_flags |= MD_FLAG_NOHTML;
     }
 
     self->parser_flags = parser_flags;
