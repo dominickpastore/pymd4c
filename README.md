@@ -230,56 +230,43 @@ Module-Wide Constants
 ---------------------
 
 The MD4C library provides various option flags for parsers and renderers as
-named constants. These are made available as module-level constants in PyMD4C.
+named constants. These are made available as module-level constants in PyMD4C. Also, each constant has a correspondient optional keyword argument that can be used instanciating parser and renderers.
 
 ### Parser Option Flags
 
 Basic option flags:
 
-* `md4c.MD_FLAG_COLLAPSEWHITESPACE` - In normal text, collapse non-trivial
-  whitespace into a single space.
-* `md4c.MD_FLAG_PERMISSIVEATXHEADERS` - Do not requite a space in ATX headers
-  (e.g. `###Header`).
-* `md4c.MD_FLAG_PERMISSIVEURLAUTOLINKS` - Convert URLs to links even without
-  `<` and `>`.
-* `md4c.MD_FLAG_PERMISSIVEEMAILAUTOLINKS` - Convert email addresses to links
-  even without `<`, `>`, and `mailto:`.
-* `md4c.MD_FLAG_NOINDENTEDCODEBLOCKS` - Disable indented code blocks. (Only
-  allow fenced code blocks.)
-* `md4c.MD_FLAG_NOHTMLBLOCKS` - Disable raw HTML blocks.
-* `md4c.MD_FLAG_NOHTMLSPANS` - Disable raw HTML inlines.
-* `md4c.MD_FLAG_TABLES` - Enable tables extension.
-* `md4c.MD_FLAG_STRIKETHROUGH` - Enable strikethrough extension.
-* `md4c.MD_FLAG_PERMISSIVEWWWAUTOLINKS` - Enable www autolinks (even without
-  any scheme prefix, as long as they begin with `www.`).
-* `md4c.MD_FLAG_TASKLISTS` - Enable task lists extension.
-* `md4c.MD_FLAG_LATEXMATHSPANS` - Enable `$` and `$$` containing LaTeX
-  equations.
-* `md4c.MD_FLAG_WIKILINKS` - Enable wiki links extension.
-* `md4c.MD_FLAG_UNDERLINE` - Enable underline extension (and disable `_` for
-  regular emphasis).
+| md4c flag | keyword argument | description |
+| :-------- | :--------------- | :---------- |
+| `md4c.MD_FLAG_COLLAPSEWHITESPACE` | `collapse_whitespace` | In normal text, collapse non-trivial whitespace into a single space. |
+| `md4c.MD_FLAG_COLLAPSEWHITESPACE` | `permissive_atx_headers` | Do not requite a space in ATX headers (e.g. `###Header`). |
+| `md4c.MD_FLAG_PERMISSIVEURLAUTOLINKS` | `permissive_url_autolinks` | Convert URLs to links even without `<` and `>`. |
+| `md4c.MD_FLAG_PERMISSIVEEMAILAUTOLINKS` | `permissive_email_autolinks` | Convert email addresses to links even without `<`, `>`, and `mailto:`. |
+| `md4c.MD_FLAG_NOINDENTEDCODEBLOCKS` | `no_indented_code_blocks` | Disable indented code blocks (only allow fenced code blocks). |
+| `md4c.MD_FLAG_NOHTMLBLOCKS` | `no_html_blocks` | Disable raw HTML blocks. |
+| `md4c.MD_FLAG_NOHTMLSPANS` | `no_html_spans` | Disable raw HTML inlines. |
+| `md4c.MD_FLAG_TABLES` | `tables` | Enable tables extension. |
+| `md4c.MD_FLAG_STRIKETHROUGH` | `strikethrough` | Enable strikethrough extension. |
+| `md4c.MD_FLAG_PERMISSIVEWWWAUTOLINKS` | `permissive_www_autolinks` | Enable www autolinks (even without any scheme prefix, as long as they begin with `www.`).
+| `md4c.MD_FLAG_TASKLISTS` | `tasklists` | Enable task lists extension. |
+| `md4c.MD_FLAG_LATEXMATHSPANS` | `latex_math_spans` | Enable `$` and `$$` containing LaTeX equations. |
+| `md4c.MD_FLAG_WIKILINKS` | `wikilinks` | Enable wiki links extension. |
+| `md4c.MD_FLAG_UNDERLINE` | `underline` | Enable underline extension (and disable `_` for regular emphasis). |
 
 Combination option flags:
 
-* `md4c.MD_FLAG_PERMISSIVEAUTOLINKS` - Enables all varieties of autolinks:
-  `MD_FLAG_PERMISSIVEURLAUTOLINKS`, `MD_FLAG_PERMISSIVEEMAILAUTOLINKS`, and
-  `MD_FLAG_PERMISSIVEWWWAUTOLINKS`
-* `md4c.MD_FLAG_NOHTML` - Disables all raw HTML tags: `MD_FLAG_NOHTMLBLOCKS`
-  and `MD_FLAG_NOHTMLSPANS`
+| md4c flag | keyword argument | description |
+| :-------- | :--------------- | :---------- |
+| `md4c.MD_FLAG_PERMISSIVEAUTOLINKS` | `permissive_auto_links` | Enables all varieties of autolinks: `MD_FLAG_PERMISSIVEURLAUTOLINKS`, `MD_FLAG_PERMISSIVEEMAILAUTOLINKS`, and `MD_FLAG_PERMISSIVEWWWAUTOLINKS`. |
+| `md4c.MD_FLAG_NOHTML` | `no_html` | Disables all raw HTML tags: `MD_FLAG_NOHTMLBLOCKS` and `MD_FLAG_NOHTMLSPANS`. |
 
 Dialect option flags (note that not all features of a dialect may be supported,
 but these flags will cause MD4C to parse as many features of the dialect as it
 supports):
 
-* `md4c.MD_DIALECT_COMMONMARK` - This is the default behavior of MD4C, so no
-  additional flags are enabled.
-* `md4c.MD_DIALECT_GITHUB` - Parse GitHub-Flavored Markdown, which enables the
-  following flags:
-
-  - `MD_FLAG_PERMISSIVEAUTOLINKS`
-  - `MD_FLAG_TABLES`
-  - `MD_FLAG_STRIKETHROUGH`
-  - `MD_FLAG_TASKLISTS`
+| md4c flag | keyword argument | description |
+| :-------- | :--------------- | :---------- |
+| `md4c.MD_DIALECT_GITHUB` | `dialect_github` | Parse GitHub-Flavored Markdown, which enables the following flags:<br><br><ul><li><code>MD_FLAG_PERMISSIVEAUTOLINKS</code></li><li><code>MD_FLAG_TABLES</code></li><li><code>MD_FLAG_STRIKETHROUGH</code></li><li><code>MD_FLAG_TASKLISTS</code></li></ul>
 
 ### HTML Renderer Option Flags
 
