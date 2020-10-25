@@ -230,7 +230,7 @@ Module-Wide Constants
 ---------------------
 
 The MD4C library provides various option flags for parsers and renderers as
-named constants. These are made available as module-level constants in PyMD4C. Also, each constant has a correspondient optional keyword argument that can be used instanciating parser and renderers.
+named constants. These are made available as module-level constants in PyMD4C. Also, each constant has a correspondent optional keyword argument that can be used instanciating parser and renderers.
 
 ### Parser Option Flags
 
