@@ -270,12 +270,12 @@ supports):
 
 ### HTML Renderer Option Flags
 
-* `md4c.MD_HTML_FLAG_DEBUG` - For development use, send MD4C debug output to
-  stderr.
-* `md4c.MD_HTML_FLAG_VERBATIM_ENTITIES` - Do not replace HTML entities with the
-  actual character (e.g. `&copy;` with ©).
-* `md4c.MD_HTML_FLAG_SKIP_UTF8_BOM` - Omit BOM from start of UTF-8 input.
-* `md4c.MD_HTML_FLAG_XHTML` - Generate XHTML instead of HTML.
+| md4c flag | keyword argument | description |
+| :-------- | :--------------- | :---------- |
+| `md4c.MD_HTML_FLAG_DEBUG` | `debug` | For development use, send MD4C debug output to stderr. |
+| `md4c.MD_HTML_FLAG_VERBATIM_ENTITIES` | `verbatim_entities` | Do not replace HTML entities with the actual character (e.g. `&copy;` with ©). |
+| `md4c.MD_HTML_FLAG_SKIP_UTF8_BOM` | `skip_utf8_bom` | Omit BOM from start of UTF-8 input. |
+| `md4c.MD_HTML_FLAG_XHTML` | `xhtml` | Generate XHTML instead of HTML. |
 
 Enums
 -----
