@@ -268,6 +268,7 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
     unsigned int underline = 0;
     unsigned int permissive_auto_links = 0;
     unsigned int no_html = 0;
+    unsigned int dialect_github = 0;
 
     static char *kwlist[] = {
         "parser_flags",
@@ -287,9 +288,10 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
         "underline",
         "permissive_auto_links",
         "no_html",
+        "dialect_github",
         NULL
     };
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I$pppppppppppppppp", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I$ppppppppppppppppp", kwlist,
                                      &parser_flags, &collapse_whitespace,
                                      &permissive_atx_headers,
                                      &permissive_url_autolinks,
@@ -298,7 +300,8 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
                                      &no_html_spans, &tables, &strikethrough,
                                      &permissive_www_autolinks, &tasklists,
                                      &latex_math_spans, &wikilinks, &underline,
-                                     &permissive_auto_links, &no_html)) {
+                                     &permissive_auto_links, &no_html,
+                                     &dialect_github)) {
         return -1;
     }
 
@@ -364,6 +367,10 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
 
     if (no_html) {
         parser_flags |= MD_FLAG_NOHTML;
+    }
+
+    if (dialect_github) {
+        parser_flags |= MD_DIALECT_GITHUB;
     }
 
     self->parser_flags = parser_flags;
