@@ -2,7 +2,7 @@
 
 set -e -u -x
 
-python_versions="3.6 3.7 3.8"
+# PY_VERSIONS is defined in .travis.yml
 full_versions=""
 
 # Install MD4C
@@ -16,7 +16,7 @@ mkdir md4c-lib/build
 
 # Install python versions
 eval "$(pyenv init -)"
-for ver in $python_versions
+for ver in $PY_VERSIONS
 do
     full_ver=$(
         pyenv install --list |
@@ -31,7 +31,7 @@ done
 pyenv global $full_versions
 
 # Build wheels
-for ver in $python_versions
+for ver in $PY_VERSIONS
 do
     (
         python${ver} -m venv venv${ver}
