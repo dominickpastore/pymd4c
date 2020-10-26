@@ -74,6 +74,8 @@ jobs:
             fi
           done
         shell: bash
+      - name: Remove original unaudited wheels
+        run: rm -f dist/*-linux-*
       - name: Show built wheels
         run: ls -l dist/
         #TODO Change this to upload build artifacts
