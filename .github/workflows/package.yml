@@ -14,15 +14,14 @@ jobs:
       image: quay.io/pypa/${{matrix.plat}}
       env:
         PY_VERSIONS: 3.6 3.7 3.8 3.9
-      #TODO Is this necessary? Is it correct?
-      #volumes:
-      #  - $GITHUB_WORKSPACE:/io
 
     strategy:
       matrix:
         plat:
-          - manylinux2010_i686
-          - manylinux2010_x86_64
+          #- manylinux2010_i686
+          #- manylinux2010_x86_64
+          - manylinux2014_i686
+          - manylinux2014_aarch64
           - manylinux2014_x86_64
 
     steps:
