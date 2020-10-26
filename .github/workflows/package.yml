@@ -15,8 +15,8 @@ jobs:
       env:
         PY_VERSIONS: 3.6 3.7 3.8 3.9
       #TODO Is this necessary? Is it correct?
-      volumes:
-        - $GITHUB_WORKSPACE:/io
+      #volumes:
+      #  - $GITHUB_WORKSPACE:/io
 
     strategy:
       matrix:
@@ -39,12 +39,16 @@ jobs:
           path: md4c-lib
       - name: Debug
         run: |
+          pwd
           echo $GITHUB_WORKSPACE
+          echo ---
           ls
-          ls /io
+          echo ---
+          ls $GITHUB_WORKSPACE
       #- name: Install MD4C
       #  run: |
       #    yum install -y cmake3
       #    mkdir /io/md4c-lib/build
       #    (
       #      cd /io/md4c-lib/build
+      #  shell: bash
