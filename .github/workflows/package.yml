@@ -11,7 +11,7 @@ jobs:
     name: Package for Linux
     runs-on: ubuntu-latest
     container:
-      image: quay.io/pypa/${{plat}}
+      image: quay.io/pypa/${{matrix.plat}}
       env:
         PY_VERSIONS: 3.6 3.7 3.8 3.9
       #TODO Is this necessary? Is it correct?
