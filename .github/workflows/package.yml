@@ -39,12 +39,12 @@ jobs:
           repository: mity/md4c
           ref: release-${{steps.md4c-version.outputs.md4c-version}}
           path: md4c-lib
-      - name: Install MD4C
+      - name: Build and install MD4C
         run: |
           yum install -y cmake3
-          mkdir /io/md4c-lib/build
+          mkdir md4c-lib/build
           (
-            cd /io/md4c-lib/build
+            cd md4c-lib/build
             cmake3 -DCMAKE_INSTALL_LIBDIR:PATH=/usr/local/lib ..
             make
             make install
@@ -77,3 +77,7 @@ jobs:
       - name: Show built wheels
         run: ls -l dist/
         #TODO Change this to upload build artifacts
+
+  #package-macos:
+    #name: Package for macOS
+    #runs-on: macos-latest
