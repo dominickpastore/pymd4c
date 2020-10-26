@@ -4,15 +4,17 @@ notifications:
   email: false
 
 language: python
+# Python version for tests
 python: 3.6
 os: linux
 
 stages:
   - name: test
-    #DEBUG
+    #DEBUG - remove multi-platform-builds later
+    #TODO Add a development branch?
     if: (branch IN (master, multi-platform-builds)) OR (tag =~ /^release-/)
   - name: deploy
-    #DEBUG
+    #DEBUG - remove multi-platform-builds later
     if: (type = push) AND (branch IN (master, multi-platform-builds))
     #if: (type = push) AND (tag =~ /^release-/)
 
