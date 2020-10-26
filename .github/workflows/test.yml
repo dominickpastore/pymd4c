@@ -1,0 +1,29 @@
+# GitHub Action for test suite
+# vim: set ts=8 sts=2 sw=2:
+name: test
+on:
+  push:
+    branches:
+      - 'master'
+      - 'dev'
+  pull_request:
+jobs:
+  run_tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+      #TODO Add flake8, actual tests

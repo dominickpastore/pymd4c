@@ -1,0 +1,19 @@
+# vim: set ts=8 sts=2 sw=2:
+
+name: Get MD4C version
+description: Get the version of MD4C to link against
+outputs:
+  md4c-version:
+    description: The MD4C version to link against
+    value: ${{steps.get-version.outputs.md4c}}
+runs:
+  using: composite
+  steps:
+    - id: get-version
+      run: |
+        import json
+        with open('about.json') as f:
+            about = json.load(f)
+        version_components = about['version'].split('.')
+        print('::set-output name=md4c::' + '.'.join(version_components[0:3]))
+      shell: python

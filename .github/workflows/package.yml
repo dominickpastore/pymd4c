@@ -1,0 +1,50 @@
+# GitHub Actions workflow for creating Python wheels
+# vim: set ts=8 sts=2 sw=2:
+name: package
+on:
+  push:
+    branches:
+      - 'master'
+      - 'github-actions'
+jobs:
+  package-linux:
+    name: Package for Linux
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/pypa/${{plat}}
+      env:
+        PY_VERSIONS: 3.6 3.7 3.8 3.9
+      #TODO Is this necessary? Is it correct?
+      volumes:
+        - $GITHUB_WORKSPACE:/io
+
+    strategy:
+      matrix:
+        plat:
+          - manylinux2010_i686
+          - manylinux2010_x86_64
+          - manylinux2014_x86_64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Debug
+        run: |
+          echo $GITHUB_WORKSPACE
+          ls
+          ls /io
+      #- name: Install MD4C
+      #  run: |
+      #    yum install -y cmake3
+      #    mkdir /io/md4c-lib/build
+      #    (
+      #      cd /io/md4c-lib/build
