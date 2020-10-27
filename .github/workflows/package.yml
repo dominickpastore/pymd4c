@@ -38,11 +38,11 @@ jobs:
           make
           sudo make install
       - name: Install Python packaging tools
-        run: python -m pip install --upgrade pip setuptools wheel
+        run: python3 -m pip install --upgrade pip setuptools wheel
       - name: Install PyMD4C with test dependencies
-        run: python -m pip install .[test]
+        run: python3 -m pip install .[test]
       - name: Check setup.py
-        run: python setup.py check -m -s
+        run: python3 setup.py check -m -s
         #- name: Run flake8
         #run: flake8 .
       #TODO Add actual tests
