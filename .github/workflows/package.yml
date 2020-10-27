@@ -150,6 +150,8 @@ jobs:
           mkdir md4c-lib/build
           cd md4c-lib/build
           cmake ..
+          pwd
+          ls
           make
           make install
         shell: bash
