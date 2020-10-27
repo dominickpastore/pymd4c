@@ -1,3 +1,4 @@
+import sys
 from setuptools import setup, Extension, Command
 import json
 
@@ -62,22 +63,38 @@ class PkgconfigExtensionList(list):
         self._fetch_pkgconfig_all()
         return super().__getitem__(key)
 
-extensions = PkgconfigExtensionList([
-    {
-        'name': 'md4c._md4c',
-        'sources': [
-            'src/pymd4c.c',
-        ],
-        'pkgconfig': 'md4c md4c-html',
-    },
-    {
-        'name': 'md4c._enum_consts',
-        'sources': [
-            'src/enum_consts.c',
-        ],
-        'pkgconfig': 'md4c',
-    },
-])
+if sys.platform.startswith('win'):
+    extensions = [
+        Extension(
+            'md4c._md4c',
+            sources=['src/pymd4c.c'],
+            include_dirs=['C:/Program Files (x86)/MD4C/include'],
+            libraries=['md4c', 'md4c-html'],
+            library_dirs=['C:/Program Files (x86)/MD4C/lib']),
+        Extension(
+            'md4c._enum_consts',
+            sources=['src/enum_consts.c'],
+            include_dirs=['C:/Program Files (x86)/MD4C/include'],
+            libraries=['md4c'],
+            library_dirs=['C:/Program Files (x86)/MD4C/lib']),
+    ]
+else:
+    extensions = PkgconfigExtensionList([
+        {
+            'name': 'md4c._md4c',
+            'sources': [
+                'src/pymd4c.c',
+            ],
+            'pkgconfig': 'md4c md4c-html',
+        },
+        {
+            'name': 'md4c._enum_consts',
+            'sources': [
+                'src/enum_consts.c',
+            ],
+            'pkgconfig': 'md4c',
+        },
+    ])
 
 setup(
     # Most package metadata is in about.json (added below via **about)
