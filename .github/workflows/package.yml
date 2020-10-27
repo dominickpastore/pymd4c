@@ -6,8 +6,11 @@ name: package
 on:
   push:
     branches:
-      - master
       - github-actions
+    tags-ignore:
+      - test-tag
+        #tags:
+        #- v*.*.*.*
 
 jobs:
   test:

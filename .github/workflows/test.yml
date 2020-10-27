@@ -12,19 +12,32 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set up Python ${{matrix.python-version}}
-        uses: actions/setup-python@v2
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
         with:
-          python-version: ${{matrix.python-version}}
-      #TODO Copy test actions from package.yml
-      - name: Install
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Build and install MD4C
         run: |
-          python -m pip install --upgrade pip
-          #python -m pip install .
-      #TODO Add flake8, actual tests
+          mkdir md4c-lib/build
+          cd md4c-lib/build
+          cmake ..
+          make
+          sudo make install
+      - name: Install Python packaging tools
+        run: python3 -m pip install --upgrade pip setuptools wheel
+      - name: Install PyMD4C with test dependencies
+        run: python3 -m pip install .[test]
+      - name: Check setup.py
+        run: python3 setup.py check -m -s
+      - name: Run flake8
+        run: flake8 .
+      #TODO Add actual tests
+
