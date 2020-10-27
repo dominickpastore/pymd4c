@@ -110,5 +110,10 @@ setup(
     python_requires='>=3.6',
     zip_safe=False,
     include_package_data=True,
+    extras_require={
+        'test': [
+            'flake8',
+        ],
+    },
     **about
 )
