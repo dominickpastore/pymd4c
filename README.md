@@ -51,19 +51,23 @@ If this does not work, there are a couple potential reasons:
 
 3. Your platform is incompatible. Again, since it is a platform wheel, it is
    built for each supported platform separately.
-   - If you are on Windows or macOS and your Python version is 3.6 or newer,
-     there is a problem with the automated build process. Please consider
-     opening a new [GitHub issue][issues].
-   - If you are on Linux, you may be running a more esoteric distribution or
-     architecture unsupported by [manylinux]. (Note that some architectures are
-     supported by manylinux but are not built at this time, including arm64,
-     ppc64le, and s390x. If that affects you, consider opening a new [GitHub
-     issue][issues] and your architecture can be added.)
+   - If you are running Windows, you may be running 32-bit (x86) Python.
+     Currently, only packages for 64-bit (x86-64) Python are built. If you can,
+     try running 64-bit Python.
+   - If you are on macOS, your macOS version might be too old.
+   - If you are on Linux, you may be running on an architecture other than
+     x86-64, a distribution that is too old, or a more esoteric distribution
+     unsupported by [manylinux2014][manylinux]. (Note that many architectures
+     supported by manylinux2014 are not built at this time, including x86,
+     arm64, ppc64le, and s390x.)
    - If you are on some other platform, unfortunately, it is not supported by
      the pre-built packages.
 
 If a build is not available for your platform (or you simply want to), you can
 build and install from source. The instructions below should assist.
+
+If a build is not available or not working for your platform and you think it
+should be, consider opening a [GitHub issue][issues].
 
 Build and Install from Source
 -----------------------------
@@ -71,31 +75,39 @@ Build and Install from Source
 ### Prerequisites
 
 This package depends on the MD4C library. It may be available through your
-package manager. Otherwise, it can be built from source as follows (note that
-the below instructions are for Unix-like systems, but theoretically there are
-ways to build on Windows as well):
+package manager. Otherwise, it can be built from source as follows:
 
-1. Download and extract the matching release from the [MD4C releases
+1. Make sure you have [CMake] and a C compiler installed.
+2. Download and extract the matching release from the [MD4C releases
    page][md4c-releases] (e.g. for PyMD4C version W.X.Y.Z, download MD4C version
    W.X.Y).
-2. Inside the extracted file, run the following:
+3. On Unix-like systems (including macOS):
+   - Inside the extracted file, run the following:
 
-       mkdir build
-       cd build
-       cmake ..
-       make
-       # Do as root:
-       make install
+         mkdir build
+         cd build
+         cmake ..
+         make
+         # Do as root:
+         make install
 
-   The install step must be run as root. The library will install to /usr/local
-   by default.
-3. You may need to rebuild the ldconfig cache (also as root): `ldconfig`
+     The install step must be run as root. The library will install to
+     /usr/local by default.
+   - You may need to rebuild the ldconfig cache (also as root): `ldconfig`
+4. On Windows:
+   - Inside the extracted file, run the following:
 
-In addition, the `pkg-config` tool and the Python `pkgconfig` package must be
-available to build PyMD4C, but they are not required after that (i.e., they are
-not a prerequisite for actually *using* PyMD4C). The `pkg-config` tool is
-likely available on your system already, and the Python `pkgconfig` package
-will be fetched automatically by `setup.py`.
+         mkdir build
+         cd build
+         cmake -DCMAKE_BUILD_TYPE=Release ..
+         cmake --build . --config Release
+         cmake --install .
+
+In addition, on Unix-like systems (including macOS), the `pkg-config` tool must
+be available to build PyMD4C. After PyMD4C is built, it is no longer required
+(that is, it is not a prerequisite for actually *using* PyMD4C). This tool is
+likely available on your system already, so this should not be an issue in most
+cases.
 
 Finally, note that since this package uses C extensions, development headers
 for Python must be installed for the build to succeed. If you are using Linux,
@@ -105,9 +117,15 @@ some distributions split these off from the main Python package. Install
 ### Build/Install
 
 Build and install with `setup.py` as you would for any Python source
-repository:
+repository. Download and extract a release or clone the repository, and run the
+following inside:
 
     pip install .
+
+On Windows, this assumes the MD4C library was installed at
+"C:/Program Files (x86)/MD4C/" (this is the default location when building MD4C
+from source, as described above). If this is not the case, installation will
+fail.
 
 Class `GenericParser`
 ---------------------
@@ -383,3 +401,4 @@ details.
 [python-packaging]: https://packaging.python.org/tutorials/installing-packages/
 [manylinux]: https://github.com/pypa/manylinux
 [md4c-releases]: https://github.com/mity/md4c/releases
+[CMake]: https://cmake.org/
