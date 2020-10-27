@@ -123,3 +123,47 @@ jobs:
       - name: Show built wheels
         run: ls -l dist/
         #TODO Change this to upload build artifacts
+
+  # Windows ###################################################################
+  package-windows:
+    name: Package for Windows
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.python-version}}
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Build and install MD4C
+        run: |
+          mkdir md4c-lib/build
+          (
+            cd md4c-lib/build
+            cmake ..
+            make
+            make install
+          )
+        shell: bash
+      - name: Install Python packaging tools
+        run: python -m pip install --upgrade pip setuptools wheel
+      - name: Build wheel
+        run: |
+          python -m pip wheel . --no-deps -w dist/
+      - name: Show built wheels
+        run: dir dist/
+        #TODO Change this to upload build artifacts
