@@ -43,8 +43,9 @@ jobs:
         run: python3 -m pip install .[test]
       - name: Check setup.py
         run: python3 setup.py check -m -s
-        #- name: Run flake8
-        #run: flake8 .
+      - name: Run flake8
+        if: false
+        run: flake8 .
       #TODO Add actual tests
 
   package-sdist:
@@ -55,9 +56,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Build and install MD4C
+        run: |
+          mkdir md4c-lib/build
+          cd md4c-lib/build
+          cmake ..
+          make
+          sudo make install
+      - name: Install Python packaging tools
+        run: python3 -m pip install --upgrade pip setuptools wheel
       - name: Build sdist
         run: python3 setup.py sdist
+      - name: List build artifacts
+        run: ls dist/
       - name: Save sdist as artifact
+        if: false
         uses: actions/upload-artifact@v2
         with:
           name: sdist
@@ -126,7 +148,10 @@ jobs:
         shell: bash
       - name: Remove original unaudited wheels
         run: rm -f dist/*-linux_*
+      - name: List build artifacts
+        run: ls dist/
       - name: Save wheels as artifacts
+        if: false
         uses: actions/upload-artifact@v2
         with:
           name: linux-wheels
@@ -172,7 +197,10 @@ jobs:
       - name: Build wheel
         run: |
           python -m pip wheel . --no-deps -w dist/
+      - name: List build artifacts
+        run: ls dist/
       - name: Save wheels as artifacts
+        if: false
         uses: actions/upload-artifact@v2
         with:
           name: ${{matrix.platform}}-${{matrix.python-version}}-wheel
