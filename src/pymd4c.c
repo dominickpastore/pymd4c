@@ -4,7 +4,7 @@
  *
  * pymd4c.c - md4c._md4c module
  * Contains the parser and renderer classes that interface directly with MD4C
- * 
+ *
  * Copyright (c) 2020 Dominick C. Pastore
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -72,7 +72,7 @@ static int buffer_init(DynamicBuffer *buf) {
     return 0;
 }
 
-/* 
+/*
  * Double the size of the DynamicBuffer. Return 0 on success, -1 on failure.
  */
 static int buffer_grow(DynamicBuffer *buf) {
@@ -297,7 +297,8 @@ static void HTMLRenderer_parse_callback(const char *output,
  * HTMLRenderer.parse(input: str) -> str
  * Parse a Markdown document and return the rendered HTML
  */
-static PyObject * HTMLRenderer_parse(HTMLRendererObject *self, PyObject *args) {
+static PyObject * HTMLRenderer_parse(HTMLRendererObject *self,
+        PyObject *args) {
     PyThreadState *_save;
 
     // Parse arguments
@@ -434,8 +435,9 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
         "dialect_github",
         NULL
     };
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I$ppppppppppppppppp", kwlist,
-                                     &parser_flags, &collapse_whitespace,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I$ppppppppppppppppp",
+                                     kwlist, &parser_flags,
+                                     &collapse_whitespace,
                                      &permissive_atx_headers,
                                      &permissive_url_autolinks,
                                      &permissive_email_autolinks,
@@ -447,7 +449,7 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
                                      &dialect_github)) {
         return -1;
     }
-    
+
     if (collapse_whitespace) {
         parser_flags |= MD_FLAG_COLLAPSEWHITESPACE;
     }
@@ -679,22 +681,25 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
     switch(type) {
         case MD_BLOCK_UL:
             arglist = Py_BuildValue("(O{s:N,s:C})", get_enum_blocktype(type),
-                    "is_tight", PyBool_FromLong(((MD_BLOCK_UL_DETAIL *) detail)->is_tight),
+                    "is_tight",
+                    PyBool_FromLong(((MD_BLOCK_UL_DETAIL *) detail)->is_tight),
                     "mark", ((MD_BLOCK_UL_DETAIL *) detail)->mark);
             break;
         case MD_BLOCK_OL:
             arglist = Py_BuildValue("(O{s:i,s:N,s:C})",
                     get_enum_blocktype(type),
                     "start", ((MD_BLOCK_OL_DETAIL *) detail)->start,
-                    "is_tight", PyBool_FromLong(((MD_BLOCK_OL_DETAIL *) detail)->is_tight),
+                    "is_tight",
+                    PyBool_FromLong(((MD_BLOCK_OL_DETAIL *) detail)->is_tight),
                     "mark_delimiter", ((MD_BLOCK_OL_DETAIL *) detail)->
                         mark_delimiter);
             break;
         case MD_BLOCK_LI:
             if (((MD_BLOCK_LI_DETAIL *) detail)->is_task) {
-                arglist = Py_BuildValue("(O{s:O,s:C,s:i})", get_enum_blocktype(type),
-                        "is_task", Py_True,
-                        "task_mark", ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
+                arglist = Py_BuildValue("(O{s:O,s:C,s:i})",
+                        get_enum_blocktype(type), "is_task", Py_True,
+                        "task_mark",
+                        ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
                         "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
                             task_mark_offset);
             } else {
@@ -708,13 +713,15 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
             break;
         case MD_BLOCK_CODE:
             if (((MD_BLOCK_CODE_DETAIL *) detail)->fence_char == NULL) {
-                arglist = Py_BuildValue("(O{s:O,s:O})", get_enum_blocktype(type),
+                arglist = Py_BuildValue("(O{s:O,s:O})",
+                        get_enum_blocktype(type),
                         "info", GenericParser_md_attribute(
                             &((MD_BLOCK_CODE_DETAIL *) detail)->info),
                         "lang", GenericParser_md_attribute(
                             &((MD_BLOCK_CODE_DETAIL *) detail)->lang));
             } else {
-                arglist = Py_BuildValue("(O{s:O,s:O,s:C})", get_enum_blocktype(type),
+                arglist = Py_BuildValue("(O{s:O,s:O,s:C})",
+                        get_enum_blocktype(type),
                         "info", GenericParser_md_attribute(
                             &((MD_BLOCK_CODE_DETAIL *) detail)->info),
                         "lang", GenericParser_md_attribute(
