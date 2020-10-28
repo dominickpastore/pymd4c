@@ -5,12 +5,8 @@
 name: package
 on:
   push:
-    branches:
-      - github-actions
-    tags-ignore:
-      - test-tag
-        #tags:
-        #- v*.*.*.*
+    tags:
+      - v*.*.*.*
 
 jobs:
   test:
@@ -82,7 +78,6 @@ jobs:
       - name: List build artifacts
         run: ls dist/
       - name: Save sdist as artifact
-        if: false
         uses: actions/upload-artifact@v2
         with:
           name: sdist
@@ -154,7 +149,6 @@ jobs:
       - name: List build artifacts
         run: ls dist/
       - name: Save wheels as artifacts
-        if: false
         uses: actions/upload-artifact@v2
         with:
           name: linux-wheels
@@ -203,8 +197,35 @@ jobs:
       - name: List build artifacts
         run: ls dist/
       - name: Save wheels as artifacts
-        if: false
         uses: actions/upload-artifact@v2
         with:
           name: ${{matrix.platform}}-${{matrix.python-version}}-wheel
           path: dist/*
+
+  pypi-upload:
+    name: Upload packages to PyPI
+    needs:
+      - package-sdist
+      - package-linux
+      - package-others
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Set up Twine
+        run: python -m pip install twine
+      - name: Fetch all packages
+        uses: actions/download-artifact@v2
+        with:
+          path: dist/
+      - name: List packages
+        run: ls -l dist/
+      - name: Publish packages
+        env:
+          TWINE_USERNAME: ${{secrets.PYPI_USERNAME}}
+          TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
+        run: |
+          twine upload --repository testpypi dist/*
