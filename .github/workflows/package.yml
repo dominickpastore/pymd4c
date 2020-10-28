@@ -85,6 +85,7 @@ jobs:
 
   package-linux:
     name: Package for Linux
+    if: false
     needs: test
     runs-on: ubuntu-latest
     container:
@@ -206,7 +207,7 @@ jobs:
     name: Upload packages to PyPI
     needs:
       - package-sdist
-      - package-linux
+        #- package-linux
       - package-others
     runs-on: ubuntu-latest
 
