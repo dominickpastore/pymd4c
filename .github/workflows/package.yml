@@ -221,6 +221,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           path: dist/
+      - name: Flatten directory structure
+        run: |
+          for d in dist/*
+          do
+            mv "$d/*" dist/
+            rmdir "$d"
+          done
+        shell: bash
       - name: List packages
         run: ls -l dist/
       - name: Publish packages
