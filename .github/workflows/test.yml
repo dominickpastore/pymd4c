@@ -1,11 +1,10 @@
-# GitHub Action for test suite
+# GitHub Actions workflow for test suite
 # vim: set ts=8 sts=2 sw=2:
 name: Test
 on:
   push:
     branches:
       - dev
-      - github-actions
   pull_request:
 jobs:
   run_tests:
