@@ -200,11 +200,11 @@ handled quietly).
   tuples or None.
 
   This dict will contain the information provided by `MD_BLOCK_*_DETAIL` and
-  `MD_SPAN_*_DETAIL` structs in MD4C's `md4c.h`, with following exceptions:
+  `MD_SPAN_*_DETAIL` structs in MD4C's `md4c.h`, with the following exceptions:
 
-  * Non tasks `MD_BLOCK_LI` blocks (when `is_task` detail is `False`) do not
-    include `task_mark` and `task_mark_offset` attributes.
-  * Indented `MD_BLOCK_CODE` blocks do not include the `fence_char` attribute.
+  * Non-task `MD_BLOCK_LI` blocks (when `is_task` is `False`) do not include
+    `task_mark` and `task_mark_offset` keys.
+  * Indented `MD_BLOCK_CODE` blocks do not include the `fence_char` key.
 
   Regarding `MD_ATTRIBUTE`s: These are used where a block or span can contain
   some associated text, such as link titles and code block language references.

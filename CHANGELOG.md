@@ -17,6 +17,8 @@ PyMD4C version numbers track MD4C version numbers:
 ### Added
 
 - Windows builds
+- Keyword arguments for option flags for `GenericParser` and `HTMLRenderer`
+  (Credit to @mondeja on GitHub for implementing)
 
 ### Changed
 
