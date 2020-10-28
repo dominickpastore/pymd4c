@@ -42,7 +42,7 @@ jobs:
       - name: Check setup.py
         run: python3 setup.py check -m -s
       - name: Run flake8
-        run: flake8 .
+        run: flake8 setup.py md4c/
       #TODO Add actual tests
 
   package-sdist:
@@ -234,4 +234,4 @@ jobs:
           TWINE_USERNAME: ${{secrets.PYPI_USERNAME}}
           TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
         run: |
-          twine upload --repository testpypi dist/*
+          twine upload dist/*
