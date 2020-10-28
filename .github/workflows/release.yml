@@ -1,0 +1,241 @@
+# GitHub Actions workflow for creating Python sdist and wheels and uploading to
+# PyPI
+# vim: set ts=8 sts=2 sw=2:
+name: Release
+on:
+  push:
+    tags:
+      - v*.*.*.*
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.python-version}}
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Build and install MD4C
+        run: |
+          mkdir md4c-lib/build
+          cd md4c-lib/build
+          cmake ..
+          make
+          sudo make install
+      - name: Install Python packaging tools
+        run: python -m pip install --upgrade pip setuptools wheel
+      - name: Install PyMD4C with test dependencies
+        run: python -m pip install .[test]
+      - name: Check setup.py
+        run: python setup.py check -m -s
+      - name: Run flake8
+        run: flake8 setup.py md4c/
+      #TODO Add actual tests
+
+  package-sdist:
+    name: Package sdist
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Build and install MD4C
+        run: |
+          mkdir md4c-lib/build
+          cd md4c-lib/build
+          cmake ..
+          make
+          sudo make install
+      - name: Install Python packaging tools
+        run: python3 -m pip install --upgrade pip setuptools wheel
+      - name: Build sdist
+        run: python3 setup.py sdist
+      - name: List build artifacts
+        run: ls dist/
+      - name: Save sdist as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: sdist
+          path: dist/*
+
+  package-linux:
+    name: Package for Linux
+    needs: test
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/pypa/${{matrix.plat}}
+      env:
+        PLAT: ${{matrix.plat}}
+        PY_VERSIONS: 3.6 3.7 3.8 3.9
+
+    strategy:
+      matrix:
+        plat:
+          # Ideally we'd build for i686 and maybe even aarch64, but these don't
+          # work with GitHub Actions.
+          - manylinux2014_x86_64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Build and install MD4C
+        run: |
+          yum install -y cmake3
+          mkdir md4c-lib/build
+          cd md4c-lib/build
+          cmake3 -DCMAKE_INSTALL_LIBDIR:PATH=/usr/local/lib -DCMAKE_BUILD_TYPE=Release ..
+          make
+          make install
+          #ldconfig
+      - name: Build wheels
+        run: |
+          for ver in ${PY_VERSIONS//.}
+          do
+            pybins="$pybins /opt/python/cp${ver}-*/bin"
+          done
+          for pybin in $pybins
+          do
+            ${pybin}/pip wheel . --no-deps -w dist/
+          done
+        shell: bash
+      - name: Run auditwheel repair
+        run: |
+          for wheel in dist/*.whl
+          do
+            if ! auditwheel show $wheel
+            then
+              echo "Skipping non-platform wheel $wheel"
+            else
+              auditwheel repair $wheel --plat $PLAT -w dist/
+            fi
+          done
+        shell: bash
+      - name: Remove original unaudited wheels
+        run: rm -f dist/*-linux_*
+      - name: List build artifacts
+        run: ls dist/
+      - name: Save wheels as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-wheels
+          path: dist/*
+
+  package-others:
+    name: Package for ${{matrix.platform}}/${{matrix.python-version}}
+    needs: test
+    runs-on: ${{matrix.platform}}-latest
+
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        platform:
+          - windows
+          - macos
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.python-version}}
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Build and install MD4C
+        run: |
+          mkdir md4c-lib/build
+          cd md4c-lib/build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --config Release
+          cmake --install .
+      - name: Install Python packaging tools
+        run: python -m pip install --upgrade pip setuptools wheel
+      - name: Build wheel
+        run: |
+          python -m pip wheel . --no-deps -w dist/
+      - name: List build artifacts
+        run: ls dist/
+      - name: Save wheels as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{matrix.platform}}-${{matrix.python-version}}-wheel
+          path: dist/*
+
+  pypi-upload:
+    name: Upload packages to PyPI
+    needs:
+      - package-sdist
+      - package-linux
+      - package-others
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Set up Twine
+        run: python -m pip install twine
+      - name: Fetch all packages
+        uses: actions/download-artifact@v2
+        with:
+          path: dist/
+      - name: Flatten directory structure
+        run: |
+          for d in dist/*
+          do
+            mv "$d"/* dist/
+            rmdir "$d"
+          done
+        shell: bash
+      - name: List packages
+        run: ls -l dist/
+      - name: Publish packages
+        env:
+          TWINE_USERNAME: ${{secrets.PYPI_USERNAME}}
+          TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
+        run: |
+          twine upload dist/*

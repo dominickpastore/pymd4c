@@ -1,15 +1,16 @@
-[![Build Status](https://travis-ci.com/dominickpastore/pymd4c.svg?branch=master)](https://travis-ci.com/dominickpastore/pymd4c)
+![Release Status](https://github.com/dominickpastore/pymd4c/workflows/Release/badge.svg?branch=master)
+![Test Status](https://github.com/dominickpastore/pymd4c/workflows/Test/badge.svg?branch=dev)
 
 PyMD4C
 ======
 
-Python bindings for the very fast [MD4C](https://github.com/mity/md4c) Markdown
-parsing and rendering library.
+Python bindings for the very fast [MD4C] Markdown parsing and rendering
+library.
 
-- GitHub: [https://github.com/dominickpastore/pymd4c](https://github.com/dominickpastore/pymd4c)
-- PyPI: [https://pypi.org/project/pymd4c/](https://pypi.org/project/pymd4c/)
-- Changelog: [https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md](https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md)
-- Issues: [https://github.com/dominickpastore/pymd4c/issues](https://github.com/dominickpastore/pymd4c/issues)
+- GitHub: [https://github.com/dominickpastore/pymd4c][GitHub]
+- PyPI: [https://pypi.org/project/pymd4c/][PyPI]
+- Changelog: [https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md][changelog]
+- Issues: [https://github.com/dominickpastore/pymd4c/issues][issues]
 
 Introduction
 ------------
@@ -21,8 +22,8 @@ HTML output directly.
 
 Accordingly, this Python module provides two classes:
 
-* `md4c.GenericParser` - Wraps the generic SAX-like MD4C parser. Requires Python
-  functions (or other callables) as callbacks.
+* `md4c.GenericParser` - Wraps the generic SAX-like MD4C parser. Requires
+  Python functions (or other callables) as callbacks.
 * `md4c.HTMLRenderer` - Wraps the HTML renderer. Produces HTML output directly.
 
 If other renderers are added to MD4C, they will get their own Python class as
@@ -31,22 +32,43 @@ well, similar to the `HTMLRenderer`.
 Install from PyPI
 -----------------
 
-PyMD4C is available on PyPI under the name [`pymd4c`](
-https://pypi.org/project/pymd4c/). Install it with pip like this:
+PyMD4C is available on PyPI under the name [`pymd4c`][PyPI]. Install it with
+pip like this:
 
     pip install pymd4c
 
-This is the recommended method to obtain PyMD4C on Linux. It should work well
-on most distributions. Unfortunately, Windows and macOS packages are not
-currently built automatically, so users on those platforms will need to build
-from source. The instructions below should assist.
+This is the recommended method to obtain PyMD4C. It should work well on most
+Linux distributions. It will probably work well on Windows and macOS (but
+these platforms are not as well-tested).
 
-Note that some more esoteric distributions or non-x86/x86\_64 architectures may
-not be supported by the manylinux packages. If either of those apply to your
-system, you may also need to build from source. (However, if you are running
-Linux on arm64, ppc64le, or s390x, consider opening a new [GitHub
-issue](https://github.com/dominickpastore/pymd4c/issues)&ndash;it may be
-possible to add your architecture.)
+If this does not work, there are a couple potential reasons:
+
+1. You do not have pip installed, or your version is too old. See [Installing
+   Packages - Python Packaging User Guide][python-packaging].
+
+2. Your version of Python is too old. This is a platform wheel, so it is built
+   for each Python version separately. Python versions older than 3.6 are not
+   supported. If your Python version is older than that, try upgrading.
+
+3. Your platform is incompatible. Again, since it is a platform wheel, it is
+   built for each supported platform separately.
+   - If you are running Windows, you may be running 32-bit (x86) Python.
+     Currently, only packages for 64-bit (x86-64) Python are built. If you can,
+     try running 64-bit Python.
+   - If you are on macOS, your macOS version might be too old.
+   - If you are on Linux, you may be running on an architecture other than
+     x86-64, a distribution that is too old, or a more esoteric distribution
+     unsupported by [manylinux2014][manylinux]. (Note that many architectures
+     supported by manylinux2014 are not built at this time, including x86,
+     arm64, ppc64le, and s390x.)
+   - If you are on some other platform, unfortunately, it is not supported by
+     the pre-built packages.
+
+If a build is not available for your platform (or you simply want to), you can
+build and install from source. The instructions below should assist.
+
+If a build is not available or not working for your platform and you think it
+should be, consider opening a [GitHub issue][issues].
 
 Build and Install from Source
 -----------------------------
@@ -54,31 +76,39 @@ Build and Install from Source
 ### Prerequisites
 
 This package depends on the MD4C library. It may be available through your
-package manager. Otherwise, it can be built from source as follows (note that
-the below instructions are for Unix-like systems, but theoretically there are
-ways to build on Windows as well):
+package manager. Otherwise, it can be built from source as follows:
 
-1. Download and extract the matching release from
-   [the releases page](https://github.com/mity/md4c/releases) (e.g. for PyMD4C
-   version W.X.Y.Z, download MD4C version W.X.Y).
-2. Inside the extracted file, run the following:
+1. Make sure you have [CMake] and a C compiler installed.
+2. Download and extract the matching release from the [MD4C releases
+   page][md4c-releases] (e.g. for PyMD4C version W.X.Y.Z, download MD4C version
+   W.X.Y).
+3. On Unix-like systems (including macOS):
+   - Inside the extracted file, run the following:
 
-       mkdir build
-       cd build
-       cmake ..
-       make
-       # Do as root:
-       make install
+         mkdir build
+         cd build
+         cmake ..
+         make
+         # Do as root:
+         make install
 
-   The install step must be run as root. The library will install to /usr/local
-   by default.
-3. You may need to rebuild the ldconfig cache (also as root): `ldconfig`
+     The install step must be run as root. The library will install to
+     /usr/local by default.
+   - You may need to rebuild the ldconfig cache (also as root): `ldconfig`
+4. On Windows:
+   - Inside the extracted file, run the following:
 
-In addition, the `pkg-config` tool and the Python `pkgconfig` package must be
-available to build PyMD4C, but they are not required after that (i.e., they are
-not a prerequisite for actually *using* PyMD4C). The `pkg-config` tool is
-likely available on your system already, and the Python `pkgconfig` package
-will be fetched automatically by `setup.py`.
+         mkdir build
+         cd build
+         cmake -DCMAKE_BUILD_TYPE=Release ..
+         cmake --build . --config Release
+         cmake --install .
+
+In addition, on Unix-like systems (including macOS), the `pkg-config` tool must
+be available to build PyMD4C. After PyMD4C is built, it is no longer required
+(that is, it is not a prerequisite for actually *using* PyMD4C). This tool is
+likely available on your system already, so this should not be an issue in most
+cases.
 
 Finally, note that since this package uses C extensions, development headers
 for Python must be installed for the build to succeed. If you are using Linux,
@@ -87,10 +117,20 @@ some distributions split these off from the main Python package. Install
 
 ### Build/Install
 
-Build and install with `setup.py` as you would for any Python source
-repository:
+Build and install as you would for any Python source repository. Download and
+extract a release or clone the repository, and run the following inside:
 
     pip install .
+
+Alternatively, you can have pip fetch and build from the latest source
+distribution on PyPI:
+
+    pip install --no-binary pymd4c pymd4c
+
+Note that on Windows, setup.py assumes the MD4C library was installed at
+"C:/Program Files (x86)/MD4C/" (this is the default location when building MD4C
+from source, as described above). If this is not the case, installation will
+fail.
 
 Class `GenericParser`
 ---------------------
@@ -160,11 +200,11 @@ handled quietly).
   tuples or None.
 
   This dict will contain the information provided by `MD_BLOCK_*_DETAIL` and
-  `MD_SPAN_*_DETAIL` structs in MD4C's `md4c.h`, with following exceptions:
+  `MD_SPAN_*_DETAIL` structs in MD4C's `md4c.h`, with the following exceptions:
 
-  * Non tasks `MD_BLOCK_LI` blocks (when `is_task` detail is `False`) do not
-    include `task_mark` and `task_mark_offset` attributes.
-  * Indented `MD_BLOCK_CODE` blocks do not include the `fence_char` attribute.
+  * Non-task `MD_BLOCK_LI` blocks (when `is_task` is `False`) do not include
+    `task_mark` and `task_mark_offset` keys.
+  * Indented `MD_BLOCK_CODE` blocks do not include the `fence_char` key.
 
   Regarding `MD_ATTRIBUTE`s: These are used where a block or span can contain
   some associated text, such as link titles and code block language references.
@@ -230,65 +270,52 @@ Module-Wide Constants
 ---------------------
 
 The MD4C library provides various option flags for parsers and renderers as
-named constants. These are made available as module-level constants in PyMD4C.
+named constants. These are made available as module-level constants in PyMD4C. Also, each constant has a correspondent optional keyword argument that can be used instanciating parser and renderers.
 
 ### Parser Option Flags
 
 Basic option flags:
 
-* `md4c.MD_FLAG_COLLAPSEWHITESPACE` - In normal text, collapse non-trivial
-  whitespace into a single space.
-* `md4c.MD_FLAG_PERMISSIVEATXHEADERS` - Do not requite a space in ATX headers
-  (e.g. `###Header`).
-* `md4c.MD_FLAG_PERMISSIVEURLAUTOLINKS` - Convert URLs to links even without
-  `<` and `>`.
-* `md4c.MD_FLAG_PERMISSIVEEMAILAUTOLINKS` - Convert email addresses to links
-  even without `<`, `>`, and `mailto:`.
-* `md4c.MD_FLAG_NOINDENTEDCODEBLOCKS` - Disable indented code blocks. (Only
-  allow fenced code blocks.)
-* `md4c.MD_FLAG_NOHTMLBLOCKS` - Disable raw HTML blocks.
-* `md4c.MD_FLAG_NOHTMLSPANS` - Disable raw HTML inlines.
-* `md4c.MD_FLAG_TABLES` - Enable tables extension.
-* `md4c.MD_FLAG_STRIKETHROUGH` - Enable strikethrough extension.
-* `md4c.MD_FLAG_PERMISSIVEWWWAUTOLINKS` - Enable www autolinks (even without
-  any scheme prefix, as long as they begin with `www.`).
-* `md4c.MD_FLAG_TASKLISTS` - Enable task lists extension.
-* `md4c.MD_FLAG_LATEXMATHSPANS` - Enable `$` and `$$` containing LaTeX
-  equations.
-* `md4c.MD_FLAG_WIKILINKS` - Enable wiki links extension.
-* `md4c.MD_FLAG_UNDERLINE` - Enable underline extension (and disable `_` for
-  regular emphasis).
+| md4c flag | keyword argument | description |
+| :-------- | :--------------- | :---------- |
+| `md4c.MD_FLAG_COLLAPSEWHITESPACE` | `collapse_whitespace` | In normal text, collapse non-trivial whitespace into a single space. |
+| `md4c.MD_FLAG_COLLAPSEWHITESPACE` | `permissive_atx_headers` | Do not requite a space in ATX headers (e.g. `###Header`). |
+| `md4c.MD_FLAG_PERMISSIVEURLAUTOLINKS` | `permissive_url_autolinks` | Convert URLs to links even without `<` and `>`. |
+| `md4c.MD_FLAG_PERMISSIVEEMAILAUTOLINKS` | `permissive_email_autolinks` | Convert email addresses to links even without `<`, `>`, and `mailto:`. |
+| `md4c.MD_FLAG_NOINDENTEDCODEBLOCKS` | `no_indented_code_blocks` | Disable indented code blocks (only allow fenced code blocks). |
+| `md4c.MD_FLAG_NOHTMLBLOCKS` | `no_html_blocks` | Disable raw HTML blocks. |
+| `md4c.MD_FLAG_NOHTMLSPANS` | `no_html_spans` | Disable raw HTML inlines. |
+| `md4c.MD_FLAG_TABLES` | `tables` | Enable tables extension. |
+| `md4c.MD_FLAG_STRIKETHROUGH` | `strikethrough` | Enable strikethrough extension. |
+| `md4c.MD_FLAG_PERMISSIVEWWWAUTOLINKS` | `permissive_www_autolinks` | Enable www autolinks (even without any scheme prefix, as long as they begin with `www.`).
+| `md4c.MD_FLAG_TASKLISTS` | `tasklists` | Enable task lists extension. |
+| `md4c.MD_FLAG_LATEXMATHSPANS` | `latex_math_spans` | Enable `$` and `$$` containing LaTeX equations. |
+| `md4c.MD_FLAG_WIKILINKS` | `wikilinks` | Enable wiki links extension. |
+| `md4c.MD_FLAG_UNDERLINE` | `underline` | Enable underline extension (and disable `_` for regular emphasis). |
 
 Combination option flags:
 
-* `md4c.MD_FLAG_PERMISSIVEAUTOLINKS` - Enables all varieties of autolinks:
-  `MD_FLAG_PERMISSIVEURLAUTOLINKS`, `MD_FLAG_PERMISSIVEEMAILAUTOLINKS`, and
-  `MD_FLAG_PERMISSIVEWWWAUTOLINKS`
-* `md4c.MD_FLAG_NOHTML` - Disables all raw HTML tags: `MD_FLAG_NOHTMLBLOCKS`
-  and `MD_FLAG_NOHTMLSPANS`
+| md4c flag | keyword argument | description |
+| :-------- | :--------------- | :---------- |
+| `md4c.MD_FLAG_PERMISSIVEAUTOLINKS` | `permissive_auto_links` | Enables all varieties of autolinks: `MD_FLAG_PERMISSIVEURLAUTOLINKS`, `MD_FLAG_PERMISSIVEEMAILAUTOLINKS`, and `MD_FLAG_PERMISSIVEWWWAUTOLINKS`. |
+| `md4c.MD_FLAG_NOHTML` | `no_html` | Disables all raw HTML tags: `MD_FLAG_NOHTMLBLOCKS` and `MD_FLAG_NOHTMLSPANS`. |
 
 Dialect option flags (note that not all features of a dialect may be supported,
 but these flags will cause MD4C to parse as many features of the dialect as it
 supports):
 
-* `md4c.MD_DIALECT_COMMONMARK` - This is the default behavior of MD4C, so no
-  additional flags are enabled.
-* `md4c.MD_DIALECT_GITHUB` - Parse GitHub-Flavored Markdown, which enables the
-  following flags:
-
-  - `MD_FLAG_PERMISSIVEAUTOLINKS`
-  - `MD_FLAG_TABLES`
-  - `MD_FLAG_STRIKETHROUGH`
-  - `MD_FLAG_TASKLISTS`
+| md4c flag | keyword argument | description |
+| :-------- | :--------------- | :---------- |
+| `md4c.MD_DIALECT_GITHUB` | `dialect_github` | Parse GitHub-Flavored Markdown, which enables the following flags:<br><br><ul><li><code>MD_FLAG_PERMISSIVEAUTOLINKS</code></li><li><code>MD_FLAG_TABLES</code></li><li><code>MD_FLAG_STRIKETHROUGH</code></li><li><code>MD_FLAG_TASKLISTS</code></li></ul>
 
 ### HTML Renderer Option Flags
 
-* `md4c.MD_HTML_FLAG_DEBUG` - For development use, send MD4C debug output to
-  stderr.
-* `md4c.MD_HTML_FLAG_VERBATIM_ENTITIES` - Do not replace HTML entities with the
-  actual character (e.g. `&copy;` with ©).
-* `md4c.MD_HTML_FLAG_SKIP_UTF8_BOM` - Omit BOM from start of UTF-8 input.
-* `md4c.MD_HTML_FLAG_XHTML` - Generate XHTML instead of HTML.
+| md4c flag | keyword argument | description |
+| :-------- | :--------------- | :---------- |
+| `md4c.MD_HTML_FLAG_DEBUG` | `debug` | For development use, send MD4C debug output to stderr. |
+| `md4c.MD_HTML_FLAG_VERBATIM_ENTITIES` | `verbatim_entities` | Do not replace HTML entities with the actual character (e.g. `&copy;` with ©). |
+| `md4c.MD_HTML_FLAG_SKIP_UTF8_BOM` | `skip_utf8_bom` | Omit BOM from start of UTF-8 input. |
+| `md4c.MD_HTML_FLAG_XHTML` | `xhtml` | Generate XHTML instead of HTML. |
 
 Enums
 -----
@@ -296,8 +323,8 @@ Enums
 The MD4C library uses various enums to provide data to callbacks. PyMD4C uses
 `IntEnum`s to encapsulate these.
 
-See `md4c.h` from the [MD4C project](https://github.com/mity/md4c/) for more
-information on these enums and associated types.
+See `md4c.h` from the [MD4C project][MD4C] for more information on these enums
+and associated types.
 
 ### Block Types - class `BlockType`
 
@@ -365,3 +392,13 @@ License
 
 This project is licensed under the MIT license. See the `LICENSE.md` file for
 details.
+
+[MD4C]: https://github.com/mity/md4c
+[GitHub]: https://github.com/dominickpastore/pymd4c
+[PyPI]: https://pypi.org/project/pymd4c/
+[changelog]: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
+[issues]: https://github.com/dominickpastore/pymd4c/issues
+[python-packaging]: https://packaging.python.org/tutorials/installing-packages/
+[manylinux]: https://github.com/pypa/manylinux
+[md4c-releases]: https://github.com/mity/md4c/releases
+[CMake]: https://cmake.org/

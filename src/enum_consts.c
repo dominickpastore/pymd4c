@@ -6,7 +6,7 @@
  * Python bindings for the various enum constants for MD4C. These are not
  * intended for direct use by applications--they should use the Python enums
  * instead
- * 
+ *
  * Copyright (c) 2020 Dominick C. Pastore
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

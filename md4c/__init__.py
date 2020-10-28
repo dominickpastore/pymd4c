@@ -28,5 +28,7 @@
 # IN THE SOFTWARE.
 #
 
-from ._md4c import *  # GenericParser, HTMLRenderer, exceptions, and flags
-from ._enums import BlockType, SpanType, TextType, Align
+# GenericParser, HTMLRenderer, exceptions, and flags
+from ._md4c import *    # noqa: F401, F403
+
+from ._enums import BlockType, SpanType, TextType, Align    # noqa: F401

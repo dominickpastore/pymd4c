@@ -4,7 +4,7 @@
  *
  * pymd4c.c - md4c._md4c module
  * Contains the parser and renderer classes that interface directly with MD4C
- * 
+ *
  * Copyright (c) 2020 Dominick C. Pastore
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -72,7 +72,7 @@ static int buffer_init(DynamicBuffer *buf) {
     return 0;
 }
 
-/* 
+/*
  * Double the size of the DynamicBuffer. Return 0 on success, -1 on failure.
  */
 static int buffer_grow(DynamicBuffer *buf) {
@@ -129,12 +129,155 @@ typedef struct {
 static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
         PyObject *kwds) {
     unsigned int parser_flags = 0;
+    unsigned int collapse_whitespace = 0;
+    unsigned int permissive_atx_headers = 0;
+    unsigned int permissive_url_autolinks = 0;
+    unsigned int permissive_email_autolinks = 0;
+    unsigned int no_indented_code_blocks = 0;
+    unsigned int no_html_blocks = 0;
+    unsigned int no_html_spans = 0;
+    unsigned int tables = 0;
+    unsigned int strikethrough = 0;
+    unsigned int permissive_www_autolinks = 0;
+    unsigned int tasklists = 0;
+    unsigned int latex_math_spans = 0;
+    unsigned int wikilinks = 0;
+    unsigned int underline = 0;
+    unsigned int permissive_auto_links = 0;
+    unsigned int no_html = 0;
+    unsigned int dialect_github = 0;
+
     unsigned int renderer_flags = 0;
-    
-    static char *kwlist[] = {"parser_flags", "renderer_flags", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|II", kwlist,
-            &parser_flags, &renderer_flags)) {
+    unsigned int debug = 0;
+    unsigned int verbatim_entities = 0;
+    unsigned int skip_utf8_bom = 0;
+    unsigned int xhtml = 0;
+
+    static char *kwlist[] = {
+        "parser_flags",
+        "renderer_flags",
+        "collapse_whitespace",
+        "permissive_atx_headers",
+        "permissive_url_autolinks",
+        "permissive_email_autolinks",
+        "no_indented_code_blocks",
+        "no_html_blocks",
+        "no_html_spans",
+        "tables",
+        "strikethrough",
+        "permissive_www_autolinks",
+        "tasklists",
+        "latex_math_spans",
+        "wikilinks",
+        "underline",
+        "permissive_auto_links",
+        "no_html",
+        "dialect_github",
+        "debug",
+        "verbatim_entities",
+        "skip_utf8_bom",
+        "xhtml",
+        NULL,
+    };
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|II$ppppppppppppppppppppp",
+                                     kwlist, &parser_flags, &renderer_flags,
+                                     &collapse_whitespace,
+                                     &permissive_atx_headers,
+                                     &permissive_url_autolinks,
+                                     &permissive_email_autolinks,
+                                     &no_indented_code_blocks, &no_html_blocks,
+                                     &no_html_spans, &tables, &strikethrough,
+                                     &permissive_www_autolinks, &tasklists,
+                                     &latex_math_spans, &wikilinks, &underline,
+                                     &permissive_auto_links, &no_html,
+                                     &dialect_github,
+                                     &debug, &verbatim_entities,
+                                     &skip_utf8_bom, &xhtml)) {
         return -1;
+    }
+
+    if (collapse_whitespace) {
+        parser_flags |= MD_FLAG_COLLAPSEWHITESPACE;
+    }
+
+    if (permissive_atx_headers) {
+        parser_flags |= MD_FLAG_PERMISSIVEATXHEADERS;
+    }
+
+    if (permissive_url_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEURLAUTOLINKS;
+    }
+
+    if (permissive_email_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEEMAILAUTOLINKS;
+    }
+
+    if (no_indented_code_blocks) {
+        parser_flags |= MD_FLAG_NOINDENTEDCODEBLOCKS;
+    }
+
+    if (no_html_blocks) {
+        parser_flags |= MD_FLAG_NOHTMLBLOCKS;
+    }
+
+    if (no_html_spans) {
+        parser_flags |= MD_FLAG_NOHTMLSPANS;
+    }
+
+    if (tables) {
+        parser_flags |= MD_FLAG_TABLES;
+    }
+
+    if (strikethrough) {
+        parser_flags |= MD_FLAG_STRIKETHROUGH;
+    }
+
+    if (permissive_www_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEWWWAUTOLINKS;
+    }
+
+    if (tasklists) {
+        parser_flags |= MD_FLAG_TASKLISTS;
+    }
+
+    if (latex_math_spans) {
+        parser_flags |= MD_FLAG_LATEXMATHSPANS;
+    }
+
+    if (wikilinks) {
+        parser_flags |= MD_FLAG_WIKILINKS;
+    }
+
+    if (underline) {
+        parser_flags |= MD_FLAG_UNDERLINE;
+    }
+
+    if (permissive_auto_links) {
+        parser_flags |= MD_FLAG_PERMISSIVEAUTOLINKS;
+    }
+
+    if (no_html) {
+        parser_flags |= MD_FLAG_NOHTML;
+    }
+
+    if (dialect_github) {
+        parser_flags |= MD_DIALECT_GITHUB;
+    }
+
+    if (debug) {
+        renderer_flags |= MD_HTML_FLAG_DEBUG;
+    }
+
+    if (verbatim_entities) {
+        renderer_flags |= MD_HTML_FLAG_VERBATIM_ENTITIES;
+    }
+
+    if (skip_utf8_bom) {
+        renderer_flags |= MD_HTML_FLAG_SKIP_UTF8_BOM;
+    }
+
+    if (xhtml) {
+        renderer_flags |= MD_HTML_FLAG_XHTML;
     }
 
     self->parser_flags = parser_flags;
@@ -154,7 +297,8 @@ static void HTMLRenderer_parse_callback(const char *output,
  * HTMLRenderer.parse(input: str) -> str
  * Parse a Markdown document and return the rendered HTML
  */
-static PyObject * HTMLRenderer_parse(HTMLRendererObject *self, PyObject *args) {
+static PyObject * HTMLRenderer_parse(HTMLRendererObject *self,
+        PyObject *args) {
     PyThreadState *_save;
 
     // Parse arguments
@@ -252,10 +396,126 @@ typedef struct {
 static int GenericParser_init(GenericParserObject *self, PyObject *args,
         PyObject *kwds) {
     unsigned int parser_flags = 0;
-    
-    static char *kwlist[] = {"parser_flags", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I", kwlist, &parser_flags)) {
+    unsigned int collapse_whitespace = 0;
+    unsigned int permissive_atx_headers = 0;
+    unsigned int permissive_url_autolinks = 0;
+    unsigned int permissive_email_autolinks = 0;
+    unsigned int no_indented_code_blocks = 0;
+    unsigned int no_html_blocks = 0;
+    unsigned int no_html_spans = 0;
+    unsigned int tables = 0;
+    unsigned int strikethrough = 0;
+    unsigned int permissive_www_autolinks = 0;
+    unsigned int tasklists = 0;
+    unsigned int latex_math_spans = 0;
+    unsigned int wikilinks = 0;
+    unsigned int underline = 0;
+    unsigned int permissive_auto_links = 0;
+    unsigned int no_html = 0;
+    unsigned int dialect_github = 0;
+
+    static char *kwlist[] = {
+        "parser_flags",
+        "collapse_whitespace",
+        "permissive_atx_headers",
+        "permissive_url_autolinks",
+        "permissive_email_autolinks",
+        "no_indented_code_blocks",
+        "no_html_blocks",
+        "no_html_spans",
+        "tables",
+        "strikethrough",
+        "permissive_www_autolinks",
+        "tasklists",
+        "latex_math_spans",
+        "wikilinks",
+        "underline",
+        "permissive_auto_links",
+        "no_html",
+        "dialect_github",
+        NULL
+    };
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I$ppppppppppppppppp",
+                                     kwlist, &parser_flags,
+                                     &collapse_whitespace,
+                                     &permissive_atx_headers,
+                                     &permissive_url_autolinks,
+                                     &permissive_email_autolinks,
+                                     &no_indented_code_blocks, &no_html_blocks,
+                                     &no_html_spans, &tables, &strikethrough,
+                                     &permissive_www_autolinks, &tasklists,
+                                     &latex_math_spans, &wikilinks, &underline,
+                                     &permissive_auto_links, &no_html,
+                                     &dialect_github)) {
         return -1;
+    }
+
+    if (collapse_whitespace) {
+        parser_flags |= MD_FLAG_COLLAPSEWHITESPACE;
+    }
+
+    if (permissive_atx_headers) {
+        parser_flags |= MD_FLAG_PERMISSIVEATXHEADERS;
+    }
+
+    if (permissive_url_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEURLAUTOLINKS;
+    }
+
+    if (permissive_email_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEEMAILAUTOLINKS;
+    }
+
+    if (no_indented_code_blocks) {
+        parser_flags |= MD_FLAG_NOINDENTEDCODEBLOCKS;
+    }
+
+    if (no_html_blocks) {
+        parser_flags |= MD_FLAG_NOHTMLBLOCKS;
+    }
+
+    if (no_html_spans) {
+        parser_flags |= MD_FLAG_NOHTMLSPANS;
+    }
+
+    if (tables) {
+        parser_flags |= MD_FLAG_TABLES;
+    }
+
+    if (strikethrough) {
+        parser_flags |= MD_FLAG_STRIKETHROUGH;
+    }
+
+    if (permissive_www_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEWWWAUTOLINKS;
+    }
+
+    if (tasklists) {
+        parser_flags |= MD_FLAG_TASKLISTS;
+    }
+
+    if (latex_math_spans) {
+        parser_flags |= MD_FLAG_LATEXMATHSPANS;
+    }
+
+    if (wikilinks) {
+        parser_flags |= MD_FLAG_WIKILINKS;
+    }
+
+    if (underline) {
+        parser_flags |= MD_FLAG_UNDERLINE;
+    }
+
+    if (permissive_auto_links) {
+        parser_flags |= MD_FLAG_PERMISSIVEAUTOLINKS;
+    }
+
+    if (no_html) {
+        parser_flags |= MD_FLAG_NOHTML;
+    }
+
+    if (dialect_github) {
+        parser_flags |= MD_DIALECT_GITHUB;
     }
 
     self->parser_flags = parser_flags;
@@ -421,22 +681,25 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
     switch(type) {
         case MD_BLOCK_UL:
             arglist = Py_BuildValue("(O{s:N,s:C})", get_enum_blocktype(type),
-                    "is_tight", PyBool_FromLong(((MD_BLOCK_UL_DETAIL *) detail)->is_tight),
+                    "is_tight",
+                    PyBool_FromLong(((MD_BLOCK_UL_DETAIL *) detail)->is_tight),
                     "mark", ((MD_BLOCK_UL_DETAIL *) detail)->mark);
             break;
         case MD_BLOCK_OL:
             arglist = Py_BuildValue("(O{s:i,s:N,s:C})",
                     get_enum_blocktype(type),
                     "start", ((MD_BLOCK_OL_DETAIL *) detail)->start,
-                    "is_tight", PyBool_FromLong(((MD_BLOCK_OL_DETAIL *) detail)->is_tight),
+                    "is_tight",
+                    PyBool_FromLong(((MD_BLOCK_OL_DETAIL *) detail)->is_tight),
                     "mark_delimiter", ((MD_BLOCK_OL_DETAIL *) detail)->
                         mark_delimiter);
             break;
         case MD_BLOCK_LI:
             if (((MD_BLOCK_LI_DETAIL *) detail)->is_task) {
-                arglist = Py_BuildValue("(O{s:O,s:C,s:i})", get_enum_blocktype(type),
-                        "is_task", Py_True,
-                        "task_mark", ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
+                arglist = Py_BuildValue("(O{s:O,s:C,s:i})",
+                        get_enum_blocktype(type), "is_task", Py_True,
+                        "task_mark",
+                        ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
                         "task_mark_offset", ((MD_BLOCK_LI_DETAIL *) detail)->
                             task_mark_offset);
             } else {
@@ -450,13 +713,15 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
             break;
         case MD_BLOCK_CODE:
             if (((MD_BLOCK_CODE_DETAIL *) detail)->fence_char == NULL) {
-                arglist = Py_BuildValue("(O{s:O,s:O})", get_enum_blocktype(type),
+                arglist = Py_BuildValue("(O{s:O,s:O})",
+                        get_enum_blocktype(type),
                         "info", GenericParser_md_attribute(
                             &((MD_BLOCK_CODE_DETAIL *) detail)->info),
                         "lang", GenericParser_md_attribute(
                             &((MD_BLOCK_CODE_DETAIL *) detail)->lang));
             } else {
-                arglist = Py_BuildValue("(O{s:O,s:O,s:C})", get_enum_blocktype(type),
+                arglist = Py_BuildValue("(O{s:O,s:O,s:C})",
+                        get_enum_blocktype(type),
                         "info", GenericParser_md_attribute(
                             &((MD_BLOCK_CODE_DETAIL *) detail)->info),
                         "lang", GenericParser_md_attribute(

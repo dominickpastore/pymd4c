@@ -1,1 +1,3 @@
+include about.json
+include CHANGELOG.md
 include LICENSE.md
