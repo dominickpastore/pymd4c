@@ -11,6 +11,9 @@ PyMD4C version numbers track MD4C version numbers:
   MD4C version and be incremented each time there is a new PyMD4C release for
   the same version of MD4C.
 
+[Unreleased]
+------------
+
 [0.4.6.0b1] - 2020-10-28
 ------------------------
 
