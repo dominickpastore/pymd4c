@@ -129,12 +129,155 @@ typedef struct {
 static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
         PyObject *kwds) {
     unsigned int parser_flags = 0;
+    unsigned int collapse_whitespace = 0;
+    unsigned int permissive_atx_headers = 0;
+    unsigned int permissive_url_autolinks = 0;
+    unsigned int permissive_email_autolinks = 0;
+    unsigned int no_indented_code_blocks = 0;
+    unsigned int no_html_blocks = 0;
+    unsigned int no_html_spans = 0;
+    unsigned int tables = 0;
+    unsigned int strikethrough = 0;
+    unsigned int permissive_www_autolinks = 0;
+    unsigned int tasklists = 0;
+    unsigned int latex_math_spans = 0;
+    unsigned int wikilinks = 0;
+    unsigned int underline = 0;
+    unsigned int permissive_auto_links = 0;
+    unsigned int no_html = 0;
+    unsigned int dialect_github = 0;
+
     unsigned int renderer_flags = 0;
-    
-    static char *kwlist[] = {"parser_flags", "renderer_flags", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|II", kwlist,
-            &parser_flags, &renderer_flags)) {
+    unsigned int debug = 0;
+    unsigned int verbatim_entities = 0;
+    unsigned int skip_utf8_bom = 0;
+    unsigned int xhtml = 0;
+
+    static char *kwlist[] = {
+        "parser_flags",
+        "renderer_flags",
+        "collapse_whitespace",
+        "permissive_atx_headers",
+        "permissive_url_autolinks",
+        "permissive_email_autolinks",
+        "no_indented_code_blocks",
+        "no_html_blocks",
+        "no_html_spans",
+        "tables",
+        "strikethrough",
+        "permissive_www_autolinks",
+        "tasklists",
+        "latex_math_spans",
+        "wikilinks",
+        "underline",
+        "permissive_auto_links",
+        "no_html",
+        "dialect_github",
+        "debug",
+        "verbatim_entities",
+        "skip_utf8_bom",
+        "xhtml",
+        NULL,
+    };
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|II$ppppppppppppppppppppp",
+                                     kwlist, &parser_flags, &renderer_flags,
+                                     &collapse_whitespace,
+                                     &permissive_atx_headers,
+                                     &permissive_url_autolinks,
+                                     &permissive_email_autolinks,
+                                     &no_indented_code_blocks, &no_html_blocks,
+                                     &no_html_spans, &tables, &strikethrough,
+                                     &permissive_www_autolinks, &tasklists,
+                                     &latex_math_spans, &wikilinks, &underline,
+                                     &permissive_auto_links, &no_html,
+                                     &dialect_github,
+                                     &debug, &verbatim_entities,
+                                     &skip_utf8_bom, &xhtml)) {
         return -1;
+    }
+
+    if (collapse_whitespace) {
+        parser_flags |= MD_FLAG_COLLAPSEWHITESPACE;
+    }
+
+    if (permissive_atx_headers) {
+        parser_flags |= MD_FLAG_PERMISSIVEATXHEADERS;
+    }
+
+    if (permissive_url_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEURLAUTOLINKS;
+    }
+
+    if (permissive_email_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEEMAILAUTOLINKS;
+    }
+
+    if (no_indented_code_blocks) {
+        parser_flags |= MD_FLAG_NOINDENTEDCODEBLOCKS;
+    }
+
+    if (no_html_blocks) {
+        parser_flags |= MD_FLAG_NOHTMLBLOCKS;
+    }
+
+    if (no_html_spans) {
+        parser_flags |= MD_FLAG_NOHTMLSPANS;
+    }
+
+    if (tables) {
+        parser_flags |= MD_FLAG_TABLES;
+    }
+
+    if (strikethrough) {
+        parser_flags |= MD_FLAG_STRIKETHROUGH;
+    }
+
+    if (permissive_www_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEWWWAUTOLINKS;
+    }
+
+    if (tasklists) {
+        parser_flags |= MD_FLAG_TASKLISTS;
+    }
+
+    if (latex_math_spans) {
+        parser_flags |= MD_FLAG_LATEXMATHSPANS;
+    }
+
+    if (wikilinks) {
+        parser_flags |= MD_FLAG_WIKILINKS;
+    }
+
+    if (underline) {
+        parser_flags |= MD_FLAG_UNDERLINE;
+    }
+
+    if (permissive_auto_links) {
+        parser_flags |= MD_FLAG_PERMISSIVEAUTOLINKS;
+    }
+
+    if (no_html) {
+        parser_flags |= MD_FLAG_NOHTML;
+    }
+
+    if (dialect_github) {
+        parser_flags |= MD_DIALECT_GITHUB;
+    }
+
+    if (debug) {
+        renderer_flags |= MD_HTML_FLAG_DEBUG;
+    }
+
+    if (verbatim_entities) {
+        renderer_flags |= MD_HTML_FLAG_VERBATIM_ENTITIES;
+    }
+
+    if (skip_utf8_bom) {
+        renderer_flags |= MD_HTML_FLAG_SKIP_UTF8_BOM;
+    }
+
+    if (xhtml) {
+        renderer_flags |= MD_HTML_FLAG_XHTML;
     }
 
     self->parser_flags = parser_flags;
@@ -252,10 +395,125 @@ typedef struct {
 static int GenericParser_init(GenericParserObject *self, PyObject *args,
         PyObject *kwds) {
     unsigned int parser_flags = 0;
-    
-    static char *kwlist[] = {"parser_flags", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I", kwlist, &parser_flags)) {
+    unsigned int collapse_whitespace = 0;
+    unsigned int permissive_atx_headers = 0;
+    unsigned int permissive_url_autolinks = 0;
+    unsigned int permissive_email_autolinks = 0;
+    unsigned int no_indented_code_blocks = 0;
+    unsigned int no_html_blocks = 0;
+    unsigned int no_html_spans = 0;
+    unsigned int tables = 0;
+    unsigned int strikethrough = 0;
+    unsigned int permissive_www_autolinks = 0;
+    unsigned int tasklists = 0;
+    unsigned int latex_math_spans = 0;
+    unsigned int wikilinks = 0;
+    unsigned int underline = 0;
+    unsigned int permissive_auto_links = 0;
+    unsigned int no_html = 0;
+    unsigned int dialect_github = 0;
+
+    static char *kwlist[] = {
+        "parser_flags",
+        "collapse_whitespace",
+        "permissive_atx_headers",
+        "permissive_url_autolinks",
+        "permissive_email_autolinks",
+        "no_indented_code_blocks",
+        "no_html_blocks",
+        "no_html_spans",
+        "tables",
+        "strikethrough",
+        "permissive_www_autolinks",
+        "tasklists",
+        "latex_math_spans",
+        "wikilinks",
+        "underline",
+        "permissive_auto_links",
+        "no_html",
+        "dialect_github",
+        NULL
+    };
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I$ppppppppppppppppp", kwlist,
+                                     &parser_flags, &collapse_whitespace,
+                                     &permissive_atx_headers,
+                                     &permissive_url_autolinks,
+                                     &permissive_email_autolinks,
+                                     &no_indented_code_blocks, &no_html_blocks,
+                                     &no_html_spans, &tables, &strikethrough,
+                                     &permissive_www_autolinks, &tasklists,
+                                     &latex_math_spans, &wikilinks, &underline,
+                                     &permissive_auto_links, &no_html,
+                                     &dialect_github)) {
         return -1;
+    }
+    
+    if (collapse_whitespace) {
+        parser_flags |= MD_FLAG_COLLAPSEWHITESPACE;
+    }
+
+    if (permissive_atx_headers) {
+        parser_flags |= MD_FLAG_PERMISSIVEATXHEADERS;
+    }
+
+    if (permissive_url_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEURLAUTOLINKS;
+    }
+
+    if (permissive_email_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEEMAILAUTOLINKS;
+    }
+
+    if (no_indented_code_blocks) {
+        parser_flags |= MD_FLAG_NOINDENTEDCODEBLOCKS;
+    }
+
+    if (no_html_blocks) {
+        parser_flags |= MD_FLAG_NOHTMLBLOCKS;
+    }
+
+    if (no_html_spans) {
+        parser_flags |= MD_FLAG_NOHTMLSPANS;
+    }
+
+    if (tables) {
+        parser_flags |= MD_FLAG_TABLES;
+    }
+
+    if (strikethrough) {
+        parser_flags |= MD_FLAG_STRIKETHROUGH;
+    }
+
+    if (permissive_www_autolinks) {
+        parser_flags |= MD_FLAG_PERMISSIVEWWWAUTOLINKS;
+    }
+
+    if (tasklists) {
+        parser_flags |= MD_FLAG_TASKLISTS;
+    }
+
+    if (latex_math_spans) {
+        parser_flags |= MD_FLAG_LATEXMATHSPANS;
+    }
+
+    if (wikilinks) {
+        parser_flags |= MD_FLAG_WIKILINKS;
+    }
+
+    if (underline) {
+        parser_flags |= MD_FLAG_UNDERLINE;
+    }
+
+    if (permissive_auto_links) {
+        parser_flags |= MD_FLAG_PERMISSIVEAUTOLINKS;
+    }
+
+    if (no_html) {
+        parser_flags |= MD_FLAG_NOHTML;
+    }
+
+    if (dialect_github) {
+        parser_flags |= MD_DIALECT_GITHUB;
     }
 
     self->parser_flags = parser_flags;
