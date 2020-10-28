@@ -179,7 +179,7 @@ static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
         "xhtml",
         NULL,
     };
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|II$pppppppppppppppppppp",
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|II$ppppppppppppppppppppp",
                                      kwlist, &parser_flags, &renderer_flags,
                                      &collapse_whitespace,
                                      &permissive_atx_headers,
