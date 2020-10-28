@@ -225,7 +225,7 @@ jobs:
         run: |
           for d in dist/*
           do
-            mv "$d/*" dist/
+            mv "$d"/* dist/
             rmdir "$d"
           done
         shell: bash
