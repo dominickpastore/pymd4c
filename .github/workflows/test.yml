@@ -1,6 +1,6 @@
 # GitHub Action for test suite
 # vim: set ts=8 sts=2 sw=2:
-name: test
+name: Test
 on:
   push:
     branches:
@@ -38,6 +38,6 @@ jobs:
       - name: Check setup.py
         run: python3 setup.py check -m -s
       - name: Run flake8
-        run: flake8 .
+        run: flake8 setup.py md4c/
       #TODO Add actual tests
 

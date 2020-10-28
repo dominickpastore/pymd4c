@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/dominickpastore/pymd4c.svg?branch=master)](https://travis-ci.com/dominickpastore/pymd4c)
+![Release Status](https://github.com/dominickpastore/pymd4c/workflows/Release/badge.svg?branch=master)
+![Test Status](https://github.com/dominickpastore/pymd4c/workflows/Test/badge.svg?branch=dev)
 
 PyMD4C
 ======
@@ -116,13 +117,17 @@ some distributions split these off from the main Python package. Install
 
 ### Build/Install
 
-Build and install with `setup.py` as you would for any Python source
-repository. Download and extract a release or clone the repository, and run the
-following inside:
+Build and install as you would for any Python source repository. Download and
+extract a release or clone the repository, and run the following inside:
 
     pip install .
 
-On Windows, this assumes the MD4C library was installed at
+Alternatively, you can have pip fetch and build from the latest source
+distribution on PyPI:
+
+    pip install --no-binary pymd4c pymd4c
+
+Note that on Windows, setup.py assumes the MD4C library was installed at
 "C:/Program Files (x86)/MD4C/" (this is the default location when building MD4C
 from source, as described above). If this is not the case, installation will
 fail.

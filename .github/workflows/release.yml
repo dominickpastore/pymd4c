@@ -1,8 +1,7 @@
-# GitHub Actions workflow for creating Python sdist and wheels
+# GitHub Actions workflow for creating Python sdist and wheels and uploading to
+# PyPI
 # vim: set ts=8 sts=2 sw=2:
-#
-#
-name: package
+name: Release
 on:
   push:
     tags:
@@ -43,7 +42,6 @@ jobs:
       - name: Check setup.py
         run: python3 setup.py check -m -s
       - name: Run flake8
-        if: false
         run: flake8 .
       #TODO Add actual tests
 
@@ -85,7 +83,6 @@ jobs:
 
   package-linux:
     name: Package for Linux
-    if: false
     needs: test
     runs-on: ubuntu-latest
     container:
@@ -207,7 +204,7 @@ jobs:
     name: Upload packages to PyPI
     needs:
       - package-sdist
-        #- package-linux
+      - package-linux
       - package-others
     runs-on: ubuntu-latest
 
