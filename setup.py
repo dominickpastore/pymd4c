@@ -1,5 +1,5 @@
 import sys
-from setuptools import setup, Extension, Command
+from setuptools import setup, Extension
 import json
 
 with open("about.json", "r") as f:
@@ -7,6 +7,7 @@ with open("about.json", "r") as f:
 
 with open("README.md", "r") as f:
     long_description = f.read()
+
 
 class PkgconfigExtensionList(list):
     """A subclass of list that does not require the pkgconfig module for
@@ -62,6 +63,7 @@ class PkgconfigExtensionList(list):
     def __getitem__(self, key):
         self._fetch_pkgconfig_all()
         return super().__getitem__(key)
+
 
 if sys.platform.startswith('win'):
     extensions = [
