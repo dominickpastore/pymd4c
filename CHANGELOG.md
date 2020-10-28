@@ -11,8 +11,8 @@ PyMD4C version numbers track MD4C version numbers:
   MD4C version and be incremented each time there is a new PyMD4C release for
   the same version of MD4C.
 
-[Unreleased]
-------------
+[0.4.6.0b1] - 2020-10-28
+------------------------
 
 ### Added
 
@@ -22,7 +22,7 @@ PyMD4C version numbers track MD4C version numbers:
 
 ### Changed
 
-- Compatible with MD4C version 0.4.5
+- Compatible with MD4C version 0.4.6
 - Omit keys from the `details` dict when they are irrelevant: No `task_mark` or
   `task_mark_offset` for non-task-lists, no `fence_char` for indented code
   blocks. (Credit to @mondeja on GitHub for implementing)
@@ -46,5 +46,6 @@ This is the initial beta release.
 - `HTMLRenderer` class wrapping the MD4C HTML renderer
 - Written for the MD4C version 0.4.4
 
-[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/release-0.4.4.0b1..dev
+[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/v0.4.6.0b1..dev
+[0.4.6.0b1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.4.0b1..v0.4.6.0b1
 [0.4.4.0b1]: https://github.com/dominickpastore/pymd4c/releases/tag/release-0.4.4.0b1
