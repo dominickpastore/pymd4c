@@ -1,4 +1,4 @@
-![Release Status](https://github.com/dominickpastore/pymd4c/workflows/Release/badge.svg?branch=master)
+![Release Status](https://github.com/dominickpastore/pymd4c/workflows/Release/badge.svg)
 ![Test Status](https://github.com/dominickpastore/pymd4c/workflows/Test/badge.svg?branch=dev)
 
 PyMD4C
