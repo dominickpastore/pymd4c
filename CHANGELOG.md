@@ -14,6 +14,10 @@ PyMD4C version numbers track MD4C version numbers:
 [Unreleased]
 ------------
 
+### Added
+
+- Windows builds
+
 ### Changed
 
 - Compatible with MD4C version 0.4.5
@@ -40,5 +44,5 @@ This is the initial beta release.
 - `HTMLRenderer` class wrapping the MD4C HTML renderer
 - Written for the MD4C version 0.4.4
 
-[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/release-0.4.4.0b1..HEAD
+[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/release-0.4.4.0b1..dev
 [0.4.4.0b1]: https://github.com/dominickpastore/pymd4c/releases/tag/release-0.4.4.0b1
