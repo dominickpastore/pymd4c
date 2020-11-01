@@ -104,6 +104,8 @@ package manager. Otherwise, it can be built from source as follows:
          cmake --build . --config Release
          cmake --install .
 
+     The library will install to "C:/Program Files (x86)/MD4C/" by default.
+
 In addition, on Unix-like systems (including macOS), the `pkg-config` tool must
 be available to build PyMD4C. After PyMD4C is built, it is no longer required
 (that is, it is not a prerequisite for actually *using* PyMD4C). This tool is
