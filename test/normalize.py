@@ -10,11 +10,12 @@ import html
 # Normalization code, adapted from
 # https://github.com/karlcow/markdown-testsuite/
 significant_attrs = ["alt", "href", "src", "title"]
-whitespace_re = re.compile('\s+')
+whitespace_re = re.compile(r'\s+')
 class MyHTMLParser(HTMLParser):
-    def __init__(self):
+    def __init__(self, preserve_self_closing=True):
         HTMLParser.__init__(self)
         self.convert_charrefs = False
+        self.preserve_self_closing = preserve_self_closing
         self.last = "starttag"
         self.in_pre = False
         self.output = ""
@@ -67,7 +68,8 @@ class MyHTMLParser(HTMLParser):
         self.last_tag = tag
         self.last = "starttag"
     def handle_startendtag(self, tag, attrs):
-        self.starttag(tag, attrs, True)
+        """Potentially convert a self-closing tag to a regular tag"""
+        self.starttag(tag, attrs, self.preserve_self_closing)
         self.last_tag = tag
         self.last = "endtag"
     def handle_comment(self, data):
@@ -123,7 +125,7 @@ class MyHTMLParser(HTMLParser):
             'th', 'figure', 'thead', 'footer', 'tr', 'form', 'ul',
             'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'video', 'script', 'style'])
 
-def normalize_html(html):
+def normalize_html(html, preserve_self_closing=True):
     r"""
     Return normalized form of HTML which ignores insignificant output
     differences:
@@ -165,9 +167,14 @@ def normalize_html(html):
         >>> normalize_html("&forall;&amp;&gt;&lt;&quot;")
         '\u2200&amp;&gt;&lt;&quot;'
 
+    * Self-closing tags are optionally converted to open tags.
+
+        >>> normalize_html("<br />")
+        '<br>'
+
     """
-    html_chunk_re = re.compile("(\<!\[CDATA\[.*?\]\]\>|\<[^>]*\>|[^<]+)")
-    parser = MyHTMLParser()
+    html_chunk_re = re.compile(r"(\<!\[CDATA\[.*?\]\]\>|\<[^>]*\>|[^<]+)")
+    parser = MyHTMLParser(preserve_self_closing)
     # We work around HTMLParser's limitations parsing CDATA
     # by breaking the input into chunks and passing CDATA chunks
     # through verbatim.
