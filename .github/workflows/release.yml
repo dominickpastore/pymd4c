@@ -47,7 +47,8 @@ jobs:
         run: python setup.py check -m -s
       - name: Run flake8
         run: flake8 setup.py md4c/
-      #TODO Add actual tests
+      - name: Run Pytest
+        run: pytest -vv test/
 
   package-sdist-docts:
     name: Package sdist and publish docs
