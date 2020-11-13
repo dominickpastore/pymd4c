@@ -3,6 +3,8 @@
 # and
 # https://github.com/github/cmark-gfm/blob/master/test/spec_tests.py
 
+import sys
+import os.path
 import re
 import md4c
 import pytest
@@ -33,7 +35,8 @@ def get_tests(specfile):
 
     header_re = re.compile('#+ ')
 
-    with open(specfile, 'r', encoding='utf-8', newline='\n') as specf:
+    full_specfile = os.path.join(sys.path[0], 'specs', specfile)
+    with open(full_specfile, 'r', encoding='utf-8', newline='\n') as specf:
         for line in specf:
             line_number = line_number + 1
             l = line.strip()
@@ -74,9 +77,9 @@ all_tests = get_tests('spec.txt')
 
 
 @pytest.mark.parametrize('test_case', all_tests,
-                         id=lambda x: f'{x["file"]}:{x["start_line"]}')
-test_html_example(test_case):
-    """Test HTMLRenderer on the given example"""
+                         ids=lambda x: f'{x["file"]}:{x["start_line"]}')
+def test_html_example(test_case):
+    """Test HTMLRenderer with default render flags on the given example"""
     parser_flags = 0
     for extension in test_case['extensions']:
         parser_flags |= extension_flags[extension]
@@ -84,7 +87,7 @@ test_html_example(test_case):
     renderer = md4c.HTMLRenderer(parser_flags, 0)
     output = renderer.parse(test_case['markdown'])
 
-    assert normalized_html(output) == normalized_html(test_case['html'])
+    assert normalize_html(output) == normalize_html(test_case['html'])
 
 #TODO Test combination flags
 
