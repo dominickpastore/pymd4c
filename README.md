@@ -254,7 +254,7 @@ Initialize a new `HTMLRenderer`. Parameters:
 ```python
 import md4c
 html_renderer = md4c.HTMLRenderer(...)
-html_renderer.parse(input)
+output = html_renderer.parse(input)
 ```
 
 Parse markdown text and return a `str` with rendered HTML. Parameters:
