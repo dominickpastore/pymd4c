@@ -279,7 +279,7 @@ Basic option flags:
 | md4c flag | keyword argument | description |
 | :-------- | :--------------- | :---------- |
 | `md4c.MD_FLAG_COLLAPSEWHITESPACE` | `collapse_whitespace` | In normal text, collapse non-trivial whitespace into a single space. |
-| `md4c.MD_FLAG_COLLAPSEWHITESPACE` | `permissive_atx_headers` | Do not requite a space in ATX headers (e.g. `###Header`). |
+| `md4c.MD_FLAG_PERMISSIVEATXHEADERS` | `permissive_atx_headers` | Do not requite a space in ATX headers (e.g. `###Header`). |
 | `md4c.MD_FLAG_PERMISSIVEURLAUTOLINKS` | `permissive_url_autolinks` | Convert URLs to links even without `<` and `>`. |
 | `md4c.MD_FLAG_PERMISSIVEEMAILAUTOLINKS` | `permissive_email_autolinks` | Convert email addresses to links even without `<`, `>`, and `mailto:`. |
 | `md4c.MD_FLAG_NOINDENTEDCODEBLOCKS` | `no_indented_code_blocks` | Disable indented code blocks (only allow fenced code blocks). |
