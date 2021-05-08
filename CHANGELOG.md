@@ -11,6 +11,27 @@ PyMD4C version numbers track MD4C version numbers:
   MD4C version and be incremented each time there is a new PyMD4C release for
   the same version of MD4C.
 
+[Unreleased]
+------------
+
+[0.4.7.0b1] - 2021-05-08
+------------------------
+
+### Added
+
+- `GenericParser` provides details from `MD_BLOCK_TABLE_DETAIL`, introduced in
+  the latest version of MD4C, when block callbacks are called for a table.
+
+### Changed
+
+- Compatible with MD4C version 0.4.7
+
+### Fixed
+
+- Typo for flag in README (PR #19, thanks @modeja)
+- Parse unsigned ints in `MD_BLOCK_*_DETAIL` structs as unsigned instead of
+  signed
+
 [0.4.6.0b1] - 2020-10-28
 ------------------------
 
@@ -46,6 +67,7 @@ This is the initial beta release.
 - `HTMLRenderer` class wrapping the MD4C HTML renderer
 - Written for the MD4C version 0.4.4
 
-[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/v0.4.6.0b1..dev
+[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/v0.4.7.0b1..dev
+[0.4.7.0b1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.6.0b1..v0.4.7.0b1
 [0.4.6.0b1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.4.0b1..v0.4.6.0b1
 [0.4.4.0b1]: https://github.com/dominickpastore/pymd4c/releases/tag/release-0.4.4.0b1
