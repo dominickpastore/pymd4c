@@ -14,6 +14,12 @@ PyMD4C version numbers track MD4C version numbers:
 [Unreleased]
 ------------
 
+### Fixed
+
+- Typo for flag in README (PR #19, thanks @modeja)
+- Parse unsigned ints in `MD_BLOCK_*_DETAIL` structs as unsigned instead of
+  signed
+
 [0.4.6.0b1] - 2020-10-28
 ------------------------
 

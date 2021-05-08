@@ -5,7 +5,7 @@
  * pymd4c.c - md4c._md4c module
  * Contains the parser and renderer classes that interface directly with MD4C
  *
- * Copyright (c) 2020 Dominick C. Pastore
+ * Copyright (c) 2020-2021 Dominick C. Pastore
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -686,7 +686,7 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
                     "mark", ((MD_BLOCK_UL_DETAIL *) detail)->mark);
             break;
         case MD_BLOCK_OL:
-            arglist = Py_BuildValue("(O{s:i,s:N,s:C})",
+            arglist = Py_BuildValue("(O{s:I,s:N,s:C})",
                     get_enum_blocktype(type),
                     "start", ((MD_BLOCK_OL_DETAIL *) detail)->start,
                     "is_tight",
@@ -696,7 +696,7 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
             break;
         case MD_BLOCK_LI:
             if (((MD_BLOCK_LI_DETAIL *) detail)->is_task) {
-                arglist = Py_BuildValue("(O{s:O,s:C,s:i})",
+                arglist = Py_BuildValue("(O{s:O,s:C,s:I})",
                         get_enum_blocktype(type), "is_task", Py_True,
                         "task_mark",
                         ((MD_BLOCK_LI_DETAIL *) detail)->task_mark,
@@ -708,11 +708,11 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
             }
             break;
         case MD_BLOCK_H:
-            arglist = Py_BuildValue("(O{s:i})", get_enum_blocktype(type),
+            arglist = Py_BuildValue("(O{s:I})", get_enum_blocktype(type),
                     "level", ((MD_BLOCK_H_DETAIL *) detail)->level);
             break;
         case MD_BLOCK_CODE:
-            if (((MD_BLOCK_CODE_DETAIL *) detail)->fence_char == NULL) {
+            if (((MD_BLOCK_CODE_DETAIL *) detail)->fence_char == '\0') {
                 arglist = Py_BuildValue("(O{s:O,s:O})",
                         get_enum_blocktype(type),
                         "info", GenericParser_md_attribute(
@@ -1178,7 +1178,6 @@ PyMODINIT_FUNC PyInit__md4c(void)
         Py_DECREF(m);
         return NULL;
     }
-    // Add the ParseError exception to the module
     StopParsing = PyErr_NewExceptionWithDoc("md4c._md4c.StopParsing",
             "Raised to stop parsing before complete.", NULL, NULL);
     Py_XINCREF(StopParsing);
