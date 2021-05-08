@@ -14,6 +14,15 @@ PyMD4C version numbers track MD4C version numbers:
 [Unreleased]
 ------------
 
+### Added
+
+- `GenericParser` provides details from `MD_BLOCK_TABLE_DETAIL`, introduced in
+  the latest version of MD4C, when block callbacks are called for a table.
+
+### Changed
+
+- Compatible with MD4C version 0.4.7
+
 ### Fixed
 
 - Typo for flag in README (PR #19, thanks @modeja)

@@ -730,6 +730,14 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
                             fence_char);
             }
             break;
+        case MD_BLOCK_TABLE:
+            arglist = Py_BuildValue("(O{s:I,s:I,s:I})",
+                    get_enum_blocktype(type),
+                    "col_count", ((MD_BLOCK_TABLE_DETAIL *) detail)->col_count,
+                    "head_row_count", ((MD_BLOCK_TABLE_DETAIL *) detail)->
+                        head_row_count,
+                    "body_row_count", ((MD_BLOCK_TABLE_DETAIL *) detail)->
+                        body_row_count);
         case MD_BLOCK_TH:
         case MD_BLOCK_TD:
             arglist = Py_BuildValue("(O{s:O})", get_enum_blocktype(type),
