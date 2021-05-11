@@ -2,9 +2,9 @@
 # PyMD4C
 # Python bindings for MD4C
 #
-# md4c._enums - Python enum types for the C enum constants
+# md4c.enums - Python enum types for the C enum constants
 #
-# Copyright (c) 2020 Dominick C. Pastore
+# Copyright (c) 2020-2021 Dominick C. Pastore
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),

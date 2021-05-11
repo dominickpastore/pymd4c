@@ -41,7 +41,7 @@
 /*
  * Name of enums module to import
  */
-const char *enums_module = "md4c._enums";
+const char *enums_module = "md4c.enums";
 
 /*
  * Exception objects

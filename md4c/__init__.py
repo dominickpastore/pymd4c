@@ -31,4 +31,4 @@
 # GenericParser, HTMLRenderer, exceptions, and flags
 from ._md4c import *    # noqa: F401, F403
 
-from ._enums import BlockType, SpanType, TextType, Align    # noqa: F401
+from .enums import BlockType, SpanType, TextType, Align     # noqa: F401
