@@ -25,6 +25,10 @@ beta!
 - `DOMParser` for applications that require an AST (also serves as an example
   of using the object-oriented API)
 
+### Changed
+
+- Moved main documentation from the README to a collection of Sphinx docs
+
 [0.4.7.0b1] - 2021-05-08
 ------------------------
 
