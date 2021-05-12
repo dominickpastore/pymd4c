@@ -7,7 +7,7 @@
 # Submodules (some of which are C extensions) contain the actual
 # implementation.
 #
-# Copyright (c) 2020 Dominick C. Pastore
+# Copyright (c) 2020-2021 Dominick C. Pastore
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -28,7 +28,7 @@
 # IN THE SOFTWARE.
 #
 
-# GenericParser, HTMLRenderer, exceptions, and flags
+# ._md4c contains GenericParser, HTMLRenderer, exceptions, and flags
 from ._md4c import *    # noqa: F401, F403
-
 from .enums import BlockType, SpanType, TextType, Align     # noqa: F401
+from .parser import ParserObject

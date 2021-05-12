@@ -14,6 +14,17 @@ PyMD4C version numbers track MD4C version numbers:
 [Unreleased]
 ------------
 
+This is a major milestone for PyMD4C! Apart from a new, more object-oriented
+API, the addition of a complete test suite means it is ready to come out of
+beta!
+
+### Added
+
+- Full test suite. No more beta!
+- Object-oriented API as an alternative to `GenericParser`
+- `DOMParser` for applications that require an AST (also serves as an example
+  of using the object-oriented API)
+
 [0.4.7.0b1] - 2021-05-08
 ------------------------
 
