@@ -36,15 +36,12 @@ class ParserObject:
     When this class's :func:`parse` function is called, it uses its own
     :func:`enter_block`, :func:`leave_block`, :func:`enter_span`,
     :func:`leave_span`, and :func:`text` functions as callbacks.
+
+    Arguments to the constructor are passed through to :class:`GenericParser`
+    as-is to set parser options.
     """
 
     def __init__(self, *args, **kwargs):
-        """Construct a new :class:`ParserObject`. Arguments are passed through
-        to :class:`GenericParser` as-is to set parser options.
-
-        This class is not terribly useful on its own. Instead, you should
-        subclass it and instantiate those.
-        """
         self.parser = GenericParser(*args, *kwargs)
 
     def enter_block(self, block_type, details):
@@ -117,6 +114,9 @@ class ParserObject:
         """Parse a Markdown document using this object's :func:`enter_block`,
         :func:`leave_block`, :func:`enter_span`, :func:`leave_span`, and
         :func:`text` functions as callbacks for :class:`GenericParser`.
+
+        :param markdown: The Markdown text to parse
+        :type markdown: str or bytes
         """
         self.parser.parse(markdown,
                           self.enter_block,

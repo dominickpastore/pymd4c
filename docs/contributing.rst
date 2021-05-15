@@ -25,7 +25,7 @@ to help things move more smoothly:
   very least, mention which class and any options you were using.
 
 - If the issue happens with specific input, provide an example Markdown
-  document (preferably less than 10 lines or so) that reproduces the issue.
+  document (preferably less than 20 lines or so) that reproduces the issue.
 
 - Any other information you think might be relevant (e.g. error messages, stack
   traces, your OS and CPU architecture, etc., depending on the type of issue).
@@ -50,9 +50,8 @@ pull request`_. If you do so, make sure you read the section below.
 Code Contributions
 ------------------
 
-First off, thank you for your interest in improving PyMD4C! If you have code
-you would like to contribute, please feel free to `submit a pull request`_ on
-GitHub.
+If you have code you would like to contribute, please feel free to
+`submit a pull request`_ on GitHub.
 
 All code contributions are appreciated, but there are a few guidelines that
 make it more likely that a PR can be accepted:
@@ -76,8 +75,7 @@ make it more likely that a PR can be accepted:
   is allowed, but with good reason.
 
 - If you add new functionality, it has a higher chance of being merged if you
-  add additional documentation and tests for the new feature (but if you don't,
-  that doesn't mean it will be automatically rejected).
+  add additional documentation and tests for the new feature.
 
 - Pull requests need not be related to an existing issue, but if you submit one
   that is, you should reference the issue number somewhere in the pull request.
@@ -85,8 +83,8 @@ make it more likely that a PR can be accepted:
 None of these are automatic deal breakers if you do not follow them, but
 following them does increase the chances of your pull request being accepted.
 
-All code contributions will be mentioned in the CHANGELOG with attribution to
-the contributor.
+All merged code contributions will be mentioned in the CHANGELOG with
+attribution to the contributor.
 
 .. _submit an issue: https://github.com/dominickpastore/pymd4c/issues
 .. _submit a pull request: https://github.com/dominickpastore/pymd4c/pull

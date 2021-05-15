@@ -64,7 +64,7 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
     unsigned int latex_math_spans = 0;
     unsigned int wikilinks = 0;
     unsigned int underline = 0;
-    unsigned int permissive_auto_links = 0;
+    unsigned int permissive_autolinks = 0;
     unsigned int no_html = 0;
     unsigned int dialect_github = 0;
 
@@ -84,7 +84,7 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
         "latex_math_spans",
         "wikilinks",
         "underline",
-        "permissive_auto_links",
+        "permissive_autolinks",
         "no_html",
         "dialect_github",
         NULL
@@ -99,7 +99,7 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
                                      &no_html_spans, &tables, &strikethrough,
                                      &permissive_www_autolinks, &tasklists,
                                      &latex_math_spans, &wikilinks, &underline,
-                                     &permissive_auto_links, &no_html,
+                                     &permissive_autolinks, &no_html,
                                      &dialect_github)) {
         return -1;
     }
@@ -160,7 +160,7 @@ static int GenericParser_init(GenericParserObject *self, PyObject *args,
         parser_flags |= MD_FLAG_UNDERLINE;
     }
 
-    if (permissive_auto_links) {
+    if (permissive_autolinks) {
         parser_flags |= MD_FLAG_PERMISSIVEAUTOLINKS;
     }
 
@@ -367,12 +367,7 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
             break;
         case MD_BLOCK_CODE:
             if (((MD_BLOCK_CODE_DETAIL *) detail)->fence_char == '\0') {
-                arglist = Py_BuildValue("(O{s:O,s:O})",
-                        get_enum_blocktype(type),
-                        "info", GenericParser_md_attribute(
-                            &((MD_BLOCK_CODE_DETAIL *) detail)->info),
-                        "lang", GenericParser_md_attribute(
-                            &((MD_BLOCK_CODE_DETAIL *) detail)->lang));
+                arglist = Py_BuildValue("(O{})", get_enum_blocktype(type));
             } else {
                 arglist = Py_BuildValue("(O{s:O,s:O,s:C})",
                         get_enum_blocktype(type),
@@ -640,18 +635,39 @@ static void GenericParser_dealloc(GenericParserObject *self) {
 
 static PyMethodDef GenericParser_methods[] = {
     {"parse", (PyCFunction) GenericParser_parse, METH_VARARGS | METH_KEYWORDS,
-        "Parse a Markdown document using the callbacks for output\n\n"
-        "Block and span callbacks must accept two arguments:\n"
-        "type - BlockType or SpanType Enum representing the block/span type\n"
-        "details - A dict with extra attributes for certain block/span types\n"
+        "parse(markdown, enter_block_callback, leave_block_callback, "
+        "enter_span_callback, leave_span_callback, text_callback)\n"
         "\n"
-        "Text callbacks must accept two different arguments:\n"
-        "type - TextType Enum\n"
-        "text - str with the text data\n\n"
-        "All callbacks should return None but may raise exceptions.\n"
-        "Raising StopParsing will abort parsing early with no error.\n"
-        "Any other exception will be propagated back to the caller of this\n"
-        "method."
+        "Parse a Markdown document using the provided callbacks for output\n"
+        "\n"
+        "Callbacks must all accept two parameters. The first describes the "
+        "type of block, inline, or text. The second is a dict with details "
+        "about the block or inline or a string containing the text itself. "
+        "See :ref:`callbacks` for more information.\n"
+        "\n"
+        "If a callback raises :class:`StopParsing`, parsing will abort with "
+        "no error. Any other exception will abort parsing and propagate back "
+        "to the caller of this method.\n"
+        "\n"
+        ":param markdown: The Markdown text to parse. If provided as a "
+        ":class:`bytes`, it must be UTF-8 encoded.\n"
+        ":type markdown: str or bytes\n"
+        ":param enter_block_callback: Callback to be called when the parser "
+        "enters a new block element\n"
+        ":type enter_block_callback: function or callable\n"
+        ":param leave_block_callback: Callback to be called when the parser "
+        "leaves a block element\n"
+        ":type leave_block_callback: function or callable\n"
+        ":param enter_span_callback: Callback to be called when the parser "
+        "enters a new inline element\n"
+        ":type enter_span_callback: function or callable\n"
+        ":param leave_span_callback: Callback to be called when the parser "
+        "leaves a inline element\n"
+        ":type leave_span_callback: function or callable\n"
+        ":param text_callback: Callback to be called when the parser has text "
+        "to add to the current block or inline element\n"
+        ":type text_callback: function or callable\n"
+        ":raises ParseError: if there is a runtime error while parsing\n"
     },
     {NULL}
 };
@@ -662,10 +678,17 @@ static PyMethodDef GenericParser_methods[] = {
 PyTypeObject GenericParserType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "md4c._md4c.GenericParser",
-    .tp_doc = "Generic MD4C Parser\n\n"
-        "Parse Markdown documents using MD4C. This is the base parser-only\n"
-        "class that requires callables to be used as callbacks. This is\n"
-        "the slowest but most flexible way to parse.",
+    .tp_doc = "GenericParser(parser_flags, **kwargs)\n"
+        "\n"
+        "SAX-like Markdown parser, implemented in C on top of the bare MD4C "
+        "parser.\n"
+        "\n"
+        ":param parser_flags: Zero or more parser option flags OR'd together. "
+        "See :ref:`options`.\n"
+        ":type parser_flags: int, optional\n"
+        "\n"
+        "Option flags may also be specified in keyword-argument form for more "
+        "readability. See :ref:`options`.\n",
     .tp_basicsize = sizeof(GenericParserObject),
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,

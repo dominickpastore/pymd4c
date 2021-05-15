@@ -136,7 +136,7 @@ static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
     unsigned int latex_math_spans = 0;
     unsigned int wikilinks = 0;
     unsigned int underline = 0;
-    unsigned int permissive_auto_links = 0;
+    unsigned int permissive_autolinks = 0;
     unsigned int no_html = 0;
     unsigned int dialect_github = 0;
 
@@ -163,7 +163,7 @@ static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
         "latex_math_spans",
         "wikilinks",
         "underline",
-        "permissive_auto_links",
+        "permissive_autolinks",
         "no_html",
         "dialect_github",
         "debug",
@@ -182,7 +182,7 @@ static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
                                      &no_html_spans, &tables, &strikethrough,
                                      &permissive_www_autolinks, &tasklists,
                                      &latex_math_spans, &wikilinks, &underline,
-                                     &permissive_auto_links, &no_html,
+                                     &permissive_autolinks, &no_html,
                                      &dialect_github,
                                      &debug, &verbatim_entities,
                                      &skip_utf8_bom, &xhtml)) {
@@ -245,7 +245,7 @@ static int HTMLRenderer_init(HTMLRendererObject *self, PyObject *args,
         parser_flags |= MD_FLAG_UNDERLINE;
     }
 
-    if (permissive_auto_links) {
+    if (permissive_autolinks) {
         parser_flags |= MD_FLAG_PERMISSIVEAUTOLINKS;
     }
 
@@ -347,7 +347,16 @@ static void HTMLRenderer_dealloc(HTMLRendererObject *self) {
 
 static PyMethodDef HTMLRenderer_methods[] = {
     {"parse", (PyCFunction) HTMLRenderer_parse, METH_VARARGS,
-        "Parse a Markdown document and return the rendered HTML"
+        "parse(markdown)\n"
+        "\n"
+        "Parse a Markdown document and return the rendered HTML.\n"
+        "\n"
+        ":param markdown: The Markdown text to parse. If provided as a "
+        ":class:`bytes`, it must be UTF-8 encoded.\n"
+        ":type markdown: str or bytes\n"
+        ":return: The generated HTML\n"
+        ":rtype: str\n"
+        ":raises ParseError: if there is a runtime error while parsing\n"
     },
     {NULL}
 };
@@ -358,8 +367,21 @@ static PyMethodDef HTMLRenderer_methods[] = {
 PyTypeObject HTMLRendererType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "md4c._md4c.HTMLRenderer",
-    .tp_doc = "HTML MD4C Parser\n\n"
-        "Parse markdown documents with MD4C and render them in HTML",
+    .tp_doc = "HTMLRenderer(parser_flags, renderer_flags, **kwargs)\n"
+        "\n"
+        "A class to convert Markdown to HTML, implemented in C on top "
+        "of the MD4C-HTML library. This is the fastest way to convert "
+        "Markdown to HTML with PyMD4C.\n"
+        "\n"
+        ":param parser_flags: Zero or more parser option flags OR'd together. "
+        "See :ref:`options`.\n"
+        ":type parser_flags: int, optional\n"
+        ":param renderer_flags: Zero or more HTML renderer option flags OR'd "
+        "together. See :ref:`options`.\n"
+        ":type renderer_flags: int, optional\n"
+        "\n"
+        "Option flags may also be specified in keyword-argument form for more "
+        "readability. See :ref:`options`.\n",
     .tp_basicsize = sizeof(HTMLRendererObject),
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,

@@ -24,8 +24,10 @@ If this does not work, there are a couple potential reasons:
    for each Python version separately. Python versions older than 3.6 are not
    supported. If your Python version is older than that, try upgrading.
 
-3. Your platform is incompatible. Again, since it is a platform wheel, it is
-   built for each supported platform separately.
+3. Your OS or architecture is incompatible. Platform wheels require a separate
+   build for each OS and architecture, so if yours is uncommon, there may not
+   be a prebuilt package for it.
+
    - If you are running Windows, you may be running 32-bit (x86) Python.
      Currently, only packages for 64-bit (x86-64) Python are built. If you can,
      try running 64-bit Python.

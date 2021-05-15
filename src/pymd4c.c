@@ -128,7 +128,7 @@ static int md4c_add_flags(PyObject *m) {
         return -1;
     }
 
-    if (md4v_add_htmlrenderer_flags(m) < 0) {
+    if (md4c_add_htmlrenderer_flags(m) < 0) {
         return -1;
     }
 
@@ -189,7 +189,10 @@ PyMODINIT_FUNC PyInit__md4c(void)
 
     // Add the ParseError and StopParsing exceptions to the module
     ParseError = PyErr_NewExceptionWithDoc("md4c._md4c.ParseError",
-            "Raised when an error occurs during parsing.", NULL, NULL);
+            "Raised when an error occurs during parsing, such as running out "
+            "of memory. Note that there is no such thing as invalid syntax in "
+            "Markdown, so this really only signals some sort of system error.",
+            NULL, NULL);
     Py_XINCREF(ParseError);
     if (PyModule_AddObject(m, "ParseError", ParseError) < 0) {
         Py_XDECREF(ParseError);
@@ -198,7 +201,10 @@ PyMODINIT_FUNC PyInit__md4c(void)
         return NULL;
     }
     StopParsing = PyErr_NewExceptionWithDoc("md4c._md4c.StopParsing",
-            "Raised to stop parsing before complete.", NULL, NULL);
+            "A callback function can raise this to stop parsing early for non-"
+            "error reasons. :class:`GenericParser` (and by extension, "
+            ":class:`ParserObject`) will catch it and abort quietly.",
+            NULL, NULL);
     Py_XINCREF(StopParsing);
     if (PyModule_AddObject(m, "StopParsing", StopParsing) < 0) {
         Py_XDECREF(StopParsing);

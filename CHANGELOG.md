@@ -18,6 +18,9 @@ This is a major milestone for PyMD4C! Apart from a new, more object-oriented
 API, the addition of a complete test suite means it is ready to come out of
 beta!
 
+Some minor breaking changes were introduced. See the changes section below.
+Not ideal, but better to do it now rather than after a stable release.
+
 ### Added
 
 - Full test suite. No more beta!
@@ -27,6 +30,11 @@ beta!
 
 ### Changed
 
+- Omit `info` and `lang` from indented code blocks, where they are not
+  relevant.
+- Keyword argument `permissive_auto_links` renamed to `permissive_autolinks`
+  (for consistency with `permissive_url_autolinks`, `permissive_www_autolinks`,
+  and `permissive_email_autolinks`).
 - Moved main documentation from the README to a collection of Sphinx docs
 
 [0.4.7.0b1] - 2021-05-08

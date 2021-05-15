@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PyMD4C'
-copyright = '2020-2021, Dominick C. Pastore'
+copyright = ' Copyright 2021 Dominick C. Pastore'
 author = 'Dominick C. Pastore'
 
 
@@ -28,6 +28,7 @@ author = 'Dominick C. Pastore'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -39,12 +40,25 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
+# -- Options for Autodoc -----------------------------------------------------
+
+# Preserve the order of members as they appear in the source code (do not sort
+# alphabetically).
+autodoc_member_order = 'bysource'
+
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
+html_theme_options = {
+    'description': 'Python bindings for MD4C',
+    'show_relbar_bottom': True,
+    'show_related': True,
+    'fixed_sidebar': True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
