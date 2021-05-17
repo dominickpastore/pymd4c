@@ -52,13 +52,43 @@ The tradeoff for this flexibility is speed:
   the overhead from producing a tree representation of the entire document in
   memory.
 - Furthermore, the SAX-like parsers in PyMD4C are a thin layer on top of MD4C,
-  which is heavily optimized C code. :class:`~md4c.DOMParser` is implemented in
-  Python on top of :class:`~md4c.ParserObject`.
+  which is heavily optimized C code. :class:`~md4c.domparser.DOMParser` is
+  implemented in Python on top of :class:`~md4c.ParserObject`.
 
 Generating a DOM
 ----------------
 
-.. TODO Document DOM-like parsing (DOMParser)
+DOM generation uses the :class:`~md4c.domparser.DOMParser` class. In the most
+simple case, it looks like this::
+
+    import md4c.domparser
+
+    with open('README.md', 'r') as f:
+        markdown = f.read()
+
+    parser = md4c.domparser.DOMParser()
+    dom = parser.parse(markdown)
+
+At this point, ``dom`` is the root :class:`~md4c.domparser.Document` node of
+the tree. You can render the tree as HTML::
+
+    html = dom.render()
+
+Or you can traverse the tree::
+
+    def traverse(dom_node):
+        # Do stuff on this node before traversing to children
+
+        try:
+            for child in dom_node.children:
+                traverse(child)
+        except AttributeError:
+            # No children
+            pass
+
+        # Do stuff on this node after traversing to children
+
+    traverse(dom)
 
 DOM Objects
 -----------
@@ -67,6 +97,10 @@ DOM Objects
 
 DOM Manipulation
 ----------------
+
+
+
+
 
 .. TODO Example of DOM manipulation
 
