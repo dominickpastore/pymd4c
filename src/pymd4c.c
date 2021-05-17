@@ -139,9 +139,9 @@ static int md4c_add_flags(PyObject *m) {
  * Module method table
  */
 static PyMethodDef md4c_methods[] = {
-    {"lookup_entity", lookup_entity, METH_VARARGS, lookup_entity_doc},
+    {"lookup_entity", lookup_entity, METH_VARARGS, LOOKUP_ENTITY_DOC},
     {NULL, NULL, 0, NULL}
-}
+};
 
 /*
  * Module Definition

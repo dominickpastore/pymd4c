@@ -32,7 +32,7 @@
 #include <Python.h>
 
 #include <md4c.h>
-#include <entity.h>
+#include "entity.h"
 
 #include "pymd4c.h"
 #include "generic_parser.h"
@@ -725,16 +725,6 @@ static unsigned int char_to_int(char c) {
         case 'F': case 'f': return 15;
     }
 }
-
-const char *lookup_entity_doc = "lookup_entity(entity)\n"
-    "\n"
-    "Translate an HTML entity to its UTF-8 representation. Returns the "
-    "unmodified input if it is not a valid entity.\n"
-    "\n"
-    ":param entity: The HTML entity, including ampersand and semicolon\n"
-    ":type entity: str\n"
-    ":returns: Corresponding UTF-8 character(s)\n"
-    ":rtype: str\n";
 
 PyObject * lookup_entity(PyObject *self, PyObject *args) {
     // Parse arguments

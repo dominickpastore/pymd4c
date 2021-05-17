@@ -1,11 +1,8 @@
 /*
- * PyMD4C
- * Python bindings for MD4C
+ * MD4C: Markdown parser for C
+ * (http://github.com/mity/md4c)
  *
- * generic_parser.h - md4c._md4c.GenericParser class
- * Wraps MD4C's SAX-like parser
- *
- * Copyright (c) 2020-2021 Dominick C. Pastore
+ * Copyright (c) 2016-2019 Martin Mitas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -26,32 +23,20 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef GENERIC_PARSER_H
-#define GENERIC_PARSER_H
+#ifndef MD4C_ENTITY_H
+#define MD4C_ENTITY_H
 
-#ifndef PY_SSIZE_T_CLEAN
-#define PY_SSIZE_T_CLEAN
-#endif
-#include <Python.h>
+#include <stdlib.h>
 
-/*
- * GenericParser type object
- */
-extern PyTypeObject GenericParserType;
 
-/*
- * lookup_entity() function
- */
-PyObject * lookup_entity(PyObject *self, PyObject *args);
+/* Most entities are formed by single Unicode codepoint, few by two codepoints.
+ * Single-codepoint entities have codepoints[1] set to zero. */
+struct entity {
+    const char* name;
+    unsigned codepoints[2];
+};
 
-#define LOOKUP_ENTITY_DOC "lookup_entity(entity)\n" \
-    "\n" \
-    "Translate an HTML entity to its UTF-8 representation. Returns the " \
-    "unmodified input if it is not a valid entity.\n" \
-    "\n" \
-    ":param entity: The HTML entity, including ampersand and semicolon\n" \
-    ":type entity: str\n" \
-    ":returns: Corresponding UTF-8 character(s)\n" \
-    ":rtype: str\n"
+const struct entity* entity_lookup(const char* name, size_t name_size);
 
-#endif
+
+#endif  /* MD4C_ENTITY_H */
