@@ -1,10 +1,10 @@
 API
 ===
 
+.. module:: md4c
+
 Parsers and Renderers
 ---------------------
-
-.. module:: md4c
 
 .. autoclass:: HTMLRenderer
    :members:

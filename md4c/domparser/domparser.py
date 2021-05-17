@@ -28,7 +28,6 @@
 from ..parser import ParserObject
 from .domtypes import DOMObject
 
-#TODO API docs for this package go on a separate page
 
 class DOMParser(ParserObject):
     """A subclass of :class:`ParserObject` that produces document object

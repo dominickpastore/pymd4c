@@ -49,7 +49,7 @@ User Manual
    overly complex and overwhelming as if it had many pages when really it's
    just a handful.
 
-   We don't do the workaround for API because it actually is a quite long page,
+   We don't do the workaround for API because the pages there are much longer,
    and a certain level of detail there is expected.
 
 .. toctree::
@@ -73,6 +73,7 @@ API
    :maxdepth: 2
 
    api
+   dom_api
 
 Additional Information
 ~~~~~~~~~~~~~~~~~~~~~~

@@ -55,13 +55,22 @@ The tradeoff for this flexibility is speed:
   which is heavily optimized C code. :class:`~md4c.DOMParser` is implemented in
   Python on top of :class:`~md4c.ParserObject`.
 
-That said, if you are using Python in the first place, chances are that speed
-is more of a "nice to have" than a critical requirement.
+Generating a DOM
+----------------
 
-TODO Document DOM-like parsing (DOMParser)
+.. TODO Document DOM-like parsing (DOMParser)
 
-TODO Document DOM objects
+DOM Objects
+-----------
 
-TODO Example of DOM manipulation
+.. TODO Document DOM objects
 
-TODO Example of using custom DOM classes
+DOM Manipulation
+----------------
+
+.. TODO Example of DOM manipulation
+
+Using Custom DOM Classes
+------------------------
+
+.. TODO Example of using custom DOM classes
