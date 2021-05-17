@@ -2,7 +2,7 @@
 # PyMD4C
 # Python bindings for MD4C
 #
-# md4c.domparser - DOM-like parser and the DOM objects
+# md4c.domparser - DOM-like parser and the AST objects
 #
 # Copyright (c) 2020-2021 Dominick C. Pastore
 #
@@ -25,5 +25,5 @@
 # IN THE SOFTWARE.
 #
 
-from .domtypes import *             # noqa: F401, F403
+from .ast import *                  # noqa: F401, F403
 from .domparser import DOMParser    # noqa: F401

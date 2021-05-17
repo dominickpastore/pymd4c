@@ -59,12 +59,12 @@ User Manual
    installation
    generating_html
    pure_parsing
-   dom_generation
+   dom_parsing
 
 - :doc:`installation`
 - :doc:`generating_html`
 - :doc:`pure_parsing`
-- :doc:`dom_generation`
+- :doc:`dom_parsing`
 
 API
 ~~~

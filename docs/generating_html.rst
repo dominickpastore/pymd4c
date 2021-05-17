@@ -63,4 +63,4 @@ Advanced Manipulations
 
 If the available options for :class:`~md4c.HTMLRenderer` do not provide enough
 flexibility for your needs, it's possible to use a :class:`~md4c.DOMParser`
-instead. See :doc:`dom_generation` for more information.
+instead. See :doc:`dom_parsing` for more information.

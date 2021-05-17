@@ -2,7 +2,7 @@
 # PyMD4C
 # Python bindings for MD4C
 #
-# md4c.domparser.domparser - A md4c.ParserObject that produces a DOM
+# md4c.domparser.domparser - A md4c.ParserObject that produces an AST
 #
 # Copyright (c) 2020-2021 Dominick C. Pastore
 #
@@ -26,7 +26,7 @@
 #
 
 from ..parser import ParserObject
-from .domtypes import DOMObject
+from .ast import ASTNode
 
 
 class DOMParser(ParserObject):
@@ -52,14 +52,14 @@ class DOMParser(ParserObject):
     """
 
     def enter_block(self, block_type, details):
-        """Enter block callback. Creates a new DOMObject for the block and add
-        it to the DOM.
+        """Enter block callback. Creates a new ASTNode for the block and add
+        it to the AST.
 
         :param block_type: An instance of the :class:`md4c.BlockType` enum
                            representing the type of block being entered
         :param details: A dict containing details about the block
         """
-        block = DOMObject(block_type, **details)
+        block = ASTNode(block_type, **details)
         if self.root is None:
             self.root = block
             self._current = block
@@ -78,14 +78,14 @@ class DOMParser(ParserObject):
         self._current = self._current.parent
 
     def enter_span(self, span_type, details):
-        """Enter span callback. Creates a new DOMObject for the span and add it
-        to the DOM.
+        """Enter span callback. Creates a new ASTNode for the span and add it
+        to the AST.
 
         :param span_type: An instance of the :class:`md4c.SpanType` enum
                            representing the type of span being entered
         :param details: A dict containing details about the span
         """
-        span = DOMObject(span_type, **details)
+        span = ASTNode(span_type, **details)
         self._current.append(span)
         self._current = span
 
@@ -100,25 +100,25 @@ class DOMParser(ParserObject):
         self._current = self._current.parent
 
     def text(self, text_type, text):
-        """Text callback. Create a new DOMObject for the text and add it to the
-        DOM.
+        """Text callback. Create a new ASTNode for the text and add it to the
+        AST.
 
         :param text_type: An instance of the :class:`md4c.TextType` enum
                           representing the type of span being entered
         :param text: The actual text to be added
         """
-        text_element = DOMObject(text_type, text=text)
+        text_element = ASTNode(text_type, text=text)
         self._current.append(text_element)
 
     def parse(self, markdown):
-        """Produce a DOM from the given Markdown document.
+        """Produce an AST from the given Markdown document.
 
         :param markdown: The Markdown text to parse
         :type markdown: str or bytes
 
-        :returns: The root :class:`DOMObject` of the document, by default a
+        :returns: The root :class:`ASTNode` of the document, by default a
                   :class:`Document`
-        :rtype: DOMObject
+        :rtype: ASTNode
         """
         self.root = None
         self._current = None

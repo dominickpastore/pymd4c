@@ -2,7 +2,7 @@
 # PyMD4C
 # Python bindings for MD4C
 #
-# md4c.domparser.domtypes - The classes for the DOM-like output from DOMParser
+# md4c.domparser.ast - The classes for the AST output from DOMParser
 #
 # Copyright (c) 2020-2021 Dominick C. Pastore
 #
@@ -39,55 +39,55 @@ from ..enums import Align as _Align
 
 # For more information on this technique, see:
 # https://stackoverflow.com/a/28076300
-class DOMObject:
-    """Base class for all DOM objects. When constructed, automatically
-    constructs the appropriate subtype instead.
+class ASTNode:
+    """Base class for all AST nodes. When constructed, automatically constructs
+    the appropriate subtype instead.
 
     The default classes for particular Markdown element types can be replaced
     by subclassing with the appropriate class argument. For example, to use a
-    custom class to handle :attr:`md4c.BlockType.P`::
+    custom class to handle :attr:`md4c.BlockType.HR`::
 
-        class MyParagraph(DOMObject, dom_type=md4c.BlockType.P):
+        class MyHorzontalRule(ASTNode, element_type=md4c.BlockType.HR):
             ...
 
-    :param dom_type: A :class:`md4c.BlockType`, :class:`md4c.SpanType`, or
-                     :class:`md4c.TextType` representing the type of this
-                     element
+    :param element_type: A :class:`md4c.BlockType`, :class:`md4c.SpanType`, or
+                         :class:`md4c.TextType` representing the type of this
+                         element
     """
     _registry = dict()
 
     @classmethod
-    def __init_subclass__(cls, dom_type, **kwargs):
+    def __init_subclass__(cls, element_type, **kwargs):
         super().__init_subclass__(**kwargs)
-        # Register cls as the class to create for dom_type
-        if dom_type is not None:
-            cls._registry[dom_type] = cls
+        # Register cls as the class to create for element_type
+        if element_type is not None:
+            cls._registry[element_type] = cls
 
-    def __new__(cls, dom_type, **kwargs):
+    def __new__(cls, element_type, **kwargs):
         # Select the appropriate subclass. There should never be a KeyError,
         # and if there is, it means we forgot to add a class in this module for
         # one of the BlockType/SpanType/TextType members.
-        subcls = cls._registry[dom_type]
+        subcls = cls._registry[element_type]
         return object.__new__(subcls)
 
     # This isn't strictly necessary--the type of element is encoded in the type
     # of the object. But if a user decides to replace one of the built-in
     # classes for a particular element, isinstance() won't work so well, but
     # comparing self.type will.
-    def __init__(self, dom_type):
+    def __init__(self, element_type):
         #: A :class:`md4c.BlockType`, :class:`md4c.SpanType`, or
         #: :class:`md4c.TextType` representing the type of element this object
         #: represents
-        self.type = dom_type
+        self.type = element_type
 
         #: The parent of this node, or None (for the root Document node and
         #: attribute nodes)
         self.parent = None
 
     @staticmethod
-    def attr_to_dom(attribute):
+    def attr_to_ast(attribute):
         """Convert an attribute from a list of tuples or None to a list of
-        :class:`DOMObject` or None
+        :class:`ASTNode` or None
 
         :param attribute: List of tuples or None
 
@@ -97,16 +97,16 @@ class DOMObject:
             return None
         result = []
         for text_type, text in attribute:
-            result.append(DOMObject(text_type, text=text))
+            result.append(ASTNode(text_type, text=text))
         return result
 
     @staticmethod
     def render_attr(attribute):
-        """Render an attribute given as a list of :class:`DOMObject` or None
+        """Render an attribute given as a list of :class:`ASTNode` or None
 
-        :param attribute: List of :class:`DOMObject` or None
+        :param attribute: List of :class:`ASTNode` or None
 
-        :returns: Rendered output. The default DOM types render HTML, but they
+        :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
         :rtype: str
         """
@@ -125,22 +125,22 @@ class DOMObject:
                        rendering. Non-leaf nodes should also pass this data on
                        to their own children.
 
-        :returns: Rendered output. The default DOM types render HTML, but they
+        :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
         :rtype: str
         """
         return ""
 
 
-class ContainerObject(DOMObject, dom_type=None):
-    """Base class for all DOM objects that may have children (blocks and
-    spans).
+class ContainerNode(ASTNode, element_type=None):
+    """Base class for all AST nodes that may have children (blocks and spans
+    except HorizontalRule).
 
-    :param dom_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
-                     representing the type of this element
+    :param element_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
+                         representing the type of this element
     """
-    def __init__(self, dom_type):
-        super().__init__(dom_type)
+    def __init__(self, element_type):
+        super().__init__(element_type)
         self.children = []
 
     def append(self, obj):
@@ -158,7 +158,7 @@ class ContainerObject(DOMObject, dom_type=None):
         :param kwargs: The data passed to the :meth:`render` function from the
                        parent node.
 
-        :returns: Rendered output. The default DOM types render HTML, but they
+        :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
         :rtype: str
         """
@@ -171,7 +171,7 @@ class ContainerObject(DOMObject, dom_type=None):
         :param kwargs: The data passed to the :meth:`render` function from the
                        parent node.
 
-        :returns: Rendered output. The default DOM types render HTML, but they
+        :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
         :rtype: str
         """
@@ -184,7 +184,7 @@ class ContainerObject(DOMObject, dom_type=None):
         :param kwargs: Data passed from the parent node that may be useful for
                        rendering. This data is also passed on to children.
 
-        :returns: Rendered output. The default DOM types render HTML, but they
+        :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
         :rtype: str
         """
@@ -196,16 +196,16 @@ class ContainerObject(DOMObject, dom_type=None):
         return ''.join(renderings)
 
 
-class TextObject(DOMObject, dom_type=None):
-    """Base class for all DOM objects representing text.
+class TextNode(ASTNode, element_type=None):
+    """Base class for all AST nodes representing text.
 
-    :param dom_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
-                     representing the type of this element
+    :param element_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
+                         representing the type of this element
     :param text: The text this object represents
     :type text: str
     """
-    def __init__(self, dom_type, text):
-        super().__init__(dom_type)
+    def __init__(self, element_type, text):
+        super().__init__(element_type)
         self.text = text
 
     #: Translation table for :meth:`html_escape`
@@ -247,21 +247,21 @@ class TextObject(DOMObject, dom_type=None):
 
 
 ###############################################################################
-# Default DOM objects (render() methods produce HTML) - Blocks                #
+# Default AST nodes (render() methods produce HTML) - Blocks                  #
 ###############################################################################
 
 
-class Document(ContainerObject, dom_type=_BlockType.DOC):
-    """Document block. Root node of the DOM.
+class Document(ContainerNode, element_type=_BlockType.DOC):
+    """Document block. Root node of the AST.
 
-    :param dom_type: :attr:`md4c.BlockType.DOC`
+    :param element_type: :attr:`md4c.BlockType.DOC`
     """
 
 
-class Quote(ContainerObject, dom_type=_BlockType.QUOTE):
+class Quote(ContainerNode, element_type=_BlockType.QUOTE):
     """Quote block.
 
-    :param dom_type: :attr:`md4c.BlockType.QUOTE`
+    :param element_type: :attr:`md4c.BlockType.QUOTE`
     """
 
     def render_pre(self, **kwargs):
@@ -287,10 +287,10 @@ class Quote(ContainerObject, dom_type=_BlockType.QUOTE):
         return '</blockquote>\n'
 
 
-class UnorderedList(ContainerObject, dom_type=_BlockType.UL):
+class UnorderedList(ContainerNode, element_type=_BlockType.UL):
     """Unordered list block.
 
-    :param dom_type: :attr:`md4c.BlockType.UL`
+    :param element_type: :attr:`md4c.BlockType.UL`
     :param is_tight: Whether the list is tight_ or not
     :type is_tight: bool
     :param mark: The character used as a bullet point
@@ -298,8 +298,8 @@ class UnorderedList(ContainerObject, dom_type=_BlockType.UL):
 
     .. _tight: https://spec.commonmark.org/0.29/#tight
     """
-    def __init__(self, dom_type, is_tight, mark):
-        super().__init__(dom_type)
+    def __init__(self, element_type, is_tight, mark):
+        super().__init__(element_type)
         self.is_tight = is_tight
         self.mark = mark
 
@@ -326,10 +326,10 @@ class UnorderedList(ContainerObject, dom_type=_BlockType.UL):
         return '</ul>\n'
 
 
-class OrderedList(ContainerObject, dom_type=_BlockType.OL):
+class OrderedList(ContainerNode, element_type=_BlockType.OL):
     """Ordered list block.
 
-    :param dom_type: :attr:`md4c.BlockType.OL`
+    :param element_type: :attr:`md4c.BlockType.OL`
     :param start: Start index of the ordered list
     :type start: int
     :param is_tight: Whether the list is tight_ or not
@@ -339,8 +339,8 @@ class OrderedList(ContainerObject, dom_type=_BlockType.OL):
 
     .. _tight: https://spec.commonmark.org/0.29/#tight
     """
-    def __init__(self, dom_type, start, is_tight, mark):
-        super().__init__(dom_type)
+    def __init__(self, element_type, start, is_tight, mark):
+        super().__init__(element_type)
         self.start = start
         self.is_tight = is_tight
         self.mark = mark
@@ -368,10 +368,10 @@ class OrderedList(ContainerObject, dom_type=_BlockType.OL):
         return '</ol>\n'
 
 
-class ListItem(ContainerObject, dom_type=_BlockType.LI):
+class ListItem(ContainerNode, element_type=_BlockType.LI):
     """List item block.
 
-    :param dom_type: :attr:`md4c.BlockType.LI`
+    :param element_type: :attr:`md4c.BlockType.LI`
     :param is_task: Whether the list item is a task list item
     :type is_task: bool
     :param task_mark: The character used to mark the task. Not required if not
@@ -381,9 +381,9 @@ class ListItem(ContainerObject, dom_type=_BlockType.LI):
                              Not required if not a task list item.
     :type task_mark_offset: int, optional
     """
-    def __init__(self, dom_type, is_task,
+    def __init__(self, element_type, is_task,
                  task_mark=None, task_mark_offset=None):
-        super().__init__(dom_type)
+        super().__init__(element_type)
         self.is_task = is_task
         self.task_mark = task_mark
         self.task_mark_offset = task_mark_offset
@@ -418,10 +418,10 @@ class ListItem(ContainerObject, dom_type=_BlockType.LI):
         return '</li>\n'
 
 
-class HorizontalRule(DOMObject, dom_type=_BlockType.HR):
+class HorizontalRule(ASTNode, element_type=_BlockType.HR):
     """Horizontal rule block.
 
-    :param dom_type: :attr:`md4c.BlockType.HR`
+    :param element_type: :attr:`md4c.BlockType.HR`
     """
 
     def render(self, **kwargs):
@@ -436,15 +436,15 @@ class HorizontalRule(DOMObject, dom_type=_BlockType.HR):
         return '<hr>'
 
 
-class Heading(ContainerObject, dom_type=_BlockType.H):
+class Heading(ContainerNode, element_type=_BlockType.H):
     """Heading block.
 
-    :param dom_type: :attr:`md4c.BlockType.H`
+    :param element_type: :attr:`md4c.BlockType.H`
     :param level: Heading level (1-6)
     :type level: int
     """
-    def __init__(self, dom_type, level):
-        super().__init__(dom_type)
+    def __init__(self, element_type, level):
+        super().__init__(element_type)
         self.level = level
 
     def render_pre(self, **kwargs):
@@ -470,10 +470,10 @@ class Heading(ContainerObject, dom_type=_BlockType.H):
         return f'</h{self.level}>\n'
 
 
-class CodeBlock(ContainerObject, dom_type=_BlockType.CODE):
+class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
     """Code block.
 
-    :param dom_type: :attr:`md4c.BlockType.CODE`
+    :param element_type: :attr:`md4c.BlockType.CODE`
     :param fence_char: Fence character. Omit for indented code blocks.
     :type fence_char: str, optional
     :param info: Info string, if present.
@@ -481,11 +481,11 @@ class CodeBlock(ContainerObject, dom_type=_BlockType.CODE):
     :param lang: Language, if present.
     :type lang: :ref:`Attribute` or None, optional
     """
-    def __init__(self, dom_type, fence_char=None, info=None, lang=None):
-        super().__init__(dom_type)
+    def __init__(self, element_type, fence_char=None, info=None, lang=None):
+        super().__init__(element_type)
         self.fence_char = fence_char
-        self.info = self.attr_to_dom(info)
-        self.lang = self.attr_to_dom(lang)
+        self.info = self.attr_to_ast(info)
+        self.lang = self.attr_to_ast(lang)
 
     def render_pre(self, **kwargs):
         """Render the opening for this code block.
@@ -514,17 +514,17 @@ class CodeBlock(ContainerObject, dom_type=_BlockType.CODE):
         return '</code></pre>\n'
 
 
-class RawHTMLBlock(ContainerObject, dom_type=_BlockType.HTML):
+class RawHTMLBlock(ContainerNode, element_type=_BlockType.HTML):
     """Raw HTML block.
 
-    :param dom_type: :attr:`md4c.BlockType.HTML`
+    :param element_type: :attr:`md4c.BlockType.HTML`
     """
 
 
-class Paragraph(ContainerObject, dom_type=_BlockType.P):
+class Paragraph(ContainerNode, element_type=_BlockType.P):
     """Paragraph.
 
-    :param dom_type: :attr:`md4c.BlockType.P`
+    :param element_type: :attr:`md4c.BlockType.P`
     """
 
     def render_pre(self, **kwargs):
@@ -550,10 +550,10 @@ class Paragraph(ContainerObject, dom_type=_BlockType.P):
         return '</p>\n'
 
 
-class Table(ContainerObject, dom_type=_BlockType.TABLE):
+class Table(ContainerNode, element_type=_BlockType.TABLE):
     """Table.
 
-    :param dom_type: :attr:`md4c.BlockType.TABLE`
+    :param element_type: :attr:`md4c.BlockType.TABLE`
     :param col_count: Number of columns in the table
     :type col_count: int
     :param head_row_count: Number of rows in the table head
@@ -561,8 +561,9 @@ class Table(ContainerObject, dom_type=_BlockType.TABLE):
     :param body_row_count: Number of rows in the table body
     :type body_row_count: int
     """
-    def __init__(self, dom_type, col_count, head_row_count, body_row_count):
-        super().__init__(dom_type)
+    def __init__(self, element_type,
+                 col_count, head_row_count, body_row_count):
+        super().__init__(element_type)
         self.col_count = col_count
         self.head_row_count = head_row_count
         self.body_row_count = body_row_count
@@ -590,10 +591,10 @@ class Table(ContainerObject, dom_type=_BlockType.TABLE):
         return '</table>\n'
 
 
-class TableHead(ContainerObject, dom_type=_BlockType.THEAD):
+class TableHead(ContainerNode, element_type=_BlockType.THEAD):
     """Table heading.
 
-    :param dom_type: :attr:`md4c.BlockType.THEAD`
+    :param element_type: :attr:`md4c.BlockType.THEAD`
     """
 
     def render_pre(self, **kwargs):
@@ -619,10 +620,10 @@ class TableHead(ContainerObject, dom_type=_BlockType.THEAD):
         return '</thead>\n'
 
 
-class TableBody(ContainerObject, dom_type=_BlockType.TBODY):
+class TableBody(ContainerNode, element_type=_BlockType.TBODY):
     """Table body.
 
-    :param dom_type: :attr:`md4c.BlockType.TBODY`
+    :param element_type: :attr:`md4c.BlockType.TBODY`
     """
 
     def render_pre(self, **kwargs):
@@ -648,10 +649,10 @@ class TableBody(ContainerObject, dom_type=_BlockType.TBODY):
         return '</tbody>\n'
 
 
-class TableRow(ContainerObject, dom_type=_BlockType.TR):
+class TableRow(ContainerNode, element_type=_BlockType.TR):
     """Table row.
 
-    :param dom_type: :attr:`md4c.BlockType.TR`
+    :param element_type: :attr:`md4c.BlockType.TR`
     """
 
     def render_pre(self, **kwargs):
@@ -677,15 +678,15 @@ class TableRow(ContainerObject, dom_type=_BlockType.TR):
         return '</tr>\n'
 
 
-class TableHeaderCell(ContainerObject, dom_type=_BlockType.TH):
+class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
     """Table header cell.
 
-    :param dom_type: :attr:`md4c.BlockType.TH`
+    :param element_type: :attr:`md4c.BlockType.TH`
     :param align: Text alignment for the cell
     :type align: :class:`md4c.Align`
     """
-    def __init__(self, dom_type, align):
-        super().__init__(dom_type)
+    def __init__(self, element_type, align):
+        super().__init__(element_type)
         self.align = align
 
     def render_pre(self, **kwargs):
@@ -718,15 +719,15 @@ class TableHeaderCell(ContainerObject, dom_type=_BlockType.TH):
         return '</th>\n'
 
 
-class TableCell(ContainerObject, dom_type=_BlockType.TD):
+class TableCell(ContainerNode, element_type=_BlockType.TD):
     """Table cell.
 
-    :param dom_type: :attr:`md4c.BlockType.TD`
+    :param element_type: :attr:`md4c.BlockType.TD`
     :param align: Text alignment for the cell
     :type align: :class:`md4c.Align`
     """
-    def __init__(self, dom_type, align):
-        super().__init__(dom_type)
+    def __init__(self, element_type, align):
+        super().__init__(element_type)
         self.align = align
 
     def render_pre(self, **kwargs):
@@ -760,14 +761,14 @@ class TableCell(ContainerObject, dom_type=_BlockType.TD):
 
 
 ###############################################################################
-# Default DOM objects (render() methods produce HTML) - Inlines               #
+# Default AST nodes (render() methods produce HTML) - Inlines                 #
 ###############################################################################
 
 
-class Emphasis(ContainerObject, dom_type=_SpanType.EM):
+class Emphasis(ContainerNode, element_type=_SpanType.EM):
     """Emphasis inline.
 
-    :param dom_type: :attr:`md4c.SpanType.EM`
+    :param element_type: :attr:`md4c.SpanType.EM`
     """
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -805,10 +806,10 @@ class Emphasis(ContainerObject, dom_type=_SpanType.EM):
         return ''
 
 
-class Strong(ContainerObject, dom_type=_SpanType.STRONG):
+class Strong(ContainerNode, element_type=_SpanType.STRONG):
     """Strong emphasis inline.
 
-    :param dom_type: :attr:`md4c.SpanType.STRONG`
+    :param element_type: :attr:`md4c.SpanType.STRONG`
     """
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -846,10 +847,10 @@ class Strong(ContainerObject, dom_type=_SpanType.STRONG):
         return ''
 
 
-class Underline(ContainerObject, dom_type=_SpanType.U):
+class Underline(ContainerNode, element_type=_SpanType.U):
     """Underline inline.
 
-    :param dom_type: :attr:`md4c.SpanType.U`
+    :param element_type: :attr:`md4c.SpanType.U`
     """
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -887,19 +888,19 @@ class Underline(ContainerObject, dom_type=_SpanType.U):
         return ''
 
 
-class Link(ContainerObject, dom_type=_SpanType.A):
+class Link(ContainerNode, element_type=_SpanType.A):
     """Hyperlink inline.
 
-    :param dom_type: :attr:`md4c.SpanType.A`
+    :param element_type: :attr:`md4c.SpanType.A`
     :param href: Link URL
     :type href: :ref:`Attribute`
     :param title: Link title, if present
     :type title: :ref:`Attribute` or None, optional
     """
-    def __init__(self, dom_type, href, title=None):
-        super().__init__(dom_type)
-        self.href = self.attr_to_dom(href)
-        self.title = self.attr_to_dom(title)
+    def __init__(self, element_type, href, title=None):
+        super().__init__(element_type)
+        self.href = self.attr_to_ast(href)
+        self.title = self.attr_to_ast(title)
 
     def render_pre(self, image_nesting_level=0, **kwargs):
         """Render the opening for this link inline.
@@ -941,19 +942,19 @@ class Link(ContainerObject, dom_type=_SpanType.A):
         return ''
 
 
-class Image(ContainerObject, dom_type=_SpanType.IMG):
+class Image(ContainerNode, element_type=_SpanType.IMG):
     """Image inline.
 
-    :param dom_type: :attr:`md4c.SpanType.IMG`
+    :param element_type: :attr:`md4c.SpanType.IMG`
     :param src: Image URL
     :type src: :ref:`Attribute`
     :param title: Image title, if present
     :type title: :ref:`Attribute` or None, optional
     """
-    def __init__(self, dom_type, src, title=None):
-        super().__init__(dom_type)
-        self.src = self.attr_to_dom(src)
-        self.title = self.attr_to_dom(title)
+    def __init__(self, element_type, src, title=None):
+        super().__init__(element_type)
+        self.src = self.attr_to_ast(src)
+        self.title = self.attr_to_ast(title)
 
     def render_pre(self, image_nesting_level, **kwargs):
         """Render the opening for this image inline.
@@ -1009,10 +1010,10 @@ class Image(ContainerObject, dom_type=_SpanType.IMG):
         image_nesting_level += 1
         super().render(image_nesting_level=image_nesting_level, **kwargs)
 
-class Code(ContainerObject, dom_type=_SpanType.CODE):
+class Code(ContainerNode, element_type=_SpanType.CODE):
     """Code inline.
 
-    :param dom_type: :attr:`md4c.SpanType.CODE`
+    :param element_type: :attr:`md4c.SpanType.CODE`
     """
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -1050,10 +1051,10 @@ class Code(ContainerObject, dom_type=_SpanType.CODE):
         return ''
 
 
-class Strikethrough(ContainerObject, dom_type=_SpanType.DEL):
+class Strikethrough(ContainerNode, element_type=_SpanType.DEL):
     """Strikethrough inline.
 
-    :param dom_type: :attr:`md4c.SpanType.DEL`
+    :param element_type: :attr:`md4c.SpanType.DEL`
     """
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -1091,10 +1092,10 @@ class Strikethrough(ContainerObject, dom_type=_SpanType.DEL):
         return ''
 
 
-class InlineMath(ContainerObject, dom_type=_SpanType.LATEXMATH):
+class InlineMath(ContainerNode, element_type=_SpanType.LATEXMATH):
     """Inline math.
 
-    :param dom_type: :attr:`md4c.SpanType.LATEXMATH`
+    :param element_type: :attr:`md4c.SpanType.LATEXMATH`
     """
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -1132,10 +1133,10 @@ class InlineMath(ContainerObject, dom_type=_SpanType.LATEXMATH):
         return ''
 
 
-class DisplayMath(ContainerObject, dom_type=_SpanType.LATEXMATH_DISPLAY):
+class DisplayMath(ContainerNode, element_type=_SpanType.LATEXMATH_DISPLAY):
     """Display math.
 
-    :param dom_type: :attr:`md4c.SpanType.LATEXMATH_DISPLAY`
+    :param element_type: :attr:`md4c.SpanType.LATEXMATH_DISPLAY`
     """
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -1173,16 +1174,16 @@ class DisplayMath(ContainerObject, dom_type=_SpanType.LATEXMATH_DISPLAY):
         return ''
 
 
-class WikiLink(ContainerObject, dom_type=_SpanType.WIKILINK):
+class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
     """Wiki link inline.
 
-    :param dom_type: :attr:`md4c.SpanType.WIKILINK`
+    :param element_type: :attr:`md4c.SpanType.WIKILINK`
     :param target: Link target
     :type target: :ref:`Attribute`
     """
-    def __init__(self, dom_type, target):
-        super().__init__(dom_type)
-        self.target = self.attr_to_dom(target)
+    def __init__(self, element_type, target):
+        super().__init__(element_type)
+        self.target = self.attr_to_ast(target)
 
     def render_pre(self, image_nesting_level=0, **kwargs):
         """Render the opening for this wiki link inline.
@@ -1221,23 +1222,23 @@ class WikiLink(ContainerObject, dom_type=_SpanType.WIKILINK):
 
 
 ###############################################################################
-# Default DOM objects (render() methods produce HTML) - Text nodes            #
+# Default AST nodes (render() methods produce HTML) - Text nodes              #
 ###############################################################################
 
 
-class NormalText(TextObject, dom_type=_TextType.NORMAL):
+class NormalText(TextNode, element_type=_TextType.NORMAL):
     """Normal text.
 
-    :param dom_type: :attr:`md4c.TextType.NORMAL`
+    :param element_type: :attr:`md4c.TextType.NORMAL`
     :param text: The actual text
     :type text: str
     """
 
 
-class NullChar(TextObject, dom_type=_TextType.NULLCHAR):
+class NullChar(TextNode, element_type=_TextType.NULLCHAR):
     """Null character.
 
-    :param dom_type: :attr:`md4c.TextType.NULLCHAR`
+    :param element_type: :attr:`md4c.TextType.NULLCHAR`
     :param text: Should be a null character, but this class assumes it is and
                  ignores it.
     :type text: str
@@ -1255,10 +1256,10 @@ class NullChar(TextObject, dom_type=_TextType.NULLCHAR):
         return '\x00'
 
 
-class LineBreak(TextObject, dom_type=_TextType.BR):
+class LineBreak(TextNode, element_type=_TextType.BR):
     """Line break.
 
-    :param dom_type: :attr:`md4c.TextType.BR`
+    :param element_type: :attr:`md4c.TextType.BR`
     :param text: Should be a newline character, but this class assumes it is
                  and ignores it.
     :type text: str
@@ -1281,10 +1282,10 @@ class LineBreak(TextObject, dom_type=_TextType.BR):
         return ' '
 
 
-class SoftLineBreak(TextObject, dom_type=_TextType.SOFTBR):
+class SoftLineBreak(TextNode, element_type=_TextType.SOFTBR):
     """Line break.
 
-    :param dom_type: :attr:`md4c.TextType.SOFTBR`
+    :param element_type: :attr:`md4c.TextType.SOFTBR`
     :param text: Should be a newline character, but this class assumes it is
                  and ignores it.
     :type text: str
@@ -1307,31 +1308,31 @@ class SoftLineBreak(TextObject, dom_type=_TextType.SOFTBR):
         return ' '
 
 
-class HTMLEntity(TextObject, dom_type=_TextType.ENTITY):
+class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
     """HTML entity.
 
-    :param dom_type: :attr:`md4c.TextType.ENTITY`
+    :param element_type: :attr:`md4c.TextType.ENTITY`
     :param text: The entity, including ampersand and semicolon
     :type text: str
     """
-    def __init__(self, dom_type, text):
-        super().__init__(dom_type)
+    def __init__(self, element_type, text):
+        super().__init__(element_type)
         self.text = _lookup_entity(text)
 
 
-class CodeText(TextObject, dom_type=_TextType.CODE):
+class CodeText(TextNode, element_type=_TextType.CODE):
     """Text in a code block or code span.
 
-    :param dom_type: :attr:`md4c.TextType.CODE`
+    :param element_type: :attr:`md4c.TextType.CODE`
     :param text: The actual code
     :type text: str
     """
 
 
-class HTMLText(TextObject, dom_type=_TextType.HTML):
+class HTMLText(TextNode, element_type=_TextType.HTML):
     """Raw HTML text
 
-    :param dom_type: :attr:`md4c.TextType.HTML`
+    :param element_type: :attr:`md4c.TextType.HTML`
     :param text: The raw HTML
     :type text: str
     """
@@ -1348,10 +1349,10 @@ class HTMLText(TextObject, dom_type=_TextType.HTML):
         return self.text
 
 
-class MathText(TextObject, dom_type=_TextType.LATEXMATH):
+class MathText(TextNode, element_type=_TextType.LATEXMATH):
     """Text in an equation.
 
-    :param dom_type: :attr:`md4c.TextType.LATEXMATH`
+    :param element_type: :attr:`md4c.TextType.LATEXMATH`
     :param text: The actual text
     :type text: str
     """

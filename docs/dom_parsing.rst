@@ -1,5 +1,5 @@
-DOM Generation
-==============
+DOM Parsing
+===========
 
 .. note::
    I am seeking feedback for this feature. If there are any changes or
@@ -16,8 +16,8 @@ DOM Generation
 
 .. _changelog: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
 
-What does "DOM generation" mean?
---------------------------------
+What does "DOM parsing" mean?
+-----------------------------
 
 In the world of XML, there are two general types of parsers: SAX (i.e.
 event-based) and DOM (i.e. tree-based). SAX parsers traverse the document, and
@@ -32,12 +32,12 @@ parsing (and the MD4C library is proud of it). This is clear from the
 :class:`~md4c.GenericParser` API.
 
 The :mod:`md4c.domparser` module provides a DOM-like API for use cases where
-that style is more appropriate. It produces a tree where each paragraph,
-heading, link, block quote, etc. is represented by a
-:class:`~md4c.domparser.DOMObject`.
+that style is more appropriate. It produces an AST where each paragraph,
+heading, link, block quote, etc. is represented by an
+:class:`~md4c.domparser.ASTNode`.
 
-Why use DOM?
-------------
+Why use DOM-like parsing?
+-------------------------
 
 You may find that the :class:`~md4c.HTMLRenderer` and SAX-like parsers do not
 provide the flexibility you need. A typical use-case would be if you want to
@@ -55,10 +55,10 @@ The tradeoff for this flexibility is speed:
   which is heavily optimized C code. :class:`~md4c.domparser.DOMParser` is
   implemented in Python on top of :class:`~md4c.ParserObject`.
 
-Generating a DOM
-----------------
+Generating an AST
+-----------------
 
-DOM generation uses the :class:`~md4c.domparser.DOMParser` class. In the most
+DOM parsing uses the :class:`~md4c.domparser.DOMParser` class. In the most
 simple case, it looks like this::
 
     import md4c.domparser
@@ -67,20 +67,20 @@ simple case, it looks like this::
         markdown = f.read()
 
     parser = md4c.domparser.DOMParser()
-    dom = parser.parse(markdown)
+    ast = parser.parse(markdown)
 
-At this point, ``dom`` is the root :class:`~md4c.domparser.Document` node of
+At this point, ``ast`` is the root :class:`~md4c.domparser.Document` node of
 the tree. You can render the tree as HTML::
 
-    html = dom.render()
+    html = ast.render()
 
 Or you can traverse the tree::
 
-    def traverse(dom_node):
+    def traverse(ast_node):
         # Do stuff on this node before traversing to children
 
         try:
-            for child in dom_node.children:
+            for child in ast_node.children:
                 traverse(child)
         except AttributeError:
             # No children
@@ -88,23 +88,19 @@ Or you can traverse the tree::
 
         # Do stuff on this node after traversing to children
 
-    traverse(dom)
+    traverse(ast)
 
-DOM Objects
------------
-
-.. TODO Document DOM objects
-
-DOM Manipulation
+AST Node Objects
 ----------------
 
+.. TODO Document AST nodes
 
+AST Manipulation
+----------------
 
+.. TODO Example of AST manipulation
 
-
-.. TODO Example of DOM manipulation
-
-Using Custom DOM Classes
+Using Custom AST Classes
 ------------------------
 
-.. TODO Example of using custom DOM classes
+.. TODO Example of using custom AST classes

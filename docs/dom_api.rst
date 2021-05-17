@@ -9,7 +9,7 @@ DOM Parser
 .. autoclass:: DOMParser
    :members:
 
-DOM Objects
+AST Objects
 -----------
 
 .. TODO Many of these have attributes matching what was set on the constructor.
@@ -21,13 +21,13 @@ DOM Objects
 Base Classes
 ~~~~~~~~~~~~
 
-.. autoclass:: DOMObject
+.. autoclass:: ASTNode
    :members:
 
-.. autoclass:: ContainerObject
+.. autoclass:: ContainerNode
    :members:
 
-.. autoclass:: TextObject
+.. autoclass:: TextNode
    :members:
 
 Block Elements
