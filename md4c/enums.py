@@ -25,7 +25,7 @@
 # IN THE SOFTWARE.
 #
 
-from enum import IntEnum
+from enum import Enum
 
 from . import _enum_consts
 
@@ -33,7 +33,7 @@ from . import _enum_consts
 # NOTE When adding a new element to any of these Enums, make sure to add an
 # appropriate class to domparser/domtypes.py.
 
-class BlockType(IntEnum):
+class BlockType(Enum):
     """Represents a type of Markdown block"""
 
     #: Document
@@ -85,7 +85,7 @@ class BlockType(IntEnum):
     TD = _enum_consts.MD_BLOCK_TD
 
 
-class SpanType(IntEnum):
+class SpanType(Enum):
     """Represents a type of Markdown span/inline"""
 
     #: Emphasis
@@ -119,7 +119,7 @@ class SpanType(IntEnum):
     U = _enum_consts.MD_SPAN_U
 
 
-class TextType(IntEnum):
+class TextType(Enum):
     """Represents a type of Markdown text"""
 
     #: Normal text
@@ -147,7 +147,7 @@ class TextType(IntEnum):
     LATEXMATH = _enum_consts.MD_TEXT_LATEXMATH
 
 
-class Align(IntEnum):
+class Align(Enum):
     """Represents a table cell alignment"""
 
     #: Default alignment

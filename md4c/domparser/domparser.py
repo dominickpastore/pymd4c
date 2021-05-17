@@ -30,20 +30,21 @@ from .domtypes import DOMObject
 
 
 class DOMParser(ParserObject):
-    """A subclass of :class:`ParserObject` that produces document object
+    """A subclass of :class:`md4c.ParserObject` that produces document object
     model-like output. In other words, it produces a tree representation of
     the Markdown document's block and inline elements.
 
     If the goal is simply to render a Markdown document in a suitable output
     format, this is a slow way to do it (in fact, `that was one of the main
     motivations behind the underlying MD4C library`__). You should consider
-    using an :class:`HTMLRenderer`, a :class:`GenericParser`, or subclasssing
-    :class:`ParserObject` instead. However, certain tasks, such as
-    transformations on the document structure, can be difficult without a full
-    abstract syntax tree, as produced by objects of this class.
+    using an :class:`md4c.HTMLRenderer`, a :class:`md4c.GenericParser`, or
+    subclasssing :class:`md4c.ParserObject` instead. However, certain tasks,
+    such as transformations on the document structure, can be difficult without
+    a full abstract syntax tree, as produced by objects of this class.
 
-    Arguments to the constructor are passed through to :class:`GenericParser`.
-    Check that class and :ref:`options` for more information about that.
+    Arguments to the constructor are passed through to
+    :class:`md4c.GenericParser`. Check that class and :ref:`options` for more
+    information about that.
 
     .. _whyfast: https://talk.commonmark.org/t/why-is-md4c-so-fast-c/2520/2
 
@@ -106,7 +107,7 @@ class DOMParser(ParserObject):
                           representing the type of span being entered
         :param text: The actual text to be added
         """
-        text_element = DOMObject(text_type, text)
+        text_element = DOMObject(text_type, text=text)
         self._current.append(text_element)
 
     def parse(self, markdown):

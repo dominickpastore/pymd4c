@@ -2,13 +2,13 @@ DOM Generation
 ==============
 
 .. note::
-  I am seeking feedback for this feature. If there are any changes or additions
-  to the API you feel would make it more useful, or if you have any other
-  suggestions, please `let me know`_ (or `via email`_ if you prefer).
+   I am seeking feedback for this feature. If there are any changes or
+   additions to the API you feel would make it more useful, or if you have any
+   other suggestions, please `let me know`_ (or `via email`_ if you prefer).
 
-  Be aware that I may make updates to the :mod:`md4c.domparser` API in response
-  to feedback I receive. When that is no longer the case, I will remove this
-  message and make a note in the changelog_.
+   Be aware that I may make updates to the :mod:`md4c.domparser` API in
+   response to feedback I receive. When that is no longer the case, I will
+   remove this message and make a note in the changelog_.
 
 .. _let me know: https://github.com/dominickpastore/pymd4c/discussions/categories/general
 

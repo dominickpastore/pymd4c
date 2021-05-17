@@ -169,7 +169,7 @@ Enums
 -----
 
 The MD4C library uses various enums to provide data to callbacks. PyMD4C uses
-:class:`IntEnum`\ s to encapsulate these.
+:class:`Enum`\ s to encapsulate these.
 
 .. autoclass:: BlockType
    :members:
@@ -187,5 +187,7 @@ Exceptions
 ----------
 
 .. autoclass:: ParseError
+   :members:
 
 .. autoclass:: StopParsing
+   :members:

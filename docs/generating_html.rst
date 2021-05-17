@@ -54,7 +54,6 @@ of these in one shot::
     renderer = md4c.HTMLRenderer(md4c.MD_DIALECT_GITHUB)
 
 .. note::
-
    Keyword arguments only have an effect when set to ``True``. Setting a
    keyword argument to ``False`` does not unset a flag set by one of the
    combination options.

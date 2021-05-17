@@ -42,7 +42,7 @@ class ParserObject:
     """
 
     def __init__(self, *args, **kwargs):
-        self.parser = GenericParser(*args, *kwargs)
+        self.parser = GenericParser(*args, **kwargs)
 
     def enter_block(self, block_type, details):
         """Called when the parser is entering a block element. This function
