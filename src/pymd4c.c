@@ -136,6 +136,14 @@ static int md4c_add_flags(PyObject *m) {
 }
 
 /*
+ * Module method table
+ */
+static PyMethodDef md4c_methods[] = {
+    {"lookup_entity", lookup_entity, METH_VARARGS, lookup_entity_doc},
+    {NULL, NULL, 0, NULL}
+}
+
+/*
  * Module Definition
  */
 static PyModuleDef md4c_module = {
@@ -143,6 +151,7 @@ static PyModuleDef md4c_module = {
     .m_name = "_md4c",
     .m_doc = "Python bindings for MD4C parsers and renderers",
     .m_size = -1,
+    .m_methods = md4c_methods,
 };
 
 /*

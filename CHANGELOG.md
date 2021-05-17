@@ -24,9 +24,14 @@ Not ideal, but better to do it now rather than after a stable release.
 ### Added
 
 - Full test suite. No more beta!
-- Object-oriented API as an alternative to `GenericParser`
+- Object-oriented `ParserObject` API as an alternative to `GenericParser`
+- `lookup_entity()` function for applications using `GenericParser` or
+  `ParserObject` to translate HTML entities
 - `DOMParser` for applications that require an AST (also serves as an example
   of using the object-oriented API)
+  * This should be considered experimental for now. While it is well-tested, I
+    am interested in feedback about the API, and I may make updates to the API
+    based on that feedback.
 
 ### Changed
 

@@ -32,6 +32,7 @@
 #include <Python.h>
 
 #include <md4c.h>
+#include <entity.h>
 
 #include "pymd4c.h"
 #include "generic_parser.h"
@@ -699,3 +700,113 @@ PyTypeObject GenericParserType = {
     .tp_clear = (inquiry) GenericParser_clear,
     .tp_methods = GenericParser_methods,
 };
+
+/*
+ * lookup_entity() function
+ */
+
+static unsigned int char_to_int(char c) {
+    switch (c) {
+        default:            return 0;
+        case '1':           return 1;
+        case '2':           return 2;
+        case '3':           return 3;
+        case '4':           return 4;
+        case '5':           return 5;
+        case '6':           return 6;
+        case '7':           return 7;
+        case '8':           return 8;
+        case '9':           return 9;
+        case 'A': case 'a': return 10;
+        case 'B': case 'b': return 11;
+        case 'C': case 'c': return 12;
+        case 'D': case 'd': return 13;
+        case 'E': case 'e': return 14;
+        case 'F': case 'f': return 15;
+    }
+}
+
+const char *lookup_entity_doc = "lookup_entity(entity)\n"
+    "\n"
+    "Translate an HTML entity to its UTF-8 representation. Returns the "
+    "unmodified input if it is not a valid entity.\n"
+    "\n"
+    ":param entity: The HTML entity, including ampersand and semicolon\n"
+    ":type entity: str\n"
+    ":returns: Corresponding UTF-8 character(s)\n"
+    ":rtype: str\n";
+
+PyObject * lookup_entity(PyObject *self, PyObject *args) {
+    // Parse arguments
+    const char *entity;
+    Py_ssize_t entity_size;
+    if (!PyArg_ParseTuple(args, "s#", &entity, &entity_size)) {
+        return NULL;
+    }
+
+    // Following code adapted from render_entity() in md4c-html.c
+    PyObject *result;
+    if (entity_size > 3 && entity[1] == '#') {
+        // Numeric entity
+        Py_UCS4 codepoint = 0;
+
+        if (entity[2] == 'x' || entity[2] == 'X') {
+            // Hex entity
+            for (Py_ssize_t i = 3; i < entity_size - 1; i++) {
+                codepoint = 16 * codepoint + char_to_int(entity[i]);
+            }
+        } else {
+            // Decimal entity
+            for (Py_ssize_t i = 2; i < entity_size - 1; i++) {
+                codepoint = 10 * codepoint + char_to_int(entity[i]);
+            }
+        }
+
+        result = PyUnicode_New(1, codepoint);
+        if (result == NULL) {
+            return NULL;
+        }
+        if (PyUnicode_WriteChar(result, 0, codepoint) < 0) {
+            Py_DECREF(result);
+            return NULL;
+        }
+        return result;
+    } else {
+        // Named entity
+        const struct entity *ent = entity_lookup(entity, entity_size);
+        if (ent == NULL) {
+            // Not a valid entity
+            result = PyTuple_GetItem(args, 0);
+            Py_XINCREF(result);
+            return result;
+        } else if (ent->codepoints[1] == 0) {
+            // Single-codepoint named entity
+            result = PyUnicode_New(1, ent->codepoints[0]);
+            if (result == NULL) {
+                return NULL;
+            }
+            if (PyUnicode_WriteChar(result, 0, ent->codepoints[0]) < 0) {
+                Py_DECREF(result);
+                return NULL;
+            }
+            return result;
+        } else {
+            // Two-codepoint named entity
+            unsigned int max_cp = (ent->codepoints[0] > ent->codepoints[1]) ?
+                                  ent->codepoints[0] : ent->codepoints[1];
+            result = PyUnicode_New(2, max_cp);
+            if (result == NULL) {
+                return NULL;
+            }
+            if (PyUnicode_WriteChar(result, 0, ent->codepoints[0]) < 0) {
+                Py_DECREF(result);
+                return NULL;
+            }
+            if (PyUnicode_WriteChar(result, 1, ent->codepoints[1]) < 0) {
+                Py_DECREF(result);
+                return NULL;
+            }
+            return result;
+        }
+    }
+}

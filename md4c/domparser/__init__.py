@@ -2,10 +2,7 @@
 # PyMD4C
 # Python bindings for MD4C
 #
-# md4c - Main PyMD4C package
-# Make the public interface for PyMD4C available under one namespace.
-# Submodules (some of which are C extensions) contain the actual
-# implementation.
+# md4c.domparser - DOM-like parser and the DOM objects
 #
 # Copyright (c) 2020-2021 Dominick C. Pastore
 #
@@ -28,8 +25,5 @@
 # IN THE SOFTWARE.
 #
 
-# ._md4c contains GenericParser, HTMLRenderer, exceptions, flags,
-# and lookup_entity
-from ._md4c import *    # noqa: F401, F403
-from .enums import BlockType, SpanType, TextType, Align     # noqa: F401
-from .parser import ParserObject
+from .domtypes import *             # noqa: F401, F403
+from .domparser import DOMParser    # noqa: F401

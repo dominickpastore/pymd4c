@@ -30,6 +30,9 @@ from enum import IntEnum
 from . import _enum_consts
 
 
+# NOTE When adding a new element to any of these Enums, make sure to add an
+# appropriate class to domparser/domtypes.py.
+
 class BlockType(IntEnum):
     """Represents a type of Markdown block"""
 

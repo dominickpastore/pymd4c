@@ -15,6 +15,11 @@ Parsers and Renderers
 .. autoclass:: ParserObject
    :members:
 
+HTML Entity Helper
+~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: lookup_entity
+
 .. _options:
 
 Option Flags
@@ -157,7 +162,7 @@ These options are only accepted by the :class:`~md4c.HTMLRenderer`.
 
 :const:`md4c.MD_HTML_FLAG_XHTML`
   Keyword argument: ``xhtml``
-
+https://www.sphinx-doc.org/en/master/usage/extensions/doctest.html
   Generate XHTML instead of HTML.
 
 Enums

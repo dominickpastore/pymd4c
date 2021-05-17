@@ -162,9 +162,10 @@ writing your own rendering code, these callbacks would write opening or closing
 HTML tags to the output stream.
 
 The fifth callback accepts a :class:`~md4c.TextType` as the first parameter
-and a string of text as the second parameter. If you were writing your own
-rendering function, this callback would simply write the text to the output
-stream.
+and a string of text as the second parameter. The text is unprocessed; for
+example, HTML entities are left in ``&...;`` form. If you were writing your own
+rendering function, this callback would write the text to the output stream
+(potentially after some translation).
 
 Callbacks do not need to return anything specific—their return values are
 ignored. To cancel parsing, callbacks can raise the :class:`~md4c.StopParsing`
@@ -220,7 +221,7 @@ details dict.
   |                        |                    | task list item              |
   +------------------------+--------------------+-----------------------------+
   | ``'task_mark'``        | Single-char string | The character (``X``,       |
-  |                        |                    | ``x``, `` ``) used to mark  |
+  |                        |                    | ``x``, space) used to mark  |
   |                        |                    | the task. Only present if   |
   |                        |                    | ``'is_task'`` is True.      |
   +------------------------+--------------------+-----------------------------+
@@ -304,6 +305,8 @@ details dict.
 
 \* Attribute values are described below.
 
+.. _Attribute:
+
 Attributes
 ~~~~~~~~~~
 
@@ -323,12 +326,22 @@ For example, this string::
 would be represented as an attribute like this::
 
     [(md4c.TextType.NORMAL, 'Copyright '),
-     (md4c.TextType.ENTITY, '©'),
+     (md4c.TextType.ENTITY, '&copy;'),
      (md4c.TextType.NORMAL, ' John Doe')]
 
 Currently, the only :class:`~md4c.TextType` types allowed in an attribute are
 :attr:`~md4c.TextType.NORMAL`, :attr:`~md4c.TextType.ENTITY`, and
 :attr:`~md4c.TextType.NULLCHAR`.
+
+Entity Helper
+-------------
+
+PyMD4C provides a helper function :func:`~md4c.lookup_entity` to assist with
+translating HTML entities to their corresponding UTF-8 character(s)::
+
+    import md4c
+
+    md4c.lookup_entity('&lt;')  # Returns '<'
 
 Object-Oriented Parsing
 -----------------------

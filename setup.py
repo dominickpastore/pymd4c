@@ -109,6 +109,7 @@ setup(
     ],
     packages=[
         'md4c',
+        'md4c.domparser',
     ],
     ext_modules=extensions,
     python_requires='>=3.6',

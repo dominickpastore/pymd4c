@@ -39,4 +39,11 @@
  */
 extern PyTypeObject GenericParserType;
 
+/*
+ * lookup_entity() function
+ */
+PyObject * lookup_entity(PyObject *self, PyObject *args);
+
+const char *lookup_entity_doc;
+
 #endif
