@@ -48,7 +48,7 @@ class ASTNode:
     custom class to handle :attr:`md4c.BlockType.HR`::
 
         class MyHorzontalRule(ASTNode, element_type=md4c.BlockType.HR):
-            ...
+            '''My custom horizonal rule class'''
 
     :param element_type: A :class:`md4c.BlockType`, :class:`md4c.SpanType`, or
                          :class:`md4c.TextType` representing the type of this
@@ -101,10 +101,13 @@ class ASTNode:
         return result
 
     @staticmethod
-    def render_attr(attribute):
+    def render_attr(attribute, url_escape=False):
         """Render an attribute given as a list of :class:`ASTNode` or None
 
         :param attribute: List of :class:`ASTNode` or None
+        :param url_escape: If True, perform URL escaping on the text.
+                           Otherwise, perform the default HTML escaping.
+        :type url_escape: bool, optional
 
         :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
@@ -114,7 +117,7 @@ class ASTNode:
             return None
         renderings = []
         for text in attribute:
-            renderings.append(text.render())
+            renderings.append(text.render(url_escape=url_escape))
         return ''.join(renderings)
 
     def render(self, **kwargs):
@@ -134,22 +137,33 @@ class ASTNode:
 
 class ContainerNode(ASTNode, element_type=None):
     """Base class for all AST nodes that may have children (blocks and spans
-    except HorizontalRule).
+    except :class:`HorizontalRule`).
 
     :param element_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
                          representing the type of this element
     """
     def __init__(self, element_type):
         super().__init__(element_type)
+
+        #: A list of this node's children.
         self.children = []
 
-    def append(self, obj):
-        """Add a new child to the object and set its parent to this object
+    def append(self, node):
+        """Add a new child to the node and set its parent to this object
 
-        :param obj: The child to add
+        :param node: The child to add
         """
-        obj.parent = self
-        self.children.append(obj)
+        node.parent = self
+        self.children.append(node)
+
+    def insert(self, i, node):
+        """Insert a new child into the node at index *i*
+
+        :param i: The new child will be at this index.
+        :param node: The child to insert
+        """
+        node.parent = self
+        self.children.insert(i, node)
 
     def render_pre(self, **kwargs):
         """Render the opening for this node. This base implementation returns
@@ -201,11 +215,13 @@ class TextNode(ASTNode, element_type=None):
 
     :param element_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
                          representing the type of this element
-    :param text: The text this object represents
+    :param text: The text this node represents, unprocessed
     :type text: str
     """
     def __init__(self, element_type, text):
         super().__init__(element_type)
+
+        #: The unprocessed text for this node
         self.text = text
 
     #: Translation table for :meth:`html_escape`
@@ -216,15 +232,33 @@ class TextNode(ASTNode, element_type=None):
         ord('"'): '&quot;',
     }
 
-    #: Translation table for :meth:`url_escape`
-    url_escape_table = {f'%{ord(c):02X}' for c in "-_.+!*(),%#@?=;:/,+$"}
-
     @classmethod
     def html_escape(cls, text):
+        """Escape HTML special characters (&<>")
+
+        :param text: Text to escape
+        :return: Escaped string
+        """
         return text.translate(cls.html_escape_table)
+
+    class _URLEscapeDict(dict):
+        """Dict that does percent escaping for any item not in it"""
+        def __missing__(self, cp):
+            utf8 = chr(cp).encode('utf-8')
+            return ''.join(f'%{b:02X}' for b in utf8)
+
+    #: Translation table for :meth:`url_escape`
+    url_escape_table = _URLEscapeDict(
+        {ord(c): c for c in "0123456789-_.+!*(),%#@?=;:/,+$"
+         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"})
 
     @classmethod
     def url_escape(cls, text):
+        """Percent-escape special characters in URLs
+
+        :param text: URL to percent-escape
+        :return: Escaped string
+        """
         return text.translate(cls.url_escape_table)
 
     def render(self, url_escape=False, **kwargs):
@@ -433,7 +467,7 @@ class HorizontalRule(ASTNode, element_type=_BlockType.HR):
         :returns: Rendered HTML
         :rtype: str
         """
-        return '<hr>'
+        return '<hr>\n'
 
 
 class Heading(ContainerNode, element_type=_BlockType.H):
@@ -916,7 +950,7 @@ class Link(ContainerNode, element_type=_SpanType.A):
         :rtype: str
         """
         if image_nesting_level == 0:
-            href = self.render_attr(self.href)
+            href = self.render_attr(self.href, url_escape=True)
             if self.title is not None:
                 title = self.render_attr(self.title)
                 return f'<a href="{href}" title="{title}">'
@@ -970,7 +1004,7 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
         :rtype: str
         """
         if image_nesting_level == 1:
-            src = self.render_attr(self.src)
+            src = self.render_attr(self.src, url_escape=True)
             return f'<img src="{src}" alt="'
         return ''
 
@@ -1315,9 +1349,25 @@ class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
     :param text: The entity, including ampersand and semicolon
     :type text: str
     """
-    def __init__(self, element_type, text):
-        super().__init__(element_type)
-        self.text = _lookup_entity(text)
+
+    def render(self, url_escape=False, **kwargs):
+        """Render this HTML entity.
+
+        :param url_escape: If True, perform URL escaping on the translated
+                           entity. Otherwise, perform the default HTML
+                           escaping.
+        :type url_escape: bool, optional
+        :param kwargs: Data passed from the parent node that may be useful for
+                       rendering.
+
+        :returns: Corresponding UTF-8 text for the entity.
+        :rtype: str
+        """
+        entity = _lookup_entity(self.text)
+        if url_escape:
+            return self.url_escape(entity)
+        return self.html_escape(entity)
+
 
 
 class CodeText(TextNode, element_type=_TextType.CODE):

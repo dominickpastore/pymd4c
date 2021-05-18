@@ -173,6 +173,8 @@ exception. The :meth:`~md4c.GenericParser.parse` method will catch it and
 immediately halt parsing quietly. All other exceptions raised in callbacks will
 abort parsing and propagate back to :meth:`~md4c.GenericParser.parse`'s caller.
 
+.. _details:
+
 Details Dicts
 ~~~~~~~~~~~~~
 

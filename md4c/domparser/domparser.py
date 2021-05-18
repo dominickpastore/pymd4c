@@ -32,7 +32,7 @@ from .ast import ASTNode
 class DOMParser(ParserObject):
     """A subclass of :class:`md4c.ParserObject` that produces document object
     model-like output. In other words, it produces a tree representation of
-    the Markdown document's block and inline elements.
+    the Markdown document's block, inline, and text elements.
 
     If the goal is simply to render a Markdown document in a suitable output
     format, this is a slow way to do it (in fact, `that was one of the main

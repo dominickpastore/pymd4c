@@ -7,7 +7,9 @@ DOM Parser
 ----------
 
 .. autoclass:: DOMParser
-   :members:
+   :members: parse
+
+.. _astobjs:
 
 AST Objects
 -----------
