@@ -368,7 +368,9 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
             break;
         case MD_BLOCK_CODE:
             if (((MD_BLOCK_CODE_DETAIL *) detail)->fence_char == '\0') {
-                arglist = Py_BuildValue("(O{})", get_enum_blocktype(type));
+                Py_INCREF(Py_None);
+                arglist = Py_BuildValue("(O{s:O})", get_enum_blocktype(type),
+                        "fence_char", Py_None);
             } else {
                 arglist = Py_BuildValue("(O{s:O,s:O,s:C})",
                         get_enum_blocktype(type),

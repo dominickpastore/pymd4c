@@ -253,8 +253,8 @@ details dict.
   |                  |                    | fenced code blocks.               |
   +------------------+--------------------+-----------------------------------+
   | ``'fence_char'`` | Single-char string | Fence character (backtick or      |
-  |                  |                    | tilde). Only present for fenced   |
-  |                  |                    | code blocks.                      |
+  |                  |                    | tilde). None for indented code    |
+  |                  |                    | blocks.                           |
   +------------------+--------------------+-----------------------------------+
 
 .. table:: Details dict for :attr:`~md4c.BlockType.TABLE`

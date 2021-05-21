@@ -534,8 +534,8 @@ class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
     Code block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.CODE`
-    :param fence_char: Fence character. Omit for indented code blocks.
-    :type fence_char: str, optional
+    :param fence_char: Fence character. None for indented code blocks.
+    :type fence_char: str or None
     :param info: Info string, if present.
     :type info: :ref:`Attribute <attribute>` or None, optional
     :param lang: Language, if present.
