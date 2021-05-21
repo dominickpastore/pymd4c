@@ -89,7 +89,7 @@ class ASTNode:
 
     @staticmethod
     def attr_to_ast(attribute):
-        """:class:`md4c.GenericParser` represents :ref:`attributes <Attribute>`
+        """:class:`md4c.GenericParser` represents :ref:`attributes <attribute>`
         as lists of 2-tuples (or None). This static method converts them to a
         list of text :class:`ASTNode`.
 
@@ -117,7 +117,7 @@ class ASTNode:
         :rtype: str
         """
         if attribute is None:
-            return None
+            return ''
         renderings = []
         for text in attribute:
             renderings.append(text.render(url_escape=url_escape))
@@ -253,6 +253,7 @@ class TextNode(ASTNode, element_type=None):
     url_escape_table = _URLEscapeDict(
         {ord(c): c for c in "0123456789-_.+!*(),%#@?=;:/,+$"
          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"})
+    url_escape_table[ord('&')] = '&amp;'
 
     @classmethod
     def url_escape(cls, text):
@@ -377,19 +378,19 @@ class OrderedList(ContainerNode, element_type=_BlockType.OL):
     :type start: int
     :param is_tight: Whether the list is tight_ or not
     :type is_tight: bool
-    :param mark: The character used as a bullet point
-    :type mark: str
+    :param mark_delimiter: The character used as the number delimiter
+    :type mark_delimiter: str
 
     .. _tight: https://spec.commonmark.org/0.29/#tight
     """
-    def __init__(self, element_type, start, is_tight, mark):
+    def __init__(self, element_type, start, is_tight, mark_delimiter):
         super().__init__(element_type)
         #: Start index of the ordered list
         self.start = start
         #: Whether the list is tight_ or not
         self.is_tight = is_tight
-        #: The character used as a bullet point
-        self.mark = mark
+        #: The character used as the number delimiter
+        self.mark_delimiter = mark_delimiter
 
     def render_pre(self, **kwargs):
         """Render the opening for this ordered list.
@@ -400,7 +401,10 @@ class OrderedList(ContainerNode, element_type=_BlockType.OL):
         :returns: Rendered HTML
         :rtype: str
         """
-        return f'<ol start="{self.start}">\n'
+        if self.start == 1:
+            return '<ol>\n'
+        else:
+            return f'<ol start="{self.start}">\n'
 
     def render_post(self, **kwargs):
         """Render the closing for this ordered list.
@@ -533,17 +537,17 @@ class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
     :param fence_char: Fence character. Omit for indented code blocks.
     :type fence_char: str, optional
     :param info: Info string, if present.
-    :type info: :ref:`Attribute` or None, optional
+    :type info: :ref:`Attribute <attribute>` or None, optional
     :param lang: Language, if present.
-    :type lang: :ref:`Attribute` or None, optional
+    :type lang: :ref:`Attribute <attribute>` or None, optional
     """
     def __init__(self, element_type, fence_char=None, info=None, lang=None):
         super().__init__(element_type)
         #: Fence character, if a fenced code block. None otherwise.
         self.fence_char = fence_char
-        #: Info string (if a fenced code block)
+        #: Info string, as a list of :class:`ASTNode` (if a fenced code block)
         self.info = self.attr_to_ast(info)
-        #: Language (if a fenced code block)
+        #: Language, as a list of :class:`ASTNode` (if a fenced code block)
         self.lang = self.attr_to_ast(lang)
 
     def render_pre(self, **kwargs):
@@ -772,7 +776,7 @@ class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
         elif self.align is _Align.RIGHT:
             return '<th align="right">'
         else:
-            return '<th>\n'
+            return '<th>'
 
     def render_post(self, **kwargs):
         """Render the closing for this table header cell.
@@ -816,7 +820,7 @@ class TableCell(ContainerNode, element_type=_BlockType.TD):
         elif self.align is _Align.RIGHT:
             return '<td align="right">'
         else:
-            return '<td>\n'
+            return '<td>'
 
     def render_post(self, **kwargs):
         """Render the closing for this table cell.
@@ -965,15 +969,16 @@ class Link(ContainerNode, element_type=_SpanType.A):
 
     :param element_type: :attr:`md4c.SpanType.A`
     :param href: Link URL
-    :type href: :ref:`Attribute`
+    :type href: :ref:`Attribute <attribute>`
     :param title: Link title, if present
-    :type title: :ref:`Attribute` or None, optional
+    :type title: :ref:`Attribute <attribute>` or None, optional
     """
     def __init__(self, element_type, href, title=None):
         super().__init__(element_type)
-        #: Link URL
+        #: Link URL, as a list of text :class:`ASTNode`
         self.href = self.attr_to_ast(href)
-        #: Link title (or None if not present)
+        #: Link title, as a list of text :class:`ASTNode` (or None if not
+        #: present)
         self.title = self.attr_to_ast(title)
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -1023,15 +1028,15 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
 
     :param element_type: :attr:`md4c.SpanType.IMG`
     :param src: Image URL
-    :type src: :ref:`Attribute`
+    :type src: :ref:`Attribute <attribute>`
     :param title: Image title, if present
-    :type title: :ref:`Attribute` or None, optional
+    :type title: :ref:`Attribute <attribute>` or None, optional
     """
     def __init__(self, element_type, src, title=None):
         super().__init__(element_type)
-        #: Image URL
+        #: Image URL, as a list of :class:`ASTNode`
         self.src = self.attr_to_ast(src)
-        #: Image title (or None if not present)
+        #: Image title, as a list of :class:`ASTNode` (or None if not present)
         self.title = self.attr_to_ast(title)
 
     def render_pre(self, image_nesting_level, **kwargs):
@@ -1086,7 +1091,8 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
         :rtype: str
         """
         image_nesting_level += 1
-        super().render(image_nesting_level=image_nesting_level, **kwargs)
+        return super().render(image_nesting_level=image_nesting_level,
+                              **kwargs)
 
 
 class Code(ContainerNode, element_type=_SpanType.CODE):
@@ -1260,11 +1266,11 @@ class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
 
     :param element_type: :attr:`md4c.SpanType.WIKILINK`
     :param target: Link target
-    :type target: :ref:`Attribute`
+    :type target: :ref:`Attribute <attribute>`
     """
     def __init__(self, element_type, target):
         super().__init__(element_type)
-        #: Link target
+        #: Link target, as a list of :class:`ASTNode`
         self.target = self.attr_to_ast(target)
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -1331,7 +1337,8 @@ class NullChar(TextNode, element_type=_TextType.NULLCHAR):
     """
 
     def render(self, **kwargs):
-        """Render this null character.
+        """Render this null character (as the Unicode replacement character,
+        codepoint 0xFFFD)
 
         :param kwargs: Data passed from the parent node that may be useful for
                        rendering.
@@ -1339,7 +1346,7 @@ class NullChar(TextNode, element_type=_TextType.NULLCHAR):
         :returns: Null character
         :rtype: str
         """
-        return '\x00'
+        return '\ufffd'
 
 
 class LineBreak(TextNode, element_type=_TextType.BR):
@@ -1422,6 +1429,7 @@ class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
         :rtype: str
         """
         entity = _lookup_entity(self.text)
+        entity = entity.replace('\x00', '\ufffd')
         if url_escape:
             return self.url_escape(entity)
         return self.html_escape(entity)

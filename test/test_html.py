@@ -8,6 +8,7 @@ import os
 import os.path
 import re
 import md4c
+import md4c.domparser
 import pytest
 from normalize import normalize_html
 
@@ -18,7 +19,12 @@ extension_flags = {
     'emailautolink': md4c.MD_FLAG_PERMISSIVEEMAILAUTOLINKS,
     'wwwautolink': md4c.MD_FLAG_PERMISSIVEWWWAUTOLINKS,
     'tasklist': md4c.MD_FLAG_TASKLISTS,
-    #TODO Add test cases for the rest of these
+    'strikethrough': md4c.MD_FLAG_STRIKETHROUGH,
+    'underline': md4c.MD_FLAG_UNDERLINE,
+    'wikilink': md4c.MD_FLAG_WIKILINKS,
+    'latexmath': md4c.MD_FLAG_LATEXMATHSPANS,
+    #TODO Add test cases for the rest of the flags
+    # (including combination flags)
 }
 
 
@@ -85,7 +91,7 @@ def collect_all_tests():
 @pytest.mark.parametrize(
     'test_case', collect_all_tests(),
      ids=lambda x: f'{x["file"]}:{x["start_line"]}-{x["section"]}')
-def test_html_example(test_case):
+def test_html_output(test_case):
     """Test HTMLRenderer with default render flags on the given example"""
     parser_flags = 0
     for extension in test_case['extensions']:
@@ -96,7 +102,24 @@ def test_html_example(test_case):
 
     assert normalize_html(output) == normalize_html(test_case['html'], False)
 
-#TODO Test combination flags
+@pytest.mark.parametrize(
+    'test_case', collect_all_tests(),
+     ids=lambda x: f'{x["file"]}:{x["start_line"]}-{x["section"]}')
+def test_domparser_html(test_case):
+    """Test that the output for DOMParser render() matches HTMLRenderer char
+    for char"""
+    parser_flags = 0
+    for extension in test_case['extensions']:
+        parser_flags |= extension_flags[extension]
+
+    html_renderer = md4c.HTMLRenderer(parser_flags)
+    html_output = html_renderer.parse(test_case['markdown'])
+
+    dom_parser = md4c.domparser.DOMParser(parser_flags)
+    dom_output = dom_parser.parse(test_case['markdown']).render()
+
+    assert html_output == dom_output
+
 
 #TODO Test keyword arguments for flags
 

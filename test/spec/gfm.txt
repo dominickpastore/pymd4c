@@ -112,7 +112,7 @@ inline spans:
 </thead>
 <tbody>
 <tr>
-<td>b <code>|</code> az</td>
+<td>b <code>\|</code> az</td>
 </tr>
 <tr>
 <td>b <strong>|</strong> im</td>
@@ -181,7 +181,7 @@ bar
 The header row must match the [delimiter row] in the number of cells.  If not,
 a table will not be recognized:
 
-```````````````````````````````` example table
+```````````````````````````````` example table disabled
 | abc | def |
 | --- |
 | bar |

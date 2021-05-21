@@ -15,15 +15,15 @@ PyMD4C version numbers track MD4C version numbers:
 ------------
 
 This is a major milestone for PyMD4C! Apart from a new, more object-oriented
-API, the addition of a complete test suite means it is ready to come out of
-beta!
+API, the addition of a test suite means it is ready to come out of beta!
 
 Some minor breaking changes were introduced. See the changes section below.
 Not ideal, but better to do it now rather than after a stable release.
 
 ### Added
 
-- Full test suite. No more beta! (TODO: Still working on this)
+- Add a test suite (there is more to do here, but it's complete enough that I
+  feel comfortable saying PyMD4C is no longer in beta)
 - Object-oriented `ParserObject` API as an alternative to `GenericParser`
 - `lookup_entity()` function for applications using `GenericParser` or
   `ParserObject` to translate HTML entities
@@ -41,6 +41,10 @@ Not ideal, but better to do it now rather than after a stable release.
   (for consistency with `permissive_url_autolinks`, `permissive_www_autolinks`,
   and `permissive_email_autolinks`).
 - Moved main documentation from the README to a collection of Sphinx docs
+
+### Fixed
+
+- `GenericParser` now provides the correct details dict for tables
 
 [0.4.7.0b1] - 2021-05-08
 ------------------------

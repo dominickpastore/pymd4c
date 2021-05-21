@@ -307,7 +307,7 @@ details dict.
 
 \* Attribute values are described below.
 
-.. _Attribute:
+.. _attribute:
 
 Attributes
 ~~~~~~~~~~
