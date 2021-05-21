@@ -23,7 +23,7 @@ Not ideal, but better to do it now rather than after a stable release.
 
 ### Added
 
-- Full test suite. No more beta!
+- Full test suite. No more beta! (TODO: Still working on this)
 - Object-oriented `ParserObject` API as an alternative to `GenericParser`
 - `lookup_entity()` function for applications using `GenericParser` or
   `ParserObject` to translate HTML entities
