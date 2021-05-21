@@ -65,11 +65,11 @@ make it more likely that a PR can be accepted:
   there are any problems, you should do your best to fix them (or explain why
   the test is flagging when it shouldn't). Code that passes has a much higher
   chance of being accepted than code that fails. You can run the test suite
-  locally with TODO is correct?::
+  locally with::
 
       pip install -U .[test]
       flake8 setup.py md4c/
-      pytest
+      pytest -vv test/
 
 - Pay attention to code style. Flake8 runs as part of the test suite. ``#noqa``
   is allowed, but with good reason.

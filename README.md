@@ -7,7 +7,7 @@ PyMD4C
 Python bindings (plus extras) for the very fast [MD4C] Markdown parsing and
 rendering library.
 
-- Documentation: [TODO][docs]
+- Documentation: [https://pymd4c.dcpx.org/][docs]
 - GitHub: [https://github.com/dominickpastore/pymd4c][GitHub]
 - PyPI: [https://pypi.org/project/pymd4c/][PyPI]
 - Changelog: [https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md][changelog]
@@ -87,4 +87,4 @@ details.
 [PyPI]: https://pypi.org/project/pymd4c/
 [changelog]: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
 [issues]: https://github.com/dominickpastore/pymd4c/issues
-[docs]: TODO
+[docs]: https://pymd4c.dcpx.org/

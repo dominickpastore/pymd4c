@@ -31,7 +31,7 @@ applications that need to do more.
 Quick links
 -----------
 
-- `This documentation <TODO>`_ TODO
+- `This documentation <https://pymd4c.dcpx.org/>`_
 - `GitHub, README <https://github.com/dominickpastore/pymd4c>`_
 - `PyPI <https://pypi.org/project/pymd4c/>`_
 - `Changelog
