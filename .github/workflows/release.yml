@@ -49,8 +49,8 @@ jobs:
         run: flake8 setup.py md4c/
       #TODO Add actual tests
 
-  package-sdist:
-    name: Package sdist
+  package-sdist-docts:
+    name: Package sdist and publish docs
     needs: test
     runs-on: ubuntu-latest
 
@@ -84,6 +84,18 @@ jobs:
         with:
           name: sdist
           path: dist/*
+      - name: Build Sphinx docs
+        run: |
+          python3 -m pip install .
+          python3 -m pip install --upgrade sphinx
+          cd docs
+          make html
+      - name: Publish Sphinx docs
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          cname: pymd4c.dcpx.org
 
   package-linux:
     name: Package for Linux
