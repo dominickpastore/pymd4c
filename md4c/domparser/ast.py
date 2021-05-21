@@ -44,10 +44,13 @@ class ASTNode:
     the appropriate subtype instead.
 
     The default classes for particular Markdown element types can be replaced
-    by subclassing with the appropriate class argument. For example, to use a
-    custom class to handle :attr:`md4c.BlockType.HR`::
+    by subclassing with the appropriate class argument. (Since every other node
+    class in this module already inherits from
+    :class:`~md4c.domparser.ASTNode`, this works with any of them as well.) For
+    example, to use a custom class to handle :attr:`md4c.BlockType.HR`::
 
-        class MyHorzontalRule(ASTNode, element_type=md4c.BlockType.HR):
+        class MyHorzontalRule(md4c.domparser.HorizontalRule,
+                              element_type=md4c.BlockType.HR):
             '''My custom horizonal rule class'''
 
     :param element_type: A :class:`md4c.BlockType`, :class:`md4c.SpanType`, or
@@ -86,12 +89,13 @@ class ASTNode:
 
     @staticmethod
     def attr_to_ast(attribute):
-        """Convert an attribute from a list of tuples or None to a list of
-        :class:`ASTNode` or None
+        """:class:`md4c.GenericParser` represents :ref:`attributes <Attribute>`
+        as lists of 2-tuples (or None). This static method converts them to a
+        list of text :class:`ASTNode`\ s.
 
         :param attribute: List of tuples or None
 
-        :returns: List of text objects or None
+        :returns: List of text :class:`ASTNode`\ s or None
         """
         if attribute is None:
             return None
@@ -106,11 +110,10 @@ class ASTNode:
 
         :param attribute: List of :class:`ASTNode` or None
         :param url_escape: If True, perform URL escaping on the text.
-                           Otherwise, perform the default HTML escaping.
+                           Otherwise, perform the default (HTML) escaping.
         :type url_escape: bool, optional
 
-        :returns: Rendered output. The default AST types render HTML, but they
-                  can be replaced to render any output format necessary.
+        :returns: Rendered output.
         :rtype: str
         """
         if attribute is None:
@@ -192,8 +195,9 @@ class ContainerNode(ASTNode, element_type=None):
         return ""
 
     def render(self, **kwargs):
-        """Render the opening for this node, all its children, then the closing
-        for this node.
+        """A render implementation that should suit elements with children
+        well: Renders the opening for this node, then all its children, then
+        the closing for this node.
 
         :param kwargs: Data passed from the parent node that may be useful for
                        rendering. This data is also passed on to children.
@@ -224,7 +228,6 @@ class TextNode(ASTNode, element_type=None):
         #: The unprocessed text for this node
         self.text = text
 
-    #: Translation table for :meth:`html_escape`
     html_escape_table = {
         ord('&'): '&amp;',
         ord('<'): '&lt;',
@@ -234,7 +237,7 @@ class TextNode(ASTNode, element_type=None):
 
     @classmethod
     def html_escape(cls, text):
-        """Escape HTML special characters (&<>")
+        """Escape HTML special characters (``&<>"``)
 
         :param text: Text to escape
         :return: Escaped string
@@ -247,7 +250,6 @@ class TextNode(ASTNode, element_type=None):
             utf8 = chr(cp).encode('utf-8')
             return ''.join(f'%{b:02X}' for b in utf8)
 
-    #: Translation table for :meth:`url_escape`
     url_escape_table = _URLEscapeDict(
         {ord(c): c for c in "0123456789-_.+!*(),%#@?=;:/,+$"
          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"})
@@ -263,8 +265,8 @@ class TextNode(ASTNode, element_type=None):
 
     def render(self, url_escape=False, **kwargs):
         """Render the text for this node, performing HTML or URL escaping in
-        the process. HTML escaping translates <, >, &, and " to HTML entities.
-        URL escaping translates special characters to %xx.
+        the process. HTML escaping translates ``<``, ``>``, ``&``, and ``"`` to
+        HTML entities. URL escaping translates special characters to ``%xx``.
 
         :param url_escape: If True, perform URL escaping on the text.
                            Otherwise, perform the default HTML escaping.
@@ -286,14 +288,15 @@ class TextNode(ASTNode, element_type=None):
 
 
 class Document(ContainerNode, element_type=_BlockType.DOC):
-    """Document block. Root node of the AST.
+    """Document block. Root node of the AST. Inherits from
+    :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.DOC`
     """
 
 
 class Quote(ContainerNode, element_type=_BlockType.QUOTE):
-    """Quote block.
+    """Quote block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.QUOTE`
     """
@@ -322,7 +325,9 @@ class Quote(ContainerNode, element_type=_BlockType.QUOTE):
 
 
 class UnorderedList(ContainerNode, element_type=_BlockType.UL):
-    """Unordered list block.
+    """UnorderedList(element_type, is_tight, mark)
+
+    Unordered list block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.UL`
     :param is_tight: Whether the list is tight_ or not
@@ -334,7 +339,9 @@ class UnorderedList(ContainerNode, element_type=_BlockType.UL):
     """
     def __init__(self, element_type, is_tight, mark):
         super().__init__(element_type)
+        #: Whether the list is tight_ or not
         self.is_tight = is_tight
+        #: The character used as a bullet point
         self.mark = mark
 
     def render_pre(self, **kwargs):
@@ -361,7 +368,9 @@ class UnorderedList(ContainerNode, element_type=_BlockType.UL):
 
 
 class OrderedList(ContainerNode, element_type=_BlockType.OL):
-    """Ordered list block.
+    """OrderedList(element_type, start, is_tight, mark)
+
+    Ordered list block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.OL`
     :param start: Start index of the ordered list
@@ -375,8 +384,11 @@ class OrderedList(ContainerNode, element_type=_BlockType.OL):
     """
     def __init__(self, element_type, start, is_tight, mark):
         super().__init__(element_type)
+        #: Start index of the ordered list
         self.start = start
+        #: Whether the list is tight_ or not
         self.is_tight = is_tight
+        #: The character used as a bullet point
         self.mark = mark
 
     def render_pre(self, **kwargs):
@@ -403,7 +415,9 @@ class OrderedList(ContainerNode, element_type=_BlockType.OL):
 
 
 class ListItem(ContainerNode, element_type=_BlockType.LI):
-    """List item block.
+    """ListItem(element_type, is_task, task_mark, task_mark_offset)
+
+    List item block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.LI`
     :param is_task: Whether the list item is a task list item
@@ -418,8 +432,11 @@ class ListItem(ContainerNode, element_type=_BlockType.LI):
     def __init__(self, element_type, is_task,
                  task_mark=None, task_mark_offset=None):
         super().__init__(element_type)
+        #: Whether the list item is a task list item
         self.is_task = is_task
+        #: The character used to mark the task (if a task list item)
         self.task_mark = task_mark
+        #: The offset of the task mark between the ``[]`` (if a task list item)
         self.task_mark_offset = task_mark_offset
 
     def render_pre(self, **kwargs):
@@ -453,7 +470,7 @@ class ListItem(ContainerNode, element_type=_BlockType.LI):
 
 
 class HorizontalRule(ASTNode, element_type=_BlockType.HR):
-    """Horizontal rule block.
+    """Horizontal rule block. Inherits from :class:`ASTNode`.
 
     :param element_type: :attr:`md4c.BlockType.HR`
     """
@@ -471,7 +488,9 @@ class HorizontalRule(ASTNode, element_type=_BlockType.HR):
 
 
 class Heading(ContainerNode, element_type=_BlockType.H):
-    """Heading block.
+    """Heading(element_type, level)
+
+    Heading block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.H`
     :param level: Heading level (1-6)
@@ -479,6 +498,7 @@ class Heading(ContainerNode, element_type=_BlockType.H):
     """
     def __init__(self, element_type, level):
         super().__init__(element_type)
+        #: Heading level (1-6)
         self.level = level
 
     def render_pre(self, **kwargs):
@@ -505,7 +525,9 @@ class Heading(ContainerNode, element_type=_BlockType.H):
 
 
 class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
-    """Code block.
+    """CodeBlock(element_type, fence_char, info, lang)
+
+    Code block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.CODE`
     :param fence_char: Fence character. Omit for indented code blocks.
@@ -517,8 +539,11 @@ class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
     """
     def __init__(self, element_type, fence_char=None, info=None, lang=None):
         super().__init__(element_type)
+        #: Fence character, if a fenced code block. None otherwise.
         self.fence_char = fence_char
+        #: Info string (if a fenced code block)
         self.info = self.attr_to_ast(info)
+        #: Language (if a fenced code block)
         self.lang = self.attr_to_ast(lang)
 
     def render_pre(self, **kwargs):
@@ -549,7 +574,7 @@ class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
 
 
 class RawHTMLBlock(ContainerNode, element_type=_BlockType.HTML):
-    """Raw HTML block.
+    """Raw HTML block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.HTML`
     """
@@ -585,7 +610,9 @@ class Paragraph(ContainerNode, element_type=_BlockType.P):
 
 
 class Table(ContainerNode, element_type=_BlockType.TABLE):
-    """Table.
+    """Table(element_type, col_count, head_row_count, bod_row_count)
+
+    Table. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.TABLE`
     :param col_count: Number of columns in the table
@@ -598,8 +625,11 @@ class Table(ContainerNode, element_type=_BlockType.TABLE):
     def __init__(self, element_type,
                  col_count, head_row_count, body_row_count):
         super().__init__(element_type)
+        #: Number of columns in the table
         self.col_count = col_count
+        #: Number of rows in the table head
         self.head_row_count = head_row_count
+        #: Number of rows in the table body
         self.body_row_count = body_row_count
 
     def render_pre(self, **kwargs):
@@ -626,7 +656,7 @@ class Table(ContainerNode, element_type=_BlockType.TABLE):
 
 
 class TableHead(ContainerNode, element_type=_BlockType.THEAD):
-    """Table heading.
+    """Table heading. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.THEAD`
     """
@@ -655,7 +685,7 @@ class TableHead(ContainerNode, element_type=_BlockType.THEAD):
 
 
 class TableBody(ContainerNode, element_type=_BlockType.TBODY):
-    """Table body.
+    """Table body. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.TBODY`
     """
@@ -684,7 +714,7 @@ class TableBody(ContainerNode, element_type=_BlockType.TBODY):
 
 
 class TableRow(ContainerNode, element_type=_BlockType.TR):
-    """Table row.
+    """Table row. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.TR`
     """
@@ -713,7 +743,9 @@ class TableRow(ContainerNode, element_type=_BlockType.TR):
 
 
 class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
-    """Table header cell.
+    """TableHeaderCell(element_type, align)
+
+    Table header cell. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.TH`
     :param align: Text alignment for the cell
@@ -721,6 +753,7 @@ class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
     """
     def __init__(self, element_type, align):
         super().__init__(element_type)
+        #: Text alignment for the cell (a :attr:`md4c.BlockType.TH`)
         self.align = align
 
     def render_pre(self, **kwargs):
@@ -754,7 +787,9 @@ class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
 
 
 class TableCell(ContainerNode, element_type=_BlockType.TD):
-    """Table cell.
+    """TableCell(element_type, align)
+
+    Table cell. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.TD`
     :param align: Text alignment for the cell
@@ -762,6 +797,7 @@ class TableCell(ContainerNode, element_type=_BlockType.TD):
     """
     def __init__(self, element_type, align):
         super().__init__(element_type)
+        #: Text alignment for the cell (a :attr:`md4c.BlockType.TH`)
         self.align = align
 
     def render_pre(self, **kwargs):
@@ -800,7 +836,7 @@ class TableCell(ContainerNode, element_type=_BlockType.TD):
 
 
 class Emphasis(ContainerNode, element_type=_SpanType.EM):
-    """Emphasis inline.
+    """Emphasis inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.EM`
     """
@@ -841,7 +877,7 @@ class Emphasis(ContainerNode, element_type=_SpanType.EM):
 
 
 class Strong(ContainerNode, element_type=_SpanType.STRONG):
-    """Strong emphasis inline.
+    """Strong emphasis inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.STRONG`
     """
@@ -882,7 +918,7 @@ class Strong(ContainerNode, element_type=_SpanType.STRONG):
 
 
 class Underline(ContainerNode, element_type=_SpanType.U):
-    """Underline inline.
+    """Underline inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.U`
     """
@@ -923,7 +959,9 @@ class Underline(ContainerNode, element_type=_SpanType.U):
 
 
 class Link(ContainerNode, element_type=_SpanType.A):
-    """Hyperlink inline.
+    """Link(element_type, href, title)
+
+    Hyperlink inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.A`
     :param href: Link URL
@@ -933,7 +971,9 @@ class Link(ContainerNode, element_type=_SpanType.A):
     """
     def __init__(self, element_type, href, title=None):
         super().__init__(element_type)
+        #: Link URL
         self.href = self.attr_to_ast(href)
+        #: Link title (or None if not present)
         self.title = self.attr_to_ast(title)
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -977,7 +1017,9 @@ class Link(ContainerNode, element_type=_SpanType.A):
 
 
 class Image(ContainerNode, element_type=_SpanType.IMG):
-    """Image inline.
+    """Image(element_type, src, title)
+
+    Image inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.IMG`
     :param src: Image URL
@@ -987,7 +1029,9 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
     """
     def __init__(self, element_type, src, title=None):
         super().__init__(element_type)
+        #: Image URL
         self.src = self.attr_to_ast(src)
+        #: Image title (or None if not present)
         self.title = self.attr_to_ast(title)
 
     def render_pre(self, image_nesting_level, **kwargs):
@@ -1045,7 +1089,7 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
         super().render(image_nesting_level=image_nesting_level, **kwargs)
 
 class Code(ContainerNode, element_type=_SpanType.CODE):
-    """Code inline.
+    """Code inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.CODE`
     """
@@ -1086,7 +1130,7 @@ class Code(ContainerNode, element_type=_SpanType.CODE):
 
 
 class Strikethrough(ContainerNode, element_type=_SpanType.DEL):
-    """Strikethrough inline.
+    """Strikethrough inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.DEL`
     """
@@ -1127,7 +1171,7 @@ class Strikethrough(ContainerNode, element_type=_SpanType.DEL):
 
 
 class InlineMath(ContainerNode, element_type=_SpanType.LATEXMATH):
-    """Inline math.
+    """Inline math. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.LATEXMATH`
     """
@@ -1168,7 +1212,7 @@ class InlineMath(ContainerNode, element_type=_SpanType.LATEXMATH):
 
 
 class DisplayMath(ContainerNode, element_type=_SpanType.LATEXMATH_DISPLAY):
-    """Display math.
+    """Display math. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.LATEXMATH_DISPLAY`
     """
@@ -1209,7 +1253,9 @@ class DisplayMath(ContainerNode, element_type=_SpanType.LATEXMATH_DISPLAY):
 
 
 class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
-    """Wiki link inline.
+    """WikiLink(element_type, target)
+
+    Wiki link inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.WIKILINK`
     :param target: Link target
@@ -1217,6 +1263,7 @@ class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
     """
     def __init__(self, element_type, target):
         super().__init__(element_type)
+        #: Link target
         self.target = self.attr_to_ast(target)
 
     def render_pre(self, image_nesting_level=0, **kwargs):
@@ -1261,7 +1308,9 @@ class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
 
 
 class NormalText(TextNode, element_type=_TextType.NORMAL):
-    """Normal text.
+    """NormalText(element_type, text)
+
+    Normal text. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.NORMAL`
     :param text: The actual text
@@ -1270,7 +1319,9 @@ class NormalText(TextNode, element_type=_TextType.NORMAL):
 
 
 class NullChar(TextNode, element_type=_TextType.NULLCHAR):
-    """Null character.
+    """NullChar(element_type, text)
+
+    Null character. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.NULLCHAR`
     :param text: Should be a null character, but this class assumes it is and
@@ -1291,7 +1342,9 @@ class NullChar(TextNode, element_type=_TextType.NULLCHAR):
 
 
 class LineBreak(TextNode, element_type=_TextType.BR):
-    """Line break.
+    """LineBreak(element_type, text)
+
+    Line break. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.BR`
     :param text: Should be a newline character, but this class assumes it is
@@ -1317,7 +1370,9 @@ class LineBreak(TextNode, element_type=_TextType.BR):
 
 
 class SoftLineBreak(TextNode, element_type=_TextType.SOFTBR):
-    """Line break.
+    """SoftLineBreak(element_type, text)
+
+    Soft line break. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.SOFTBR`
     :param text: Should be a newline character, but this class assumes it is
@@ -1343,7 +1398,9 @@ class SoftLineBreak(TextNode, element_type=_TextType.SOFTBR):
 
 
 class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
-    """HTML entity.
+    """HTMLEntity(element_type, text)
+
+    HTML entity. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.ENTITY`
     :param text: The entity, including ampersand and semicolon
@@ -1371,7 +1428,9 @@ class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
 
 
 class CodeText(TextNode, element_type=_TextType.CODE):
-    """Text in a code block or code span.
+    """CodeText(element_type, text)
+
+    Text in a code block or code span. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.CODE`
     :param text: The actual code
@@ -1380,7 +1439,9 @@ class CodeText(TextNode, element_type=_TextType.CODE):
 
 
 class HTMLText(TextNode, element_type=_TextType.HTML):
-    """Raw HTML text
+    """HTMLText(element_type, text)
+
+    Raw HTML text. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.HTML`
     :param text: The raw HTML
@@ -1400,7 +1461,9 @@ class HTMLText(TextNode, element_type=_TextType.HTML):
 
 
 class MathText(TextNode, element_type=_TextType.LATEXMATH):
-    """Text in an equation.
+    """MathText(element_type, text)
+
+    Text in an equation. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.LATEXMATH`
     :param text: The actual text

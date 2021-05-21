@@ -1,8 +1,8 @@
 PyMD4C Documentation
 ====================
 
-Welcome to the full documentation for PyMD4C, Python bindings for the very fast
-MD4C_ Markdown parsing and rendering library.
+Welcome to the full documentation for PyMD4C, Python bindings (plus extras) for
+the very fast MD4C_ Markdown parsing and rendering library.
 
 .. _MD4C: https://github.com/mity/md4c
 
@@ -23,9 +23,10 @@ In more detail, the underlying MD4C C library provides two things:
 - An HTML renderer, built on top of that parser, to provide HTML output
   directly
 
-PyMD4C provides Python bindings for both. The goal is to provide a simple and
-fast interface for applications that just need to translate Markdown to HTML,
-while providing flexibility for applications that need to do more.
+PyMD4C provides Python bindings for both, plus some convenience features built
+on top. The goal is to provide a simple and fast interface for applications
+that just need to translate Markdown to HTML, while providing flexibility for
+applications that need to do more.
 
 Quick links
 -----------

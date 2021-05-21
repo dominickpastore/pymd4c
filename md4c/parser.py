@@ -30,8 +30,8 @@ from ._md4c import GenericParser
 class ParserObject:
     """Object-oriented wrapper for :class:`GenericParser`. Rather than
     providing callbacks for ``enter_block``, ``leave_block``, ``enter_span``,
-    ``leave_span``, and ``text`` to a ``parse`` function, this abstract base
-    class can be subclassed to provide implementations for them.
+    ``leave_span``, and ``text`` to a ``parse`` function, this base class can
+    be subclassed to provide implementations for them.
 
     When this class's :func:`parse` function is called, it uses its own
     :func:`enter_block`, :func:`leave_block`, :func:`enter_span`,

@@ -3,6 +3,11 @@ API
 
 .. module:: md4c
 
+This is the API for the :mod:`md4c` module, which provides the actual bindings
+for the MD4C_ C library.
+
+.. _MD4C: https://github.com/mity/md4c
+
 Parsers and Renderers
 ---------------------
 

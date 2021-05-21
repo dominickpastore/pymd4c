@@ -4,8 +4,8 @@
 PyMD4C
 ======
 
-Python bindings for the very fast [MD4C] Markdown parsing and rendering
-library.
+Python bindings (plus extras) for the very fast [MD4C] Markdown parsing and
+rendering library.
 
 - Documentation: [TODO][docs]
 - GitHub: [https://github.com/dominickpastore/pymd4c][GitHub]
@@ -21,9 +21,10 @@ the various blocks, inlines, and text it parses from the Markdown input. In
 addition, it provides an HTML renderer built on top of the parser to provide
 HTML output directly.
 
-PyMD4C provides Python bindings for both. The goal is to provide a simple and
-fast interface for applications that just need to translate Markdown to HTML,
-while providing flexibility for applications that need to do more.
+PyMD4C provides Python bindings for both, plus some convenience features built
+on top. The goal is to provide a simple and fast interface for applications
+that just need to translate Markdown to HTML, while providing flexibility for
+applications that need to do more.
 
 Brief installation instructions and examples are below, but see the [full
 documentation][docs] for more detail.

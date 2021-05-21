@@ -350,7 +350,7 @@ Object-Oriented Parsing
 
 PyMD4C provides a more object-oriented wrapper for :class:`~md4c.GenericParser`
 for applications which might find that useful: the :class:`~md4c.ParserObject`
-class. This is an abstract base class that defines the five callbacks as member
+class. This is a base class that defines the five callbacks as member
 functions.
 
 To use it, define a subclass that overrides the callback methods as necessary.

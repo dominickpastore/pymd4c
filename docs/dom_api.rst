@@ -3,6 +3,9 @@ DOM API
 
 .. module:: md4c.domparser
 
+This is the API for the :mod:`md4c.domparser` module, which provides a DOM-like
+parser built on top of the bindings from the main :mod:`md4c` module.
+
 DOM Parser
 ----------
 
@@ -11,17 +14,8 @@ DOM Parser
 
 .. _astobjs:
 
-AST Objects
------------
-
-.. TODO Many of these have attributes matching what was set on the constructor.
-   These should be documented somehow, whether by a note here saying additional
-   parameters are exposed as members (with additional clarification for
-   attributes, which are transformed) or by documenting the attributes in each
-   class.
-
-Base Classes
-~~~~~~~~~~~~
+Base AST Classes
+----------------
 
 .. autoclass:: ASTNode
    :members:
@@ -32,8 +26,12 @@ Base Classes
 .. autoclass:: TextNode
    :members:
 
-Block Elements
-~~~~~~~~~~~~~~
+.. NOTE The elements with details have them documented both as constructor
+   arguments and as attributes of the class. This is a little redundant and
+   makes the documentation more cluttered...consider doing it differently.
+
+Block AST Classes
+-----------------
 
 .. autoclass:: Document
    :members:
@@ -83,8 +81,8 @@ Block Elements
 .. autoclass:: TableCell
    :members:
 
-Inline Elements
-~~~~~~~~~~~~~~~
+Inline AST Classes
+------------------
 
 .. autoclass:: Emphasis
    :members:
@@ -116,29 +114,29 @@ Inline Elements
 .. autoclass:: WikiLink
    :members:
 
-Text Elements
-~~~~~~~~~~~~~
+Text AST Classes
+----------------
 
 .. autoclass:: NormalText
-   :members:
+   :members: text, render
 
 .. autoclass:: NullChar
-   :members:
+   :members: text, render
 
 .. autoclass:: LineBreak
-   :members:
+   :members: text, render
 
 .. autoclass:: SoftLineBreak
-   :members:
+   :members: text, render
 
 .. autoclass:: HTMLEntity
-   :members:
+   :members: text, render
 
 .. autoclass:: CodeText
-   :members:
+   :members: text, render
 
 .. autoclass:: HTMLText
-   :members:
+   :members: text, render
 
 .. autoclass:: MathText
-   :members:
+   :members: text, render
