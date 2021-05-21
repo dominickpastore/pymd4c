@@ -85,9 +85,9 @@ else:
         {
             'name': 'md4c._md4c',
             'sources': [
-                'src/pymd4c.c',
-                'src/generic_parser.c',
                 'src/html_renderer.c',
+                'src/generic_parser.c',
+                'src/pymd4c.c',
             ],
             'pkgconfig': 'md4c md4c-html',
         },
