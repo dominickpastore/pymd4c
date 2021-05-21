@@ -220,7 +220,7 @@ jobs:
   pypi-upload:
     name: Upload packages to PyPI
     needs:
-      - package-sdist
+      - package-sdist-docs
       - package-linux
       - package-others
     runs-on: ubuntu-latest
