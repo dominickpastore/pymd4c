@@ -51,7 +51,7 @@ jobs:
       - name: Run Pytest
         run: pytest -vv test/
 
-  package-sdist-docts:
+  package-sdist-docs:
     name: Package sdist and publish docs
     needs: test
     runs-on: ubuntu-latest
