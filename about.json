@@ -1,6 +1,6 @@
 {
     "name": "pymd4c",
-    "version": "0.4.7.1b1",
+    "version": "0.4.8.0b1",
     "description": "Python bindings for MD4C",
     "author": "Dominick C. Pastore",
     "author_email": "dominickpastore@dcpx.org",
