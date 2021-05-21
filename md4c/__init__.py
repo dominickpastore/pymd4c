@@ -32,4 +32,4 @@
 # and lookup_entity
 from ._md4c import *    # noqa: F401, F403
 from .enums import BlockType, SpanType, TextType, Align     # noqa: F401
-from .parser import ParserObject
+from .parser import ParserObject    # noqa: F401

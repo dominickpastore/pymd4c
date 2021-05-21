@@ -91,11 +91,11 @@ class ASTNode:
     def attr_to_ast(attribute):
         """:class:`md4c.GenericParser` represents :ref:`attributes <Attribute>`
         as lists of 2-tuples (or None). This static method converts them to a
-        list of text :class:`ASTNode`\ s.
+        list of text :class:`ASTNode`.
 
         :param attribute: List of tuples or None
 
-        :returns: List of text :class:`ASTNode`\ s or None
+        :returns: List of text :class:`ASTNode` or None
         """
         if attribute is None:
             return None
@@ -1088,6 +1088,7 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
         image_nesting_level += 1
         super().render(image_nesting_level=image_nesting_level, **kwargs)
 
+
 class Code(ContainerNode, element_type=_SpanType.CODE):
     """Code inline. Inherits from :class:`ContainerNode`.
 
@@ -1424,7 +1425,6 @@ class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
         if url_escape:
             return self.url_escape(entity)
         return self.html_escape(entity)
-
 
 
 class CodeText(TextNode, element_type=_TextType.CODE):

@@ -27,6 +27,7 @@
 
 from ._md4c import GenericParser
 
+
 class ParserObject:
     """Object-oriented wrapper for :class:`GenericParser`. Rather than
     providing callbacks for ``enter_block``, ``leave_block``, ``enter_span``,
