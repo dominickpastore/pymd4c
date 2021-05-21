@@ -69,7 +69,11 @@ if sys.platform.startswith('win'):
     extensions = [
         Extension(
             'md4c._md4c',
-            sources=['src/pymd4c.c'],
+            sources=[
+                'src/pymd4c.c',
+                'src/generic_parser.c',
+                'src/html_renderer.c',
+            ],
             include_dirs=['C:/Program Files (x86)/MD4C/include'],
             libraries=['md4c', 'md4c-html'],
             library_dirs=['C:/Program Files (x86)/MD4C/lib']),
@@ -85,9 +89,9 @@ else:
         {
             'name': 'md4c._md4c',
             'sources': [
-                'src/html_renderer.c',
-                'src/generic_parser.c',
                 'src/pymd4c.c',
+                'src/generic_parser.c',
+                'src/html_renderer.c',
             ],
             'pkgconfig': 'md4c md4c-html',
         },
