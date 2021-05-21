@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Help Resources &#8212; PyMD4C  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing to PyMD4C" href="contributing.html" />
+    <link rel="prev" title="DOM API" href="dom_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyMD4C</a></h1>
+
+
+
+<p class="blurb">Python bindings for MD4C</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generating_html.html">Generating HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pure_parsing.html">Pure Parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom_parsing.html">DOM Parsing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom_api.html">DOM API</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Help Resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#frequently-asked-questions">Frequently Asked Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-these-docs-locally">Generating These Docs Locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#human-help">Human Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyMD4C</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="dom_api.html" title="previous chapter">DOM API</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing to PyMD4C</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="help-resources">
+<h1>Help Resources<a class="headerlink" href="#help-resources" title="Permalink to this headline">¶</a></h1>
+<section id="frequently-asked-questions">
+<h2>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h2>
+<section id="why-another-markdown-library">
+<h3>Why another Markdown library?<a class="headerlink" href="#why-another-markdown-library" title="Permalink to this headline">¶</a></h3>
+<p>The primary reason is performance. Most applications that work with Markdown
+are going to be interested in one thing and one thing only: generating HTML.
+For that, there are two performance advantages from offloading the task to C:</p>
+<ul class="simple">
+<li><p>C is more efficient with CPU cycles and memory usage than Python</p></li>
+<li><p>A bulk processing task like this can release CPython’s <a class="reference external" href="https://docs.python.org/3/glossary.html#term-global-interpreter-lock">Global Interpreter
+Lock</a> while it is not running Python code (an advantage for multithreading)</p></li>
+</ul>
+<p>There are several C libraries for Markdown parsing, but I chose MD4C for a
+couple reasons:</p>
+<ul class="simple">
+<li><p>It is one of the fastest Markdown parsing libraries out there (if not <em>the</em>
+fastest).</p></li>
+<li><p>The tests for MD4C are thorough. The author has put a lot of care into
+avoiding non-linear parsing time (meaning good protection from DOS attacks)
+and uses modern techniques like coverage testing and fuzzing. This is quite
+important considering it will likely handle untrusted input.</p></li>
+</ul>
+<p>And since Python bindings for MD4C did not yet exist, I decided to create them.</p>
+</section>
+</section>
+<section id="generating-these-docs-locally">
+<h2>Generating These Docs Locally<a class="headerlink" href="#generating-these-docs-locally" title="Permalink to this headline">¶</a></h2>
+<p>This documentation is generated with <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a>. With it installed and a local
+copy of the PyMD4C repository, you can generate your own local copy of the docs
+as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">docs</span><span class="o">/</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+<p>Now, you can browse the docs by opening “_build/html/index.html” in the browser
+of your choice.</p>
+</section>
+<section id="human-help">
+<h2>Human Help<a class="headerlink" href="#human-help" title="Permalink to this headline">¶</a></h2>
+<p>If you find you need a bit of human help, feel free to post in the <a class="reference external" href="https://github.com/dominickpastore/pymd4c/discussions">discussions</a>
+tab on GitHub. I do my best to keep an eye on these and respond.</p>
+<p>Currently, there is no mailing list, IRC channel, Discord chat, or Stack
+Overflow tag. The project is not yet big enough to warrant them.</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="dom_api.html" title="Previous document">DOM API</a>
+        </li>
+        <li>
+          <a href="contributing.html" title="Next document">Contributing to PyMD4C</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy; Copyright 2021 Dominick C. Pastore.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/help.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

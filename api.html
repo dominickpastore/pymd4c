@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>API &#8212; PyMD4C  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DOM API" href="dom_api.html" />
+    <link rel="prev" title="DOM Parsing" href="dom_parsing.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyMD4C</a></h1>
+
+
+
+<p class="blurb">Python bindings for MD4C</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generating_html.html">Generating HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pure_parsing.html">Pure Parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom_parsing.html">DOM Parsing</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#parsers-and-renderers">Parsers and Renderers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#option-flags">Option Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dom_api.html">DOM API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Help Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyMD4C</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="dom_parsing.html" title="previous chapter">DOM Parsing</a></li>
+      <li>Next: <a href="dom_api.html" title="next chapter">DOM API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-md4c">
+<span id="api"></span><h1>API<a class="headerlink" href="#module-md4c" title="Permalink to this headline">¶</a></h1>
+<p>This is the API for the <a class="reference internal" href="#module-md4c" title="md4c"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c</span></code></a> module, which provides the actual bindings
+for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</a> C library.</p>
+<section id="parsers-and-renderers">
+<h2>Parsers and Renderers<a class="headerlink" href="#parsers-and-renderers" title="Permalink to this headline">¶</a></h2>
+<section id="html-entity-helper">
+<h3>HTML Entity Helper<a class="headerlink" href="#html-entity-helper" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="option-flags">
+<span id="options"></span><h2>Option Flags<a class="headerlink" href="#option-flags" title="Permalink to this headline">¶</a></h2>
+<p>PyMD4C’s parsers and renderers accept options in two forms: An OR’d set of
+flags or as keyword arguments that accept <code class="docutils literal notranslate"><span class="pre">True</span></code>. All parsers and renderers
+accept the parsing options, but renderer options are specific to the renderer.</p>
+<section id="parser-option-flags">
+<h3>Parser Option Flags<a class="headerlink" href="#parser-option-flags" title="Permalink to this headline">¶</a></h3>
+<section id="basic-option-flags">
+<h4>Basic option flags<a class="headerlink" href="#basic-option-flags" title="Permalink to this headline">¶</a></h4>
+<dl>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_COLLAPSEWHITESPACE</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">collapse_whitespace</span></code></p>
+<p>In normal text, collapse non-trivial whitespace into a single space.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_PERMISSIVEATXHEADERS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">permissive_atx_headers</span></code></p>
+<p>Do not require a space in ATX headers (e.g. <code class="docutils literal notranslate"><span class="pre">###Header</span></code>)</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_PERMISSIVEURLAUTOLINKS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">permissive_url_autolinks</span></code></p>
+<p>Convert URLs to links even without <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_PERMISSIVEEMAILAUTOLINKS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">permissive_email_autolinks</span></code></p>
+<p>Convert email addresses to links even without <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">mailto:</span></code>.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_NOINDENTEDCODEBLOCKS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">no_indented_code_blocks</span></code></p>
+<p>Disable indented code blocks (only allow fenced code blocks).</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_NOHTMLBLOCKS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">no_html_blocks</span></code></p>
+<p>Disable raw HTML blocks.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_NOHTMLSPANS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">no_html_spans</span></code></p>
+<p>Disable raw HTML inlines.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_TABLES</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">tables</span></code></p>
+<p>Enable tables extension.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_STRIKETHROUGH</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">strikethrough</span></code></p>
+<p>Enable strikethrough extension.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_PERMISSIVEWWWAUTOLINKS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">permissive_www_autolinks</span></code></p>
+<p>Enable www autolinks (even without any scheme prefix, as long as they begin
+with <code class="docutils literal notranslate"><span class="pre">www.</span></code>).</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_TASKLISTS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">tasklists</span></code></p>
+<p>Enable task lists extension.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_LATEXMATHSPANS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">latex_math_spans</span></code></p>
+<p>Enable <code class="docutils literal notranslate"><span class="pre">$</span></code> and <code class="docutils literal notranslate"><span class="pre">$$</span></code> containing LaTeX equations.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_WIKILINKS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">wikilinks</span></code></p>
+<p>Enable wiki links extension.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_UNDERLINE</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">underline</span></code></p>
+<p>Enable underline extension (and disable <code class="docutils literal notranslate"><span class="pre">_</span></code> for regular emphasis).</p>
+</dd>
+</dl>
+</section>
+<section id="combination-option-flags">
+<h4>Combination option flags<a class="headerlink" href="#combination-option-flags" title="Permalink to this headline">¶</a></h4>
+<p>These enable several related parser options, or options to match a particular
+dialect of Markdown as closely as possible.</p>
+<dl>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_PERMISSIVEAUTOLINKS</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">permissive_autolinks</span></code></p>
+<p>Enables all varieties of autolinks:</p>
+<ul class="simple">
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_PERMISSIVEURLAUTOLINKS</span></code></p></li>
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_PERMISSIVEEMAILAUTOLINKS</span></code></p></li>
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_PERMISSIVEWWWAUTOLINKS</span></code></p></li>
+</ul>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_NOHTML</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">no_html</span></code></p>
+<p>Disables all raw HTML tags:</p>
+<ul class="simple">
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_NOHTMLBLOCKS</span></code></p></li>
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_NOHTMLSPANS</span></code></p></li>
+</ul>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_DIALECT_GITHUB</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">dialect_github</span></code></p>
+<p>Parse GitHub-Flavored Markdown (GFM), which enables the following flags:</p>
+<ul class="simple">
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_PERMISSIVEAUTOLINKS</span></code></p></li>
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_TABLES</span></code></p></li>
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_STRIKETHROUGH</span></code></p></li>
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">MD_FLAG_TASKLISTS</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="html-renderer-option-flags">
+<h3>HTML Renderer Option Flags<a class="headerlink" href="#html-renderer-option-flags" title="Permalink to this headline">¶</a></h3>
+<p>These options are only accepted by the <code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code>.</p>
+<dl>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_HTML_FLAG_DEBUG</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">debug</span></code></p>
+<p>For development use, send MD4C debug output to stderr.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_HTML_FLAG_VERBATIM_ENTITIES</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">verbatim_entities</span></code></p>
+<p>Do not replace HTML entities with the actual character (e.g. <code class="docutils literal notranslate"><span class="pre">&amp;copy;</span></code> with
+“©”).</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_HTML_FLAG_SKIP_UTF8_BOM</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">skip_utf8_bom</span></code></p>
+<p>Omit BOM from the start of UTF-8 input.</p>
+</dd>
+<dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_HTML_FLAG_XHTML</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">xhtml</span></code></p>
+</dd>
+<dt><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/doctest.html">https://www.sphinx-doc.org/en/master/usage/extensions/doctest.html</a></dt><dd><p>Generate XHTML instead of HTML.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
+<p>The MD4C library uses various enums to provide data to callbacks. PyMD4C uses
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code>s to encapsulate these.</p>
+</section>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="dom_parsing.html" title="Previous document">DOM Parsing</a>
+        </li>
+        <li>
+          <a href="dom_api.html" title="Next document">DOM API</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy; Copyright 2021 Dominick C. Pastore.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Installation &#8212; PyMD4C  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Generating HTML" href="generating_html.html" />
+    <link rel="prev" title="PyMD4C Documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyMD4C</a></h1>
+
+
+
+<p class="blurb">Python bindings for MD4C</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-from-pypi">Install from PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-and-install-from-source">Build and Install from Source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generating_html.html">Generating HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pure_parsing.html">Pure Parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom_parsing.html">DOM Parsing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom_api.html">DOM API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Help Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyMD4C</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">PyMD4C Documentation</a></li>
+      <li>Next: <a href="generating_html.html" title="next chapter">Generating HTML</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<section id="install-from-pypi">
+<h2>Install from PyPI<a class="headerlink" href="#install-from-pypi" title="Permalink to this headline">¶</a></h2>
+<p>PyMD4C is available on PyPI under the name <a class="reference external" href="https://pypi.org/project/pymd4c/"><code class="docutils literal notranslate"><span class="pre">pymd4c</span></code></a>. Install it with
+pip like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pymd4c</span>
+</pre></div>
+</div>
+<p>This is the recommended method to obtain PyMD4C. It should work well on most
+Linux distributions, Windows, and macOS.</p>
+<p>If this does not work, there are a couple potential reasons:</p>
+<ol class="arabic simple">
+<li><p>You do not have pip installed, or your version is too old. See <a class="reference external" href="https://packaging.python.org/tutorials/installing-packages/">Installing
+Packages - Python Packaging User Guide</a>.</p></li>
+<li><p>Your version of Python is too old. This is a platform wheel, so it is built
+for each Python version separately. Python versions older than 3.6 are not
+supported. If your Python version is older than that, try upgrading.</p></li>
+<li><p>Your OS or architecture is incompatible. Platform wheels require a separate
+build for each OS and architecture, so if yours is uncommon, there may not
+be a prebuilt package for it.</p>
+<ul class="simple">
+<li><p>If you are running Windows, you may be running 32-bit (x86) Python.
+Currently, only packages for 64-bit (x86-64) Python are built. If you can,
+try running 64-bit Python.</p></li>
+<li><p>If you are on macOS, your macOS version might be too old.</p></li>
+<li><p>If you are on Linux, you may be running on an architecture other than
+x86-64, a distribution that is too old, or a more esoteric distribution
+unsupported by <a class="reference external" href="https://github.com/pypa/manylinux">manylinux2014</a>. (Note that many architectures
+supported by manylinux2014 are not built at this time, including x86,
+arm64, ppc64le, and s390x.)</p></li>
+<li><p>If you are on some other platform, unfortunately, it is not supported by
+the pre-built packages.</p></li>
+</ul>
+</li>
+</ol>
+<p>If a build is not available for your platform (or you simply want to), you can
+build and install from source. The instructions below should assist.</p>
+<p>If a build is not available or not working for your platform and you think it
+should be, consider opening a <a class="reference external" href="https://github.com/dominickpastore/pymd4c/issues">GitHub issue</a>.</p>
+</section>
+<section id="build-and-install-from-source">
+<h2>Build and Install from Source<a class="headerlink" href="#build-and-install-from-source" title="Permalink to this headline">¶</a></h2>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<p>This package depends on the MD4C library. It may be available through your
+package manager. Otherwise, it can be built from source as follows:</p>
+<ol class="arabic">
+<li><p>Make sure you have <a class="reference external" href="https://cmake.org/">CMake</a> and a C compiler installed.</p></li>
+<li><p>Download and extract the matching release from the <a class="reference external" href="https://github.com/mity/md4c/releases">MD4C releases</a>
+page (e.g. for PyMD4C version W.X.Y.Z, download MD4C version W.X.Y).</p></li>
+<li><p>On Unix-like systems (including macOS):</p>
+<ul>
+<li><p>Inside the extracted file, run the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">build</span>
+<span class="n">cd</span> <span class="n">build</span>
+<span class="n">cmake</span> <span class="o">..</span>
+<span class="n">make</span>
+<span class="c1"># Do as root:</span>
+<span class="n">make</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>The install step must be run as root. The library will install to
+/usr/local by default.</p>
+</li>
+<li><p>You may need to rebuild the ldconfig cache (also as root):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ldconfig</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>On Windows:</p>
+<ul>
+<li><p>Inside the extracted file, run the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">build</span>
+<span class="n">cd</span> <span class="n">build</span>
+<span class="n">cmake</span> <span class="o">-</span><span class="n">DCMAKE_BUILD_TYPE</span><span class="o">=</span><span class="n">Release</span> <span class="o">..</span>
+<span class="n">cmake</span> <span class="o">--</span><span class="n">build</span> <span class="o">.</span> <span class="o">--</span><span class="n">config</span> <span class="n">Release</span>
+<span class="n">cmake</span> <span class="o">--</span><span class="n">install</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>The library will install to “C:/Program Files (x86)/MD4C/” by default.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>In addition, on Unix-like systems (including macOS), the <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> tool
+must be available to build PyMD4C. After PyMD4C is built, it is no longer
+required (that is, it is not a prerequisite for actually <em>using</em> PyMD4C). This
+tool is likely available on your system already, so this should not be an issue
+in most cases.</p>
+<p>Finally, note that since this package uses C extensions, development headers
+for Python must be installed for the build to succeed. If you are using Linux,
+some distributions split these off from the main Python package. Install
+<code class="docutils literal notranslate"><span class="pre">python-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">python-devel</span></code> to get them.</p>
+</section>
+<section id="build-install">
+<h3>Build/Install<a class="headerlink" href="#build-install" title="Permalink to this headline">¶</a></h3>
+<p>Build and install as you would for any Python source repository. Download and
+extract a release or clone the repository, and run the following inside:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Alternatively, you can have pip fetch and build from the latest source
+distribution on PyPI:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">binary</span> <span class="n">pymd4c</span> <span class="n">pymd4c</span>
+</pre></div>
+</div>
+<p>Note that on Windows, setup.py assumes the MD4C library was installed at
+“C:/Program Files (x86)/MD4C/” (this is the default location when building MD4C
+from source, as described above). If this is not the case, installation will
+fail.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="index.html" title="Previous document">PyMD4C Documentation</a>
+        </li>
+        <li>
+          <a href="generating_html.html" title="Next document">Generating HTML</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy; Copyright 2021 Dominick C. Pastore.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

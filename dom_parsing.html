@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>DOM Parsing &#8212; PyMD4C  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Pure Parsing" href="pure_parsing.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyMD4C</a></h1>
+
+
+
+<p class="blurb">Python bindings for MD4C</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generating_html.html">Generating HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pure_parsing.html">Pure Parsing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DOM Parsing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-does-dom-parsing-mean">What does “DOM parsing” mean?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-use-dom-like-parsing">Why use DOM-like parsing?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-an-ast">Generating an AST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ast-node-objects">AST Node Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ast-manipulation">AST Manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-custom-ast-classes">Using Custom AST Classes</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom_api.html">DOM API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Help Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyMD4C</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="pure_parsing.html" title="previous chapter">Pure Parsing</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="dom-parsing">
+<h1>DOM Parsing<a class="headerlink" href="#dom-parsing" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I am seeking feedback for this feature. If there are any changes or
+additions to the API you feel would make it more useful, or if you have any
+other suggestions, please <a class="reference external" href="https://github.com/dominickpastore/pymd4c/discussions/categories/general">let me know</a> (or <a class="reference external" href="mailto:pymd4c&#37;&#52;&#48;dcpx&#46;org">via email</a> if you prefer).</p>
+<p>Be aware that I may make updates to the <a class="reference internal" href="dom_api.html#module-md4c.domparser" title="md4c.domparser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c.domparser</span></code></a> API in
+response to feedback I receive. When that is no longer the case, I will
+remove this message and make a note in the <a class="reference external" href="https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md">changelog</a>.</p>
+</div>
+<section id="what-does-dom-parsing-mean">
+<h2>What does “DOM parsing” mean?<a class="headerlink" href="#what-does-dom-parsing-mean" title="Permalink to this headline">¶</a></h2>
+<p>In the world of XML, there are two general types of parsers: SAX (i.e.
+event-based) and DOM (i.e. tree-based). SAX parsers traverse the document, and
+as each tag or bit of content is parsed, the appropriate event is emitted
+(enter-element, leave-element, characters) and a callback handles it. DOM
+parsers construct a tree representation of the entire document for the caller.</p>
+<p>While the concepts were originally conceived for XML, most parsers for any
+markup language usually fit into these same two categories. The MD4C C library
+and the main <a class="reference internal" href="api.html#module-md4c" title="md4c"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c</span></code></a> Python module take a definitive SAX-like approach to
+parsing (and the MD4C library is proud of it). This is clear from the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code> API.</p>
+<p>The <a class="reference internal" href="dom_api.html#module-md4c.domparser" title="md4c.domparser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c.domparser</span></code></a> module provides a DOM-like API for use cases where
+that style is more appropriate. It produces an AST where each paragraph,
+heading, link, block quote, etc. is represented by an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code>.</p>
+</section>
+<section id="why-use-dom-like-parsing">
+<h2>Why use DOM-like parsing?<a class="headerlink" href="#why-use-dom-like-parsing" title="Permalink to this headline">¶</a></h2>
+<p>You may find that the <code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code> and SAX-like parsers do not
+provide the flexibility you need. A typical use-case would be if you want to
+manipulate the input document before it is rendered. For example, maybe you
+want to convert every occurrence of a certain word to a hyperlink, except in
+code blocks. Or you want to delete everything after the first paragraph under
+each heading.</p>
+<p>The tradeoff for this flexibility is speed:</p>
+<ul class="simple">
+<li><p>DOM parsers are more resource-intensive than SAX parsers in general, due to
+the overhead from producing a tree representation of the entire document in
+memory.</p></li>
+<li><p>Furthermore, the SAX-like parsers in PyMD4C are a thin layer on top of MD4C,
+which is heavily optimized C code. <code class="xref py py-class docutils literal notranslate"><span class="pre">DOMParser</span></code> is
+implemented in Python on top of <code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code>.</p></li>
+</ul>
+</section>
+<section id="generating-an-ast">
+<h2>Generating an AST<a class="headerlink" href="#generating-an-ast" title="Permalink to this headline">¶</a></h2>
+<p>Since many applications will not need them, the DOM-like parser and the classes
+for the AST are all in a separate module: <a class="reference internal" href="dom_api.html#module-md4c.domparser" title="md4c.domparser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c.domparser</span></code></a>. The parser
+itself is the <code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.DOMParser</span></code> class. In the most simple case,
+it is used like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c.domparser</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;README.md&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">markdown</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">DOMParser</span><span class="p">()</span>
+<span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>At this point, <code class="docutils literal notranslate"><span class="pre">ast</span></code> is the root <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> node of
+the tree. You can render the tree as HTML:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">html</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Or you can traverse the tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span><span class="n">ast_node</span><span class="p">):</span>
+    <span class="c1"># Do stuff on this node before traversing to children</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">ast_node</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">traverse</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="c1"># No children</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Do stuff on this node after traversing to children</span>
+
+<span class="n">traverse</span><span class="p">(</span><span class="n">ast</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="ast-node-objects">
+<h2>AST Node Objects<a class="headerlink" href="#ast-node-objects" title="Permalink to this headline">¶</a></h2>
+<p>Each type of Markdown element (i.e. each type of block, span, and text) has an
+associated AST type. For example, <code class="xref py py-class docutils literal notranslate"><span class="pre">Paragraph</span></code> is for
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">BlockType.P</span></code>. See <a class="reference internal" href="dom_api.html#astobjs"><span class="std std-ref">Base AST Classes</span></a> for the full list.
+For Markdown elements with additional details attached to them (see
+<a class="reference internal" href="pure_parsing.html#details"><span class="std std-ref">Details Dicts</span></a>), each detail becomes an attribute in the object. For instance,
+a <code class="xref py py-class docutils literal notranslate"><span class="pre">Heading</span></code> object <code class="docutils literal notranslate"><span class="pre">hdg</span></code> would have attribute
+<code class="docutils literal notranslate"><span class="pre">hdg.level</span></code>.</p>
+<p>There are a few base classes that the AST classes inherit from:</p>
+<dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.ASTNode</span></code></dt><dd><p>All AST classes inherit from this class. It provides the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">parent</span></code> attributes. This is also the class
+that should be used to construct all AST node objects, no matter their type.
+More on that in the later sections.</p>
+</dd>
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.ContainerNode</span></code></dt><dd><p>All AST classes that are not leaf nodes inherit from this class. That is,
+all blocks and inlines except <code class="xref py py-class docutils literal notranslate"><span class="pre">HorizontalRule</span></code>. It
+provides the <code class="xref py py-attr docutils literal notranslate"><span class="pre">children</span></code> attribute and
+the <code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code> methods for adding new children.</p>
+</dd>
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.TextNode</span></code></dt><dd><p>All AST classes associated with <code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.TextType</span></code>s inherit from this.
+It provides the <code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code> attribute containing
+the unprocessed text from the parser.</p>
+</dd>
+</dl>
+</section>
+<section id="ast-manipulation">
+<h2>AST Manipulation<a class="headerlink" href="#ast-manipulation" title="Permalink to this headline">¶</a></h2>
+<p>One of the primary benefits of using a DOM-like parser is you can do AST
+manipulations on the parsed document before rendering it in HTML. Below are a
+couple examples of AST manipulations you could do.</p>
+<section id="add-a-copyright-notice">
+<h3>Add a Copyright Notice<a class="headerlink" href="#add-a-copyright-notice" title="Permalink to this headline">¶</a></h3>
+<p>Suppose you wanted to add a horizontal rule and then a copyright notice at the
+end of the document. (This probably doesn’t require generating the full AST,
+but it serves as a simple example.) You could do that like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c</span>
+<span class="kn">import</span> <span class="nn">md4c.domparser</span>
+
+<span class="c1"># Parse document</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;document.md&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">markdown</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">DOMParser</span><span class="p">()</span>
+<span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
+
+<span class="c1"># Generate horizontal rule and copyright notice paragraph</span>
+<span class="n">hr</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">BlockType</span><span class="o">.</span><span class="n">HR</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">BlockType</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
+
+<span class="c1"># Add copyright notice text to the paragraph</span>
+<span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+    <span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Copyright &#39;</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+    <span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">ENTITY</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;copy;&#39;</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+    <span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39; 2021 John Doe&#39;</span><span class="p">))</span>
+
+<span class="c1"># Add the horizontal rule and copyright notice to the end of the document</span>
+<span class="n">ast</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hr</span><span class="p">)</span>
+<span class="n">ast</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+<span class="c1"># Render</span>
+<span class="n">html</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>There are several important points to note:</p>
+<ul class="simple">
+<li><p>New nodes are always constructed using the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code>
+constructor, no matter the type. It will construct the appropriate subclass
+depending on the node type enum member passed in as the first argument.</p></li>
+<li><p>Additional arguments for the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code> constructor,
+when given, must be keyword-only. For text nodes, this must be a single
+<code class="docutils literal notranslate"><span class="pre">text</span></code> argument. For nodes with <a class="reference internal" href="pure_parsing.html#details"><span class="std std-ref">details</span></a>, these would
+correspond with the keys for the details dict.</p></li>
+<li><p>Nodes can be added as children by calling the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code> method on the parent. That
+appends the node to the parent’s children list and sets the child node’s
+parent.</p></li>
+<li><p>Neither the horizontal rule node nor any of the text nodes can accept
+children. They do not have <code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code> (or
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code>) methods.</p></li>
+</ul>
+</section>
+<section id="linkify-a-keyword">
+<h3>Linkify a Keyword<a class="headerlink" href="#linkify-a-keyword" title="Permalink to this headline">¶</a></h3>
+<p>Now a slightly more involved example: You want to replace every instance of
+your company name, “Example, Inc.” with a link to its homepage, but only in
+normal text (i.e. not code blocks, raw HTML, etc.). You might do that as
+follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c</span>
+<span class="kn">import</span> <span class="nn">md4c.domparser</span>
+
+<span class="c1"># Parse document</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;document.md&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">markdown</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">DOMParser</span><span class="p">()</span>
+<span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">linkify_name</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;If there are any instances of the company name in child</span>
+<span class="sd">    i of the parent, linkify them and return the index of the</span>
+<span class="sd">    last inserted child. If there are not, return i.&quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+    <span class="n">before</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;Example, Inc.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="c1"># Name not present.</span>
+        <span class="k">return</span> <span class="n">i</span>
+
+    <span class="c1"># Remove old child</span>
+    <span class="n">parent</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1"># Add the before portion, if not empty</span>
+    <span class="k">if</span> <span class="n">before</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">before_node</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+            <span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">before</span><span class="p">)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">before_node</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Add the link</span>
+    <span class="n">link_node</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+        <span class="n">md4c</span><span class="o">.</span><span class="n">SpanType</span><span class="o">.</span><span class="n">A</span><span class="p">,</span>
+        <span class="n">href</span><span class="o">=</span><span class="p">[(</span><span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span>
+               <span class="s1">&#39;https://example.com/&#39;</span><span class="p">)])</span>
+    <span class="n">link_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+        <span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">name</span><span class="p">))</span>
+    <span class="n">parent</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">link_node</span><span class="p">)</span>
+
+    <span class="c1"># Add the after portion and check for more instances,</span>
+    <span class="c1"># if not empty</span>
+    <span class="k">if</span> <span class="n">after</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">after_node</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+            <span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">after</span><span class="p">)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">after_node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">linkify_name</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">i</span>
+
+<span class="k">def</span> <span class="nf">find_and_linkify_name</span><span class="p">(</span><span class="n">ast_node</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Traverse the AST looking for normal text nodes,</span>
+<span class="sd">    then linkify the company name&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">ast_node</span><span class="o">.</span><span class="n">children</span><span class="p">):</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="n">ast_node</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">linkify_name</span><span class="p">(</span><span class="n">ast_node</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">find_and_linkify_name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="c1"># No children</span>
+        <span class="k">pass</span>
+
+<span class="c1"># Linkify company name and render</span>
+<span class="n">find_and_linkify_name</span><span class="p">(</span><span class="n">ast</span><span class="p">)</span>
+<span class="n">html</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Some points to note about this example:</p>
+<ul class="simple">
+<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code> method is like
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code>, except it lets you pick where
+in the parent’s children list to insert the new child node.</p></li>
+<li><p>There is no special method to remove a child. Just pop it from the parent’s
+children list.</p></li>
+<li><p>Be careful when modifying the children list as you iterate over it. It’s not
+safe to use a for loop on a list that you intend to insert or remove items
+from.</p></li>
+<li><p>The node type is identified with <code class="docutils literal notranslate"><span class="pre">child.type</span> <span class="pre">is</span> <span class="pre">md4c.TextType.NORMAL</span></code>, not
+<code class="docutils literal notranslate"><span class="pre">isinstance(child,</span> <span class="pre">md4c.domparser.NormalText)</span></code>. The former works even if
+using a custom AST class to handle normal text, while the latter only works
+with the default <code class="xref py py-class docutils literal notranslate"><span class="pre">NormalText</span></code> class.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This example was just a demonstration. If you wanted to do something like
+this in production code, you should consider that 1) normal text can appear
+in places where the link replacement shouldn’t happen (e.g. inside the text
+of an existing link), and 2) numeric entities (e.g. <code class="docutils literal notranslate"><span class="pre">&amp;#x45;</span></code> for <code class="docutils literal notranslate"><span class="pre">E</span></code>) can
+be used to foil the matching.</p>
+</div>
+</section>
+</section>
+<section id="using-custom-ast-classes">
+<h2>Using Custom AST Classes<a class="headerlink" href="#using-custom-ast-classes" title="Permalink to this headline">¶</a></h2>
+<p>You can customize the classes used for the AST. The main reason to do so is for
+customizing the rendering functionality, either to tailor the HTML generation
+to your particular application or generate another output format altogether.</p>
+<p>To provide an example, suppose you wanted to use MathJax to render your
+equations. The default <code class="xref py py-class docutils literal notranslate"><span class="pre">InlineMath</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DisplayMath</span></code> classes render <code class="docutils literal notranslate"><span class="pre">&lt;x-equation&gt;</span></code> tags, but
+you need them to render <code class="docutils literal notranslate"><span class="pre">\(...\)</span></code> and <code class="docutils literal notranslate"><span class="pre">\[...\]</span></code> instead. Here is how you
+could do that:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c</span>
+<span class="kn">import</span> <span class="nn">md4c.domparser</span>
+
+<span class="c1"># Create custom AST classes for InlineMath and DisplayMath</span>
+
+<span class="k">class</span> <span class="nc">InlineMathJax</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">InlineMath</span><span class="p">,</span>
+                    <span class="n">element_type</span><span class="o">=</span><span class="n">md4c</span><span class="o">.</span><span class="n">SpanType</span><span class="o">.</span><span class="n">LATEXMATH</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">(&#39;</span>
+
+    <span class="k">def</span> <span class="nf">render_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">)&#39;</span>
+
+<span class="k">class</span> <span class="nc">DisplayMathJax</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">DisplayMath</span><span class="p">,</span>
+                     <span class="n">element_type</span><span class="o">=</span><span class="n">md4c</span><span class="o">.</span><span class="n">SpanType</span><span class="o">.</span><span class="n">LATEXMATH_DISPLAY</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">[&#39;</span>
+
+    <span class="k">def</span> <span class="nf">render_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">]&#39;</span>
+
+<span class="c1"># Parse and render document</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;document.md&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">markdown</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">DOMParser</span><span class="p">(</span><span class="n">latex_math_spans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
+<span class="n">html</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The magic here is in the class parameters: Alongside the parent class, we have
+an <code class="docutils literal notranslate"><span class="pre">element_type</span></code> parameter. So long as one of our class’s ancestors is
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code> and <code class="docutils literal notranslate"><span class="pre">element_type</span></code> is provided,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code> will register our new class as the one to
+construct for that element type. This needs to be done before calling the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code> method.</p>
+<p>Some additional notes about the AST classes:</p>
+<ul class="simple">
+<li><p>Most of the block and span classes (all except
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HorizontalRule</span></code>) inherit from
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code>. For these, you can almost always rely
+on the default <code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code> method as-is and
+just customize <code class="xref py py-meth docutils literal notranslate"><span class="pre">render_pre()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">render_post()</span></code>. They run before and after
+the children are rendered, respectively.</p></li>
+<li><p>The CommonMark spec allows most span elements to occur inside an image
+element. HTML does <em>not</em> allow this, since the image text becomes the alt
+text attribute. To handle this, most of the span and text elements accept an
+<code class="docutils literal notranslate"><span class="pre">image_nesting_level</span></code> argument for their
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code> method. If <code class="docutils literal notranslate"><span class="pre">image_nesting_level</span> <span class="pre">&gt;</span>
+<span class="pre">0</span></code>, they render without HTML tags.</p></li>
+<li><p>Normally, text nodes appear in the regular text of a document. But sometimes,
+they appear in URL contexts (link targets and image sources). In those
+contexts, the render function for text nodes is passed an additional keyword
+argument: <code class="docutils literal notranslate"><span class="pre">url_escape</span></code>. When True, normal text and entities must process
+their output through their <code class="xref py py-meth docutils literal notranslate"><span class="pre">url_escape()</span></code>
+method.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="pure_parsing.html" title="Previous document">Pure Parsing</a>
+        </li>
+        <li>
+          <a href="api.html" title="Next document">API</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy; Copyright 2021 Dominick C. Pastore.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/dom_parsing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
