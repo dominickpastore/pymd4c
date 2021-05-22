@@ -102,8 +102,223 @@
 for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</a> C library.</p>
 <section id="parsers-and-renderers">
 <h2>Parsers and Renderers<a class="headerlink" href="#parsers-and-renderers" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.HTMLRenderer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">HTMLRenderer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser_flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer_flags</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.HTMLRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class to convert Markdown to HTML, implemented in C on top of the MD4C-HTML library. This is the fastest way to convert Markdown to HTML with PyMD4C.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parser_flags</strong> (<em>int</em><em>, </em><em>optional</em>) – Zero or more parser option flags OR’d together. See <a class="reference internal" href="#options"><span class="std std-ref">Option Flags</span></a>.</p></li>
+<li><p><strong>renderer_flags</strong> (<em>int</em><em>, </em><em>optional</em>) – Zero or more HTML renderer option flags OR’d together. See <a class="reference internal" href="#options"><span class="std std-ref">Option Flags</span></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Option flags may also be specified in keyword-argument form for more readability. See <a class="reference internal" href="#options"><span class="std std-ref">Option Flags</span></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="md4c.HTMLRenderer.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markdown</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.HTMLRenderer.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a Markdown document and return the rendered HTML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>markdown</strong> (<em>str</em><em> or </em><em>bytes</em>) – The Markdown text to parse. If provided as a <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, it must be UTF-8 encoded.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The generated HTML</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#md4c.ParseError" title="md4c.ParseError"><strong>ParseError</strong></a> – if there is a runtime error while parsing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.GenericParser">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">GenericParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser_flags</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.GenericParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>SAX-like Markdown parser, implemented in C on top of the bare MD4C parser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parser_flags</strong> (<em>int</em><em>, </em><em>optional</em>) – Zero or more parser option flags OR’d together. See <a class="reference internal" href="#options"><span class="std std-ref">Option Flags</span></a>.</p>
+</dd>
+</dl>
+<p>Option flags may also be specified in keyword-argument form for more readability. See <a class="reference internal" href="#options"><span class="std std-ref">Option Flags</span></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="md4c.GenericParser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markdown</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enter_block_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_block_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enter_span_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_span_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.GenericParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a Markdown document using the provided callbacks for output</p>
+<p>Callbacks must all accept two parameters. The first describes the type of block, inline, or text. The second is a dict with details about the block or inline or a string containing the text itself. See <a class="reference internal" href="pure_parsing.html#callbacks"><span class="std std-ref">Callbacks</span></a> for more information.</p>
+<p>If a callback raises <a class="reference internal" href="#md4c.StopParsing" title="md4c.StopParsing"><code class="xref py py-class docutils literal notranslate"><span class="pre">StopParsing</span></code></a>, parsing will abort with no error. Any other exception will abort parsing and propagate back to the caller of this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>markdown</strong> (<em>str</em><em> or </em><em>bytes</em>) – The Markdown text to parse. If provided as a <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, it must be UTF-8 encoded.</p></li>
+<li><p><strong>enter_block_callback</strong> (<em>function</em><em> or </em><em>callable</em>) – Callback to be called when the parser enters a new block element</p></li>
+<li><p><strong>leave_block_callback</strong> (<em>function</em><em> or </em><em>callable</em>) – Callback to be called when the parser leaves a block element</p></li>
+<li><p><strong>enter_span_callback</strong> (<em>function</em><em> or </em><em>callable</em>) – Callback to be called when the parser enters a new inline element</p></li>
+<li><p><strong>leave_span_callback</strong> (<em>function</em><em> or </em><em>callable</em>) – Callback to be called when the parser leaves a inline element</p></li>
+<li><p><strong>text_callback</strong> (<em>function</em><em> or </em><em>callable</em>) – Callback to be called when the parser has text to add to the current block or inline element</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#md4c.ParseError" title="md4c.ParseError"><strong>ParseError</strong></a> – if there is a runtime error while parsing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.ParserObject">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">ParserObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.ParserObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object-oriented wrapper for <a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>. Rather than
+providing callbacks for <code class="docutils literal notranslate"><span class="pre">enter_block</span></code>, <code class="docutils literal notranslate"><span class="pre">leave_block</span></code>, <code class="docutils literal notranslate"><span class="pre">enter_span</span></code>,
+<code class="docutils literal notranslate"><span class="pre">leave_span</span></code>, and <code class="docutils literal notranslate"><span class="pre">text</span></code> to a <code class="docutils literal notranslate"><span class="pre">parse</span></code> function, this base class can
+be subclassed to provide implementations for them.</p>
+<p>When this class’s <a class="reference internal" href="#md4c.ParserObject.parse" title="md4c.ParserObject.parse"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse()</span></code></a> function is called, it uses its own
+<a class="reference internal" href="#md4c.ParserObject.enter_block" title="md4c.ParserObject.enter_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">enter_block()</span></code></a>, <a class="reference internal" href="#md4c.ParserObject.leave_block" title="md4c.ParserObject.leave_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">leave_block()</span></code></a>, <a class="reference internal" href="#md4c.ParserObject.enter_span" title="md4c.ParserObject.enter_span"><code class="xref py py-func docutils literal notranslate"><span class="pre">enter_span()</span></code></a>,
+<a class="reference internal" href="#md4c.ParserObject.leave_span" title="md4c.ParserObject.leave_span"><code class="xref py py-func docutils literal notranslate"><span class="pre">leave_span()</span></code></a>, and <a class="reference internal" href="#md4c.ParserObject.text" title="md4c.ParserObject.text"><code class="xref py py-func docutils literal notranslate"><span class="pre">text()</span></code></a> functions as callbacks.</p>
+<p>Arguments to the constructor are passed through to <a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>
+as-is to set parser options.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="md4c.ParserObject.enter_block">
+<span class="sig-name descname"><span class="pre">enter_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.ParserObject.enter_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parser is entering a block element. This function
+should be overridden in subclasses. By default, it does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block_type</strong> – An instance of the <a class="reference internal" href="#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.BlockType</span></code></a> enum
+representing the type of block being entered</p></li>
+<li><p><strong>details</strong> – A dict that contains extra information for certain
+types of blocks. For example, heading blocks provide
+<code class="docutils literal notranslate"><span class="pre">'level'</span></code>. Keys are strings. Values are either
+integers, strings, lists of tuples, or <code class="docutils literal notranslate"><span class="pre">None</span></code>. For
+more information, see the documentation for
+<a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="md4c.ParserObject.leave_block">
+<span class="sig-name descname"><span class="pre">leave_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.ParserObject.leave_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parser is leaving a block element. This function
+should be overridden in subclasses. By default, it does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block_type</strong> – An instance of the <a class="reference internal" href="#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.BlockType</span></code></a> enum
+representing the type of block being left</p></li>
+<li><p><strong>details</strong> – A dict that contains extra information for certain
+types of blocks. For example, heading blocks provide
+<code class="docutils literal notranslate"><span class="pre">'level'</span></code>. Keys are strings. Values are either
+integers, strings, lists of tuples, or <code class="docutils literal notranslate"><span class="pre">None</span></code>. For
+more information, see the documentation for
+<a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="md4c.ParserObject.enter_span">
+<span class="sig-name descname"><span class="pre">enter_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.ParserObject.enter_span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parser is entering an inline element. This function
+should be overridden in subclasses. By default, it does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>span_type</strong> – An instance of the <a class="reference internal" href="#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.SpanType</span></code></a> enum
+representing the type of inline being entered</p></li>
+<li><p><strong>details</strong> – A dict that contains extra information for certain
+types of inlines. For example, links provide <code class="docutils literal notranslate"><span class="pre">'href'</span></code>
+and <code class="docutils literal notranslate"><span class="pre">'title'</span></code>. Keys are strings. Values are either
+integers, strings, lists of tuples, or <code class="docutils literal notranslate"><span class="pre">None</span></code>. For
+more information, see the documentation for
+<a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="md4c.ParserObject.leave_span">
+<span class="sig-name descname"><span class="pre">leave_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.ParserObject.leave_span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parser is entering an inline element. This function
+should be overridden in subclasses. By default, it does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>span_type</strong> – An instance of the <a class="reference internal" href="#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.SpanType</span></code></a> enum
+representing the type of inline being entered</p></li>
+<li><p><strong>details</strong> – A dict that contains extra information for certain
+types of inlines. For example, links provide <code class="docutils literal notranslate"><span class="pre">'href'</span></code>
+and <code class="docutils literal notranslate"><span class="pre">'title'</span></code>. Keys are strings. Values are either
+integers, strings, lists of tuples, or <code class="docutils literal notranslate"><span class="pre">None</span></code>. For
+more information, see the documentation for
+<a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="md4c.ParserObject.text">
+<span class="sig-name descname"><span class="pre">text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.ParserObject.text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parser has text to add to the current block or
+inline element. This function should be overridden in subclasses. By
+default, it does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text_type</strong> – An instance of the <a class="reference internal" href="#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.TextType</span></code></a> enum
+representing the type of text element</p></li>
+<li><p><strong>text</strong> – A string containing the actual text to add</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="md4c.ParserObject.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markdown</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.ParserObject.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a Markdown document using this object’s <a class="reference internal" href="#md4c.ParserObject.enter_block" title="md4c.ParserObject.enter_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">enter_block()</span></code></a>,
+<a class="reference internal" href="#md4c.ParserObject.leave_block" title="md4c.ParserObject.leave_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">leave_block()</span></code></a>, <a class="reference internal" href="#md4c.ParserObject.enter_span" title="md4c.ParserObject.enter_span"><code class="xref py py-func docutils literal notranslate"><span class="pre">enter_span()</span></code></a>, <a class="reference internal" href="#md4c.ParserObject.leave_span" title="md4c.ParserObject.leave_span"><code class="xref py py-func docutils literal notranslate"><span class="pre">leave_span()</span></code></a>, and
+<a class="reference internal" href="#md4c.ParserObject.text" title="md4c.ParserObject.text"><code class="xref py py-func docutils literal notranslate"><span class="pre">text()</span></code></a> functions as callbacks for <a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>markdown</strong> (<em>str</em><em> or </em><em>bytes</em>) – The Markdown text to parse</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <section id="html-entity-helper">
 <h3>HTML Entity Helper<a class="headerlink" href="#html-entity-helper" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="md4c.lookup_entity">
+<span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">lookup_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.lookup_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate an HTML entity to its UTF-8 representation. Returns the unmodified input if it is not a valid entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entity</strong> (<em>str</em>) – The HTML entity, including ampersand and semicolon</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Corresponding UTF-8 character(s)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 <section id="option-flags">
@@ -195,7 +410,7 @@ dialect of Markdown as closely as possible.</p>
 </section>
 <section id="html-renderer-option-flags">
 <h3>HTML Renderer Option Flags<a class="headerlink" href="#html-renderer-option-flags" title="Permalink to this headline">¶</a></h3>
-<p>These options are only accepted by the <code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code>.</p>
+<p>These options are only accepted by the <a class="reference internal" href="#md4c.HTMLRenderer" title="md4c.HTMLRenderer"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code></a>.</p>
 <dl>
 <dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_HTML_FLAG_DEBUG</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">debug</span></code></p>
 <p>For development use, send MD4C debug output to stderr.</p>
@@ -218,9 +433,273 @@ dialect of Markdown as closely as possible.</p>
 <h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
 <p>The MD4C library uses various enums to provide data to callbacks. PyMD4C uses
 <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code>s to encapsulate these.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.BlockType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">BlockType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.BlockType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a type of Markdown block</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.DOC">
+<span class="sig-name descname"><span class="pre">DOC</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#md4c.BlockType.DOC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Document</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.QUOTE">
+<span class="sig-name descname"><span class="pre">QUOTE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#md4c.BlockType.QUOTE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block quote</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.UL">
+<span class="sig-name descname"><span class="pre">UL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#md4c.BlockType.UL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unordered list</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.OL">
+<span class="sig-name descname"><span class="pre">OL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#md4c.BlockType.OL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ordered list</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.LI">
+<span class="sig-name descname"><span class="pre">LI</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#md4c.BlockType.LI" title="Permalink to this definition">¶</a></dt>
+<dd><p>List item</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.HR">
+<span class="sig-name descname"><span class="pre">HR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#md4c.BlockType.HR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Horizontal rule</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.H">
+<span class="sig-name descname"><span class="pre">H</span></span><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#md4c.BlockType.H" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heading</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.CODE">
+<span class="sig-name descname"><span class="pre">CODE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#md4c.BlockType.CODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Code block</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.HTML">
+<span class="sig-name descname"><span class="pre">HTML</span></span><em class="property"> <span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#md4c.BlockType.HTML" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raw HTML block</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.P">
+<span class="sig-name descname"><span class="pre">P</span></span><em class="property"> <span class="pre">=</span> <span class="pre">9</span></em><a class="headerlink" href="#md4c.BlockType.P" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paragraph</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.TABLE">
+<span class="sig-name descname"><span class="pre">TABLE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">10</span></em><a class="headerlink" href="#md4c.BlockType.TABLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Table</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.THEAD">
+<span class="sig-name descname"><span class="pre">THEAD</span></span><em class="property"> <span class="pre">=</span> <span class="pre">11</span></em><a class="headerlink" href="#md4c.BlockType.THEAD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Table header row</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.TBODY">
+<span class="sig-name descname"><span class="pre">TBODY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">12</span></em><a class="headerlink" href="#md4c.BlockType.TBODY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Table body</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.TR">
+<span class="sig-name descname"><span class="pre">TR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">13</span></em><a class="headerlink" href="#md4c.BlockType.TR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Table row</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.TH">
+<span class="sig-name descname"><span class="pre">TH</span></span><em class="property"> <span class="pre">=</span> <span class="pre">14</span></em><a class="headerlink" href="#md4c.BlockType.TH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Table header cell</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.BlockType.TD">
+<span class="sig-name descname"><span class="pre">TD</span></span><em class="property"> <span class="pre">=</span> <span class="pre">15</span></em><a class="headerlink" href="#md4c.BlockType.TD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Table cell</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.SpanType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">SpanType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.SpanType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a type of Markdown span/inline</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.EM">
+<span class="sig-name descname"><span class="pre">EM</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#md4c.SpanType.EM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emphasis</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.STRONG">
+<span class="sig-name descname"><span class="pre">STRONG</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#md4c.SpanType.STRONG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strong emphasis</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#md4c.SpanType.A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.IMG">
+<span class="sig-name descname"><span class="pre">IMG</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#md4c.SpanType.IMG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Image</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.CODE">
+<span class="sig-name descname"><span class="pre">CODE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#md4c.SpanType.CODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inline code</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.DEL">
+<span class="sig-name descname"><span class="pre">DEL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#md4c.SpanType.DEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strikethrough</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.LATEXMATH">
+<span class="sig-name descname"><span class="pre">LATEXMATH</span></span><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#md4c.SpanType.LATEXMATH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inline math</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.LATEXMATH_DISPLAY">
+<span class="sig-name descname"><span class="pre">LATEXMATH_DISPLAY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#md4c.SpanType.LATEXMATH_DISPLAY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display math</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.WIKILINK">
+<span class="sig-name descname"><span class="pre">WIKILINK</span></span><em class="property"> <span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#md4c.SpanType.WIKILINK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wiki link</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.SpanType.U">
+<span class="sig-name descname"><span class="pre">U</span></span><em class="property"> <span class="pre">=</span> <span class="pre">9</span></em><a class="headerlink" href="#md4c.SpanType.U" title="Permalink to this definition">¶</a></dt>
+<dd><p>Underline</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.TextType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">TextType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.TextType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a type of Markdown text</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.TextType.NORMAL">
+<span class="sig-name descname"><span class="pre">NORMAL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#md4c.TextType.NORMAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal text</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.TextType.NULLCHAR">
+<span class="sig-name descname"><span class="pre">NULLCHAR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#md4c.TextType.NULLCHAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Null character</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.TextType.BR">
+<span class="sig-name descname"><span class="pre">BR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#md4c.TextType.BR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Line break</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.TextType.SOFTBR">
+<span class="sig-name descname"><span class="pre">SOFTBR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#md4c.TextType.SOFTBR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Soft line break</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.TextType.ENTITY">
+<span class="sig-name descname"><span class="pre">ENTITY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#md4c.TextType.ENTITY" title="Permalink to this definition">¶</a></dt>
+<dd><p>HTML entity</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.TextType.CODE">
+<span class="sig-name descname"><span class="pre">CODE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#md4c.TextType.CODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text inside a code block or inline code block</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.TextType.HTML">
+<span class="sig-name descname"><span class="pre">HTML</span></span><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#md4c.TextType.HTML" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raw HTML (inside an HTML block or simply inline HTML)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.TextType.LATEXMATH">
+<span class="sig-name descname"><span class="pre">LATEXMATH</span></span><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#md4c.TextType.LATEXMATH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text inside an equation</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.Align">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">Align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.Align" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a table cell alignment</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.Align.DEFAULT">
+<span class="sig-name descname"><span class="pre">DEFAULT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#md4c.Align.DEFAULT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default alignment</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.Align.LEFT">
+<span class="sig-name descname"><span class="pre">LEFT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#md4c.Align.LEFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Left alignment</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.Align.CENTER">
+<span class="sig-name descname"><span class="pre">CENTER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#md4c.Align.CENTER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Centering</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.Align.RIGHT">
+<span class="sig-name descname"><span class="pre">RIGHT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#md4c.Align.RIGHT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right alignment</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.ParseError">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">ParseError</span></span><a class="headerlink" href="#md4c.ParseError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when an error occurs during parsing, such as running out of memory. Note that there is no such thing as invalid syntax in Markdown, so this really only signals some sort of system error.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="md4c.StopParsing">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">StopParsing</span></span><a class="headerlink" href="#md4c.StopParsing" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callback function can raise this to stop parsing early for non-error reasons. <a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a> (and by extension, <a class="reference internal" href="#md4c.ParserObject" title="md4c.ParserObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code></a>) will catch it and abort quietly.</p>
+</dd></dl>
+
 </section>
 </section>
 

@@ -100,7 +100,7 @@
 <section id="sax-like-parsing">
 <h2>SAX-Like Parsing<a class="headerlink" href="#sax-like-parsing" title="Permalink to this headline">¶</a></h2>
 <p>Applications that want to do their own rendering or don’t need to generate
-output at all can use the <code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code> class. It is implemented
+output at all can use the <a class="reference internal" href="api.html#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a> class. It is implemented
 in C on top of the bare MD4C parser and provides a similar SAX-like interface.</p>
 <p>Here is an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c</span>
@@ -163,7 +163,7 @@ first step in the actual parsing is to construct a parser:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">GenericParser</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Much like the <code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code>, the constructor accepts options (see
+<p>Much like the <a class="reference internal" href="api.html#md4c.HTMLRenderer" title="md4c.HTMLRenderer"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code></a>, the constructor accepts options (see
 <a class="reference internal" href="api.html#options"><span class="std std-ref">Option Flags</span></a>), either through keyword arguments:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">GenericParser</span><span class="p">(</span><span class="n">tables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                             <span class="n">strikethrough</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -179,7 +179,7 @@ first step in the actual parsing is to construct a parser:</p>
 </section>
 <section id="actual-parsing">
 <h3>Actual Parsing<a class="headerlink" href="#actual-parsing" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code> method does the actual parsing. This is
+<p>The <a class="reference internal" href="api.html#md4c.GenericParser.parse" title="md4c.GenericParser.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a> method does the actual parsing. This is
 where “SAX-like” comes into play: Rather than producing an abstract syntax tree
 in memory, MD4C provides a callback interface. As it digests the Markdown
 document from top to bottom, it calls a callback for any of these five events:</p>
@@ -190,7 +190,7 @@ document from top to bottom, it calls a callback for any of these five events:</
 <li><p>Leaving an inline/span</p></li>
 <li><p>Adding text inside the current element</p></li>
 </ul>
-<p>Accordingly, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code> call in the example above
+<p>Accordingly, the <a class="reference internal" href="api.html#md4c.GenericParser.parse" title="md4c.GenericParser.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a> call in the example above
 has six parameters. The first is the Markdown document to parse, and the other
 five are the functions to use as callbacks:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">markdown</span><span class="p">,</span>
@@ -203,7 +203,7 @@ five are the functions to use as callbacks:</p>
 </section>
 <section id="callbacks">
 <span id="id1"></span><h3>Callbacks<a class="headerlink" href="#callbacks" title="Permalink to this headline">¶</a></h3>
-<p>Each <code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code> call requires five callbacks:</p>
+<p>Each <a class="reference internal" href="api.html#md4c.GenericParser.parse" title="md4c.GenericParser.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a> call requires five callbacks:</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="enter_block_callback">
 <span class="sig-name descname"><span class="pre">enter_block_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#enter_block_callback" title="Permalink to this definition">¶</a></dt>
@@ -211,7 +211,7 @@ five are the functions to use as callbacks:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>block_type</strong> – An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">BlockType</span></code></p></li>
+<li><p><strong>block_type</strong> – An instance of <a class="reference internal" href="api.html#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockType</span></code></a></p></li>
 <li><p><strong>details</strong> – The details dict</p></li>
 </ul>
 </dd>
@@ -225,7 +225,7 @@ five are the functions to use as callbacks:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>block_type</strong> – An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">BlockType</span></code></p></li>
+<li><p><strong>block_type</strong> – An instance of <a class="reference internal" href="api.html#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockType</span></code></a></p></li>
 <li><p><strong>details</strong> – The details dict</p></li>
 </ul>
 </dd>
@@ -239,7 +239,7 @@ five are the functions to use as callbacks:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>span_type</strong> – An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">SpanType</span></code></p></li>
+<li><p><strong>span_type</strong> – An instance of <a class="reference internal" href="api.html#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanType</span></code></a></p></li>
 <li><p><strong>details</strong> – The details dict</p></li>
 </ul>
 </dd>
@@ -253,7 +253,7 @@ five are the functions to use as callbacks:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>span_type</strong> – An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">SpanType</span></code></p></li>
+<li><p><strong>span_type</strong> – An instance of <a class="reference internal" href="api.html#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanType</span></code></a></p></li>
 <li><p><strong>details</strong> – The details dict</p></li>
 </ul>
 </dd>
@@ -267,7 +267,7 @@ five are the functions to use as callbacks:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>text_type</strong> – An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></p></li>
+<li><p><strong>text_type</strong> – An instance of <a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></a></p></li>
 <li><p><strong>text</strong> – A string containing the text to be added</p></li>
 </ul>
 </dd>
@@ -275,22 +275,22 @@ five are the functions to use as callbacks:</p>
 </dd></dl>
 
 <p>The first four callbacks work similarly. All must accept a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BlockType</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">SpanType</span></code> as their first parameter
+<a class="reference internal" href="api.html#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockType</span></code></a> or <a class="reference internal" href="api.html#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanType</span></code></a> as their first parameter
 and a details dict as their second parameter. The details dict is described
 in the next section, but it is how additional properties of the element are
 provided, such as a heading’s label or a link’s destination. If you were
 writing your own rendering code, these callbacks would write opening or closing
 HTML tags to the output stream.</p>
-<p>The fifth callback accepts a <code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code> as the first parameter
+<p>The fifth callback accepts a <a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></a> as the first parameter
 and a string of text as the second parameter. The text is unprocessed; for
 example, HTML entities are left in <code class="docutils literal notranslate"><span class="pre">&amp;...;</span></code> form. If you were writing your own
 rendering function, this callback would write the text to the output stream
 (potentially after some translation).</p>
 <p>Callbacks do not need to return anything specific—their return values are
-ignored. To cancel parsing, callbacks can raise the <code class="xref py py-class docutils literal notranslate"><span class="pre">StopParsing</span></code>
-exception. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code> method will catch it and
+ignored. To cancel parsing, callbacks can raise the <a class="reference internal" href="api.html#md4c.StopParsing" title="md4c.StopParsing"><code class="xref py py-class docutils literal notranslate"><span class="pre">StopParsing</span></code></a>
+exception. The <a class="reference internal" href="api.html#md4c.GenericParser.parse" title="md4c.GenericParser.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a> method will catch it and
 immediately halt parsing quietly. All other exceptions raised in callbacks will
-abort parsing and propagate back to <code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code>’s caller.</p>
+abort parsing and propagate back to <a class="reference internal" href="api.html#md4c.GenericParser.parse" title="md4c.GenericParser.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a>’s caller.</p>
 </section>
 <section id="details-dicts">
 <span id="details"></span><h3>Details Dicts<a class="headerlink" href="#details-dicts" title="Permalink to this headline">¶</a></h3>
@@ -301,7 +301,7 @@ strings, and the values to expect are listed in the tables below.</p>
 <p>Any block or span type for which there is no table will receive an empty
 details dict.</p>
 <table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">UL</span></code></span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.BlockType.UL" title="md4c.BlockType.UL"><code class="xref py py-attr docutils literal notranslate"><span class="pre">UL</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 22%" />
 <col style="width: 27%" />
@@ -326,7 +326,7 @@ used as a bullet point</p></td>
 </tbody>
 </table>
 <table class="docutils align-default" id="id3">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">OL</span></code></span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.BlockType.OL" title="md4c.BlockType.OL"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OL</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 30%" />
 <col style="width: 27%" />
@@ -357,7 +357,7 @@ used as the number delimiter</p></td>
 </tbody>
 </table>
 <table class="docutils align-default" id="id4">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">LI</span></code></span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.BlockType.LI" title="md4c.BlockType.LI"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LI</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 27%" />
@@ -392,7 +392,7 @@ character between the
 </tbody>
 </table>
 <table class="docutils align-default" id="id5">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">H</span></code></span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.BlockType.H" title="md4c.BlockType.H"><code class="xref py py-attr docutils literal notranslate"><span class="pre">H</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 22%" />
 <col style="width: 27%" />
@@ -412,7 +412,7 @@ character between the
 </tbody>
 </table>
 <table class="docutils align-default" id="id6">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">CODE</span></code></span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.BlockType.CODE" title="md4c.BlockType.CODE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CODE</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 27%" />
@@ -444,7 +444,7 @@ blocks.</p></td>
 </tbody>
 </table>
 <table class="docutils align-default" id="id7">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">TABLE</span></code></span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.BlockType.TABLE" title="md4c.BlockType.TABLE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TABLE</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 30%" />
 <col style="width: 21%" />
@@ -472,7 +472,7 @@ blocks.</p></td>
 </tbody>
 </table>
 <table class="docutils align-default" id="id8">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">TH</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">TD</span></code></span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.BlockType.TH" title="md4c.BlockType.TH"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TH</span></code></a> and <a class="reference internal" href="api.html#md4c.BlockType.TD" title="md4c.BlockType.TD"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TD</span></code></a></span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 22%" />
 <col style="width: 30%" />
@@ -486,13 +486,13 @@ blocks.</p></td>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'align'</span></code></p></td>
-<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.Align</span></code></p></td>
+<td><p><a class="reference internal" href="api.html#md4c.Align" title="md4c.Align"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.Align</span></code></a></p></td>
 <td><p>Cell alignment</p></td>
 </tr>
 </tbody>
 </table>
 <table class="docutils align-default" id="id9">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">A</span></code></span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.SpanType.A" title="md4c.SpanType.A"><code class="xref py py-attr docutils literal notranslate"><span class="pre">A</span></code></a></span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 19%" />
 <col style="width: 18%" />
@@ -516,7 +516,7 @@ blocks.</p></td>
 </tbody>
 </table>
 <table class="docutils align-default" id="id10">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">IMG</span></code></span><a class="headerlink" href="#id10" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.SpanType.IMG" title="md4c.SpanType.IMG"><code class="xref py py-attr docutils literal notranslate"><span class="pre">IMG</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 19%" />
 <col style="width: 18%" />
@@ -540,7 +540,7 @@ blocks.</p></td>
 </tbody>
 </table>
 <table class="docutils align-default" id="id11">
-<caption><span class="caption-text">Details dict for <code class="xref py py-attr docutils literal notranslate"><span class="pre">WIKILINK</span></code></span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Details dict for <a class="reference internal" href="api.html#md4c.SpanType.WIKILINK" title="md4c.SpanType.WIKILINK"><code class="xref py py-attr docutils literal notranslate"><span class="pre">WIKILINK</span></code></a></span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 19%" />
 <col style="width: 18%" />
@@ -569,7 +569,7 @@ span/inline elements, but they may contain HTML entities or null characters, so
 attributes are how MD4C copes with this.</p>
 <p>PyMD4C represents attributes as either <code class="docutils literal notranslate"><span class="pre">None</span></code> or a list of 2-tuples
 <code class="docutils literal notranslate"><span class="pre">(text_type,</span> <span class="pre">text)</span></code> where <code class="docutils literal notranslate"><span class="pre">text_type</span></code> is a member of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code> and <code class="docutils literal notranslate"><span class="pre">text</span></code> is the actual text as a string.</p>
+<a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></a> and <code class="docutils literal notranslate"><span class="pre">text</span></code> is the actual text as a string.</p>
 <p>For example, this string:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Copyright</span> <span class="o">&amp;</span><span class="n">copy</span><span class="p">;</span> <span class="n">John</span> <span class="n">Doe</span>
 </pre></div>
@@ -580,14 +580,14 @@ attributes are how MD4C copes with this.</p>
  <span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="s1">&#39; John Doe&#39;</span><span class="p">)]</span>
 </pre></div>
 </div>
-<p>Currently, the only <code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code> types allowed in an attribute are
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">NORMAL</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">ENTITY</span></code>, and
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">NULLCHAR</span></code>.</p>
+<p>Currently, the only <a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></a> types allowed in an attribute are
+<a class="reference internal" href="api.html#md4c.TextType.NORMAL" title="md4c.TextType.NORMAL"><code class="xref py py-attr docutils literal notranslate"><span class="pre">NORMAL</span></code></a>, <a class="reference internal" href="api.html#md4c.TextType.ENTITY" title="md4c.TextType.ENTITY"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ENTITY</span></code></a>, and
+<a class="reference internal" href="api.html#md4c.TextType.NULLCHAR" title="md4c.TextType.NULLCHAR"><code class="xref py py-attr docutils literal notranslate"><span class="pre">NULLCHAR</span></code></a>.</p>
 </section>
 </section>
 <section id="entity-helper">
 <h2>Entity Helper<a class="headerlink" href="#entity-helper" title="Permalink to this headline">¶</a></h2>
-<p>PyMD4C provides a helper function <code class="xref py py-func docutils literal notranslate"><span class="pre">lookup_entity()</span></code> to assist with
+<p>PyMD4C provides a helper function <a class="reference internal" href="api.html#md4c.lookup_entity" title="md4c.lookup_entity"><code class="xref py py-func docutils literal notranslate"><span class="pre">lookup_entity()</span></code></a> to assist with
 translating HTML entities to their corresponding UTF-8 character(s):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c</span>
 
@@ -597,17 +597,17 @@ translating HTML entities to their corresponding UTF-8 character(s):</p>
 </section>
 <section id="object-oriented-parsing">
 <h2>Object-Oriented Parsing<a class="headerlink" href="#object-oriented-parsing" title="Permalink to this headline">¶</a></h2>
-<p>PyMD4C provides a more object-oriented wrapper for <code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code>
-for applications which might find that useful: the <code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code>
+<p>PyMD4C provides a more object-oriented wrapper for <a class="reference internal" href="api.html#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>
+for applications which might find that useful: the <a class="reference internal" href="api.html#md4c.ParserObject" title="md4c.ParserObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code></a>
 class. This is a base class that defines the five callbacks as member
 functions.</p>
 <p>To use it, define a subclass that overrides the callback methods as necessary.
-The constructor accepts the same arguments as <code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code>
+The constructor accepts the same arguments as <a class="reference internal" href="api.html#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>
 (unless it is overridden). Then, you can call the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code> method, which only requires the Markdown input
+<a class="reference internal" href="api.html#md4c.ParserObject.parse" title="md4c.ParserObject.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a> method, which only requires the Markdown input
 as an argument.</p>
 <p>Here is the same example program as above, implemented using a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code> instead of <code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code>:</p>
+<a class="reference internal" href="api.html#md4c.ParserObject" title="md4c.ParserObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code></a> instead of <a class="reference internal" href="api.html#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c</span>
 
 <span class="k">class</span> <span class="nc">CountingParser</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">ParserObject</span><span class="p">):</span>
@@ -650,7 +650,7 @@ as an argument.</p>
 <p>Notice that using this paradigm, the counts can be instance variables instead
 of global variables. And the callbacks for leaving blocks and spans can be
 omitted entirely, since they were not necessary.</p>
-<p>For more information, see the <code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code> API.</p>
+<p>For more information, see the <a class="reference internal" href="api.html#md4c.ParserObject" title="md4c.ParserObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code></a> API.</p>
 </section>
 </section>
 

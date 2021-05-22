@@ -120,15 +120,15 @@ parsers construct a tree representation of the entire document for the caller.</
 markup language usually fit into these same two categories. The MD4C C library
 and the main <a class="reference internal" href="api.html#module-md4c" title="md4c"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c</span></code></a> Python module take a definitive SAX-like approach to
 parsing (and the MD4C library is proud of it). This is clear from the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code> API.</p>
+<a class="reference internal" href="api.html#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a> API.</p>
 <p>The <a class="reference internal" href="dom_api.html#module-md4c.domparser" title="md4c.domparser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c.domparser</span></code></a> module provides a DOM-like API for use cases where
 that style is more appropriate. It produces an AST where each paragraph,
 heading, link, block quote, etc. is represented by an
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code>.</p>
+<a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a>.</p>
 </section>
 <section id="why-use-dom-like-parsing">
 <h2>Why use DOM-like parsing?<a class="headerlink" href="#why-use-dom-like-parsing" title="Permalink to this headline">¶</a></h2>
-<p>You may find that the <code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code> and SAX-like parsers do not
+<p>You may find that the <a class="reference internal" href="api.html#md4c.HTMLRenderer" title="md4c.HTMLRenderer"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code></a> and SAX-like parsers do not
 provide the flexibility you need. A typical use-case would be if you want to
 manipulate the input document before it is rendered. For example, maybe you
 want to convert every occurrence of a certain word to a hyperlink, except in
@@ -140,15 +140,15 @@ each heading.</p>
 the overhead from producing a tree representation of the entire document in
 memory.</p></li>
 <li><p>Furthermore, the SAX-like parsers in PyMD4C are a thin layer on top of MD4C,
-which is heavily optimized C code. <code class="xref py py-class docutils literal notranslate"><span class="pre">DOMParser</span></code> is
-implemented in Python on top of <code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code>.</p></li>
+which is heavily optimized C code. <a class="reference internal" href="dom_api.html#md4c.domparser.DOMParser" title="md4c.domparser.DOMParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DOMParser</span></code></a> is
+implemented in Python on top of <a class="reference internal" href="api.html#md4c.ParserObject" title="md4c.ParserObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParserObject</span></code></a>.</p></li>
 </ul>
 </section>
 <section id="generating-an-ast">
 <h2>Generating an AST<a class="headerlink" href="#generating-an-ast" title="Permalink to this headline">¶</a></h2>
 <p>Since many applications will not need them, the DOM-like parser and the classes
 for the AST are all in a separate module: <a class="reference internal" href="dom_api.html#module-md4c.domparser" title="md4c.domparser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c.domparser</span></code></a>. The parser
-itself is the <code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.DOMParser</span></code> class. In the most simple case,
+itself is the <a class="reference internal" href="dom_api.html#md4c.domparser.DOMParser" title="md4c.domparser.DOMParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.DOMParser</span></code></a> class. In the most simple case,
 it is used like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c.domparser</span>
 
@@ -159,7 +159,7 @@ it is used like this:</p>
 <span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>At this point, <code class="docutils literal notranslate"><span class="pre">ast</span></code> is the root <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> node of
+<p>At this point, <code class="docutils literal notranslate"><span class="pre">ast</span></code> is the root <a class="reference internal" href="dom_api.html#md4c.domparser.Document" title="md4c.domparser.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> node of
 the tree. You can render the tree as HTML:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">html</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
 </pre></div>
@@ -184,28 +184,28 @@ the tree. You can render the tree as HTML:</p>
 <section id="ast-node-objects">
 <h2>AST Node Objects<a class="headerlink" href="#ast-node-objects" title="Permalink to this headline">¶</a></h2>
 <p>Each type of Markdown element (i.e. each type of block, span, and text) has an
-associated AST type. For example, <code class="xref py py-class docutils literal notranslate"><span class="pre">Paragraph</span></code> is for
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">BlockType.P</span></code>. See <a class="reference internal" href="dom_api.html#astobjs"><span class="std std-ref">Base AST Classes</span></a> for the full list.
+associated AST type. For example, <a class="reference internal" href="dom_api.html#md4c.domparser.Paragraph" title="md4c.domparser.Paragraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">Paragraph</span></code></a> is for
+<a class="reference internal" href="api.html#md4c.BlockType.P" title="md4c.BlockType.P"><code class="xref py py-attr docutils literal notranslate"><span class="pre">BlockType.P</span></code></a>. See <a class="reference internal" href="dom_api.html#astobjs"><span class="std std-ref">Base AST Classes</span></a> for the full list.
 For Markdown elements with additional details attached to them (see
 <a class="reference internal" href="pure_parsing.html#details"><span class="std std-ref">Details Dicts</span></a>), each detail becomes an attribute in the object. For instance,
-a <code class="xref py py-class docutils literal notranslate"><span class="pre">Heading</span></code> object <code class="docutils literal notranslate"><span class="pre">hdg</span></code> would have attribute
+a <a class="reference internal" href="dom_api.html#md4c.domparser.Heading" title="md4c.domparser.Heading"><code class="xref py py-class docutils literal notranslate"><span class="pre">Heading</span></code></a> object <code class="docutils literal notranslate"><span class="pre">hdg</span></code> would have attribute
 <code class="docutils literal notranslate"><span class="pre">hdg.level</span></code>.</p>
 <p>There are a few base classes that the AST classes inherit from:</p>
 <dl class="simple">
-<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.ASTNode</span></code></dt><dd><p>All AST classes inherit from this class. It provides the
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code> and
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">parent</span></code> attributes. This is also the class
+<dt><a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.ASTNode</span></code></a></dt><dd><p>All AST classes inherit from this class. It provides the
+<a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode.type" title="md4c.domparser.ASTNode.type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a> and
+<a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode.parent" title="md4c.domparser.ASTNode.parent"><code class="xref py py-attr docutils literal notranslate"><span class="pre">parent</span></code></a> attributes. This is also the class
 that should be used to construct all AST node objects, no matter their type.
 More on that in the later sections.</p>
 </dd>
-<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.ContainerNode</span></code></dt><dd><p>All AST classes that are not leaf nodes inherit from this class. That is,
-all blocks and inlines except <code class="xref py py-class docutils literal notranslate"><span class="pre">HorizontalRule</span></code>. It
-provides the <code class="xref py py-attr docutils literal notranslate"><span class="pre">children</span></code> attribute and
-the <code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code> methods for adding new children.</p>
+<dt><a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.ContainerNode</span></code></a></dt><dd><p>All AST classes that are not leaf nodes inherit from this class. That is,
+all blocks and inlines except <a class="reference internal" href="dom_api.html#md4c.domparser.HorizontalRule" title="md4c.domparser.HorizontalRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">HorizontalRule</span></code></a>. It
+provides the <a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.children" title="md4c.domparser.ContainerNode.children"><code class="xref py py-attr docutils literal notranslate"><span class="pre">children</span></code></a> attribute and
+the <a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.append" title="md4c.domparser.ContainerNode.append"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code></a> and
+<a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.insert" title="md4c.domparser.ContainerNode.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code></a> methods for adding new children.</p>
 </dd>
-<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.TextNode</span></code></dt><dd><p>All AST classes associated with <code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.TextType</span></code>s inherit from this.
-It provides the <code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code> attribute containing
+<dt><a class="reference internal" href="dom_api.html#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.TextNode</span></code></a></dt><dd><p>All AST classes associated with <a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.TextType</span></code></a>s inherit from this.
+It provides the <a class="reference internal" href="dom_api.html#md4c.domparser.TextNode.text" title="md4c.domparser.TextNode.text"><code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code></a> attribute containing
 the unprocessed text from the parser.</p>
 </dd>
 </dl>
@@ -251,20 +251,20 @@ but it serves as a simple example.) You could do that like this:</p>
 </div>
 <p>There are several important points to note:</p>
 <ul class="simple">
-<li><p>New nodes are always constructed using the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code>
+<li><p>New nodes are always constructed using the <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a>
 constructor, no matter the type. It will construct the appropriate subclass
 depending on the node type enum member passed in as the first argument.</p></li>
-<li><p>Additional arguments for the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code> constructor,
+<li><p>Additional arguments for the <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a> constructor,
 when given, must be keyword-only. For text nodes, this must be a single
 <code class="docutils literal notranslate"><span class="pre">text</span></code> argument. For nodes with <a class="reference internal" href="pure_parsing.html#details"><span class="std std-ref">details</span></a>, these would
 correspond with the keys for the details dict.</p></li>
 <li><p>Nodes can be added as children by calling the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code> method on the parent. That
+<a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.append" title="md4c.domparser.ContainerNode.append"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code></a> method on the parent. That
 appends the node to the parent’s children list and sets the child node’s
 parent.</p></li>
 <li><p>Neither the horizontal rule node nor any of the text nodes can accept
-children. They do not have <code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code> (or
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code>) methods.</p></li>
+children. They do not have <a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.append" title="md4c.domparser.ContainerNode.append"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code></a> (or
+<a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.insert" title="md4c.domparser.ContainerNode.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code></a>) methods.</p></li>
 </ul>
 </section>
 <section id="linkify-a-keyword">
@@ -344,8 +344,8 @@ follows:</p>
 </div>
 <p>Some points to note about this example:</p>
 <ul class="simple">
-<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code> method is like
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code>, except it lets you pick where
+<li><p>The <a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.insert" title="md4c.domparser.ContainerNode.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code></a> method is like
+<a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.append" title="md4c.domparser.ContainerNode.append"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code></a>, except it lets you pick where
 in the parent’s children list to insert the new child node.</p></li>
 <li><p>There is no special method to remove a child. Just pop it from the parent’s
 children list.</p></li>
@@ -355,7 +355,7 @@ from.</p></li>
 <li><p>The node type is identified with <code class="docutils literal notranslate"><span class="pre">child.type</span> <span class="pre">is</span> <span class="pre">md4c.TextType.NORMAL</span></code>, not
 <code class="docutils literal notranslate"><span class="pre">isinstance(child,</span> <span class="pre">md4c.domparser.NormalText)</span></code>. The former works even if
 using a custom AST class to handle normal text, while the latter only works
-with the default <code class="xref py py-class docutils literal notranslate"><span class="pre">NormalText</span></code> class.</p></li>
+with the default <a class="reference internal" href="dom_api.html#md4c.domparser.NormalText" title="md4c.domparser.NormalText"><code class="xref py py-class docutils literal notranslate"><span class="pre">NormalText</span></code></a> class.</p></li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -373,8 +373,8 @@ be used to foil the matching.</p>
 customizing the rendering functionality, either to tailor the HTML generation
 to your particular application or generate another output format altogether.</p>
 <p>To provide an example, suppose you wanted to use MathJax to render your
-equations. The default <code class="xref py py-class docutils literal notranslate"><span class="pre">InlineMath</span></code> and
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DisplayMath</span></code> classes render <code class="docutils literal notranslate"><span class="pre">&lt;x-equation&gt;</span></code> tags, but
+equations. The default <a class="reference internal" href="dom_api.html#md4c.domparser.InlineMath" title="md4c.domparser.InlineMath"><code class="xref py py-class docutils literal notranslate"><span class="pre">InlineMath</span></code></a> and
+<a class="reference internal" href="dom_api.html#md4c.domparser.DisplayMath" title="md4c.domparser.DisplayMath"><code class="xref py py-class docutils literal notranslate"><span class="pre">DisplayMath</span></code></a> classes render <code class="docutils literal notranslate"><span class="pre">&lt;x-equation&gt;</span></code> tags, but
 you need them to render <code class="docutils literal notranslate"><span class="pre">\(...\)</span></code> and <code class="docutils literal notranslate"><span class="pre">\[...\]</span></code> instead. Here is how you
 could do that:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">md4c</span>
@@ -409,30 +409,30 @@ could do that:</p>
 </div>
 <p>The magic here is in the class parameters: Alongside the parent class, we have
 an <code class="docutils literal notranslate"><span class="pre">element_type</span></code> parameter. So long as one of our class’s ancestors is
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code> and <code class="docutils literal notranslate"><span class="pre">element_type</span></code> is provided,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code> will register our new class as the one to
+<a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a> and <code class="docutils literal notranslate"><span class="pre">element_type</span></code> is provided,
+<a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a> will register our new class as the one to
 construct for that element type. This needs to be done before calling the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code> method.</p>
+<a class="reference internal" href="dom_api.html#md4c.domparser.DOMParser.parse" title="md4c.domparser.DOMParser.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a> method.</p>
 <p>Some additional notes about the AST classes:</p>
 <ul class="simple">
 <li><p>Most of the block and span classes (all except
-<code class="xref py py-class docutils literal notranslate"><span class="pre">HorizontalRule</span></code>) inherit from
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code>. For these, you can almost always rely
-on the default <code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code> method as-is and
-just customize <code class="xref py py-meth docutils literal notranslate"><span class="pre">render_pre()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">render_post()</span></code>. They run before and after
+<a class="reference internal" href="dom_api.html#md4c.domparser.HorizontalRule" title="md4c.domparser.HorizontalRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">HorizontalRule</span></code></a>) inherit from
+<a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>. For these, you can almost always rely
+on the default <a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.render" title="md4c.domparser.ContainerNode.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> method as-is and
+just customize <a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.render_pre" title="md4c.domparser.ContainerNode.render_pre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render_pre()</span></code></a> and
+<a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.render_post" title="md4c.domparser.ContainerNode.render_post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render_post()</span></code></a>. They run before and after
 the children are rendered, respectively.</p></li>
 <li><p>The CommonMark spec allows most span elements to occur inside an image
 element. HTML does <em>not</em> allow this, since the image text becomes the alt
 text attribute. To handle this, most of the span and text elements accept an
 <code class="docutils literal notranslate"><span class="pre">image_nesting_level</span></code> argument for their
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code> method. If <code class="docutils literal notranslate"><span class="pre">image_nesting_level</span> <span class="pre">&gt;</span>
+<a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode.render" title="md4c.domparser.ASTNode.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> method. If <code class="docutils literal notranslate"><span class="pre">image_nesting_level</span> <span class="pre">&gt;</span>
 <span class="pre">0</span></code>, they render without HTML tags.</p></li>
 <li><p>Normally, text nodes appear in the regular text of a document. But sometimes,
 they appear in URL contexts (link targets and image sources). In those
 contexts, the render function for text nodes is passed an additional keyword
 argument: <code class="docutils literal notranslate"><span class="pre">url_escape</span></code>. When True, normal text and entities must process
-their output through their <code class="xref py py-meth docutils literal notranslate"><span class="pre">url_escape()</span></code>
+their output through their <a class="reference internal" href="dom_api.html#md4c.domparser.TextNode.url_escape" title="md4c.domparser.TextNode.url_escape"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_escape()</span></code></a>
 method.</p></li>
 </ul>
 </section>
