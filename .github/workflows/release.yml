@@ -75,6 +75,7 @@ jobs:
           cmake ..
           make
           sudo make install
+          sudo ldconfig
       - name: Install Python packaging tools
         run: python3 -m pip install --upgrade pip setuptools wheel
       - name: Build sdist

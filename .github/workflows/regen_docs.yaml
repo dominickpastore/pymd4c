@@ -1,0 +1,47 @@
+# GitHub Actions workflow for manually regenerating the docs and publishing to
+# GitHub Pages
+# vim: set ts=8 sts=2 sw=2:
+name: Regenerate Docs
+on: workflow_dispatch
+
+jobs:
+  regen-docs:
+    name: Regenerate and publish docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-version}}
+          path: md4c-lib
+      - name: Build and install MD4C
+        run: |
+          mkdir md4c-lib/build
+          cd md4c-lib/build
+          cmake ..
+          make
+          sudo make install
+          sudo ldconfig
+      - name: Install Python packaging tools
+        run: python3 -m pip install --upgrade pip setuptools wheel
+      - name: Install PyMD4C
+        run: python3 -m pip install .
+      - name: Install Sphinx
+        run: python3 -m pip install --upgrade sphinx
+      - name: Build Sphinx docs
+        run: |
+          cd docs
+          make html
+      - name: Publish Sphinx docs
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          cname: pymd4c.dcpx.org
