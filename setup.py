@@ -94,6 +94,7 @@ else:
                 'src/html_renderer.c',
             ],
             'pkgconfig': 'md4c md4c-html',
+            'include_dirs': ['src'],
         },
         {
             'name': 'md4c._enum_consts',
@@ -101,6 +102,7 @@ else:
                 'src/enum_consts.c',
             ],
             'pkgconfig': 'md4c',
+            'include_dirs': ['src'],
         },
     ])
 
