@@ -25,7 +25,8 @@
 # IN THE SOFTWARE.
 #
 
-import urllib.parse
+import urllib.parse as _url_parse
+from collections.abc import ByteString as _ByteString
 
 from .. import lookup_entity as _lookup_entity
 from ..enums import BlockType as _BlockType
@@ -58,6 +59,9 @@ class ASTNode:
     :param element_type: A :class:`md4c.BlockType`, :class:`md4c.SpanType`, or
                          :class:`md4c.TextType` representing the type of this
                          element
+    :param use_bytes: True if this node should render as :class:`bytes`, False
+                      if it should render as :class:`str`. Defaults to False.
+    :type use_bytes: bool, optional
     """
     _registry = dict()
 
@@ -68,7 +72,7 @@ class ASTNode:
         if element_type is not None:
             cls._registry[element_type] = cls
 
-    def __new__(cls, element_type, **kwargs):
+    def __new__(cls, element_type, use_bytes=False, **kwargs):
         # Select the appropriate subclass. There should never be a KeyError,
         # and if there is, it means we forgot to add a class in this module for
         # one of the BlockType/SpanType/TextType members.
@@ -79,18 +83,22 @@ class ASTNode:
     # of the object. But if a user decides to replace one of the built-in
     # classes for a particular element, isinstance() won't work so well, but
     # comparing self.type will.
-    def __init__(self, element_type, is_bytes=False):
+    def __init__(self, element_type, use_bytes=False):
         #: A :class:`md4c.BlockType`, :class:`md4c.SpanType`, or
         #: :class:`md4c.TextType` representing the type of element this object
         #: represents
         self.type = element_type
 
+        #: True if this node should render as :class:`bytes`, False if it
+        #: should render as :class:`str`. Normally gets set according to
+        #: whether the Markdown input was a :class:`str` or :class:`bytes`.
+        self.bytes = use_bytes
+
         #: The parent of this node, or None (for the root Document node and
         #: attribute nodes)
         self.parent = None
 
-    @staticmethod
-    def attr_to_ast(attribute):
+    def attr_to_ast(self, attribute):
         """:class:`md4c.GenericParser` represents :ref:`attributes <attribute>`
         as lists of 2-tuples (or None). This static method converts them to a
         list of text :class:`ASTNode`.
@@ -103,11 +111,10 @@ class ASTNode:
             return None
         result = []
         for text_type, text in attribute:
-            result.append(ASTNode(text_type, text=text))
+            result.append(ASTNode(text_type, use_bytes=self.bytes, text=text))
         return result
 
-    @staticmethod
-    def render_attr(attribute, url_escape=False):
+    def render_attr(self, attribute, url_escape=False):
         """Render an attribute given as a list of :class:`ASTNode` or None
 
         :param attribute: List of :class:`ASTNode` or None
@@ -118,16 +125,12 @@ class ASTNode:
         :returns: Rendered output.
         :rtype: str or bytes
         """
-        #TODO bytes
         if attribute is None:
-            return ''
+            return b'' if self.bytes else ''
         renderings = []
         for text in attribute:
             renderings.append(text.render(url_escape=url_escape))
-        try:
-            return ''.join(renderings)
-        except TypeError:
-            return b''.join(renderings)
+        return b''.join(renderings) if self.bytes else ''.join(renderings)
 
     def render(self, **kwargs):
         """Render this node and its children. This base implementation returns
@@ -139,20 +142,22 @@ class ASTNode:
 
         :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
-        :rtype: str
+        :rtype: str or bytes
         """
-        return ""
+        return b'' if self.bytes else ''
 
 
 class ContainerNode(ASTNode, element_type=None):
-    """Base class for all AST nodes that may have children (blocks and spans
+    """ContainerNode(element_type, **kwargs)
+
+    Base class for all AST nodes that may have children (blocks and spans
     except :class:`HorizontalRule`).
 
     :param element_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
                          representing the type of this element
     """
-    def __init__(self, element_type):
-        super().__init__(element_type)
+    def __init__(self, element_type, **kwargs):
+        super().__init__(element_type, **kwargs)
 
         #: A list of this node's children.
         self.children = []
@@ -162,6 +167,10 @@ class ContainerNode(ASTNode, element_type=None):
 
         :param node: The child to add
         """
+        if self.bytes and not node.bytes:
+            raise ValueError("Cannot add a str node to a bytes node")
+        if not self.bytes and node.bytes:
+            raise ValueError("Cannot add a bytes node to a str node")
         node.parent = self
         self.children.append(node)
 
@@ -171,6 +180,10 @@ class ContainerNode(ASTNode, element_type=None):
         :param i: The new child will be at this index.
         :param node: The child to insert
         """
+        if self.bytes and not node.bytes:
+            raise ValueError("Cannot add a str node to a bytes node")
+        if not self.bytes and node.bytes:
+            raise ValueError("Cannot add a bytes node to a str node")
         node.parent = self
         self.children.insert(i, node)
 
@@ -183,9 +196,9 @@ class ContainerNode(ASTNode, element_type=None):
 
         :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
-        :rtype: str
+        :rtype: str or bytes
         """
-        return ""
+        return b'' if self.bytes else ''
 
     def render_post(self, **kwargs):
         """Render the closing for this node. This base implementation returns
@@ -196,9 +209,9 @@ class ContainerNode(ASTNode, element_type=None):
 
         :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
-        :rtype: str
+        :rtype: str or bytes
         """
-        return ""
+        return b'' if self.bytes else ''
 
     def render(self, **kwargs):
         """A render implementation that should suit elements with children
@@ -210,26 +223,34 @@ class ContainerNode(ASTNode, element_type=None):
 
         :returns: Rendered output. The default AST types render HTML, but they
                   can be replaced to render any output format necessary.
-        :rtype: str
+        :rtype: str or bytes
         """
         renderings = [self.render_pre(**kwargs)]
         for child in self.children:
             renderings.append(child.render(**kwargs))
         renderings.append(self.render_post(**kwargs))
 
-        return ''.join(renderings)
+        return b''.join(renderings) if self.bytes else ''.join(renderings)
 
 
 class TextNode(ASTNode, element_type=None):
-    """Base class for all AST nodes representing text.
+    """TextNode(element_type, text, **kwargs)
 
-    :param element_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
-                         representing the type of this element
+    Base class for all AST nodes representing text.
+
+    :param element_type: A :class:`md4c.TextType` representing the type of this
+                         element
     :param text: The text this node represents, unprocessed
     :type text: str or bytes
     """
-    def __init__(self, element_type, text):
-        super().__init__(element_type)
+    def __init__(self, element_type, text, **kwargs):
+        super().__init__(element_type, **kwargs)
+
+        # Verify text type matches use_bytes parameter
+        if self.bytes and not isinstance(text, _ByteString):
+            raise TypeError("Must set use_bytes=True when text is bytes")
+        if not self.bytes and not isinstance(text, str):
+            raise TypeError("Must not set use_bytes=True when text is str")
 
         #: The unprocessed text for this node
         self.text = text
@@ -264,11 +285,11 @@ class TextNode(ASTNode, element_type=None):
         :type text: str or bytes
         :return: Escaped string or bytes
         """
-        translated = (urllib.parse.quote(text, safe='-_.!*(),%#@?=;:/,+$&')
+        translated = (_url_parse.quote(text, safe='-_.!*(),%#@?=;:/,+$&')
                       .replace('&', '&amp;'))
-        if isinstance(text, bytes):
-            return translated.encode('ascii')
-        return translated
+        if isinstance(text, str):
+            return translated
+        return translated.encode('ascii')
 
     def render(self, url_escape=False, **kwargs):
         """Render the text for this node, performing HTML or URL escaping in
@@ -295,7 +316,9 @@ class TextNode(ASTNode, element_type=None):
 
 
 class Document(ContainerNode, element_type=_BlockType.DOC):
-    """Document block. Root node of the AST. Inherits from
+    """Document(element_type, **kwargs)
+
+    Document block. Root node of the AST. Inherits from
     :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.DOC`
@@ -303,7 +326,9 @@ class Document(ContainerNode, element_type=_BlockType.DOC):
 
 
 class Quote(ContainerNode, element_type=_BlockType.QUOTE):
-    """Quote block. Inherits from :class:`ContainerNode`.
+    """Quote(element_type, **kwargs)
+
+    Quote block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.QUOTE`
     """
@@ -315,9 +340,9 @@ class Quote(ContainerNode, element_type=_BlockType.QUOTE):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '<blockquote>\n'
+        return b'<blockquote>\n' if self.bytes else '<blockquote>\n'
 
     def render_post(self, **kwargs):
         """Render the closing for this quote block.
@@ -326,13 +351,13 @@ class Quote(ContainerNode, element_type=_BlockType.QUOTE):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</blockquote>\n'
+        return b'</blockquote>\n' if self.bytes else '</blockquote>\n'
 
 
 class UnorderedList(ContainerNode, element_type=_BlockType.UL):
-    """UnorderedList(element_type, is_tight, mark)
+    """UnorderedList(element_type, is_tight, mark, **kwargs)
 
     Unordered list block. Inherits from :class:`ContainerNode`.
 
@@ -344,8 +369,8 @@ class UnorderedList(ContainerNode, element_type=_BlockType.UL):
 
     .. _tight: https://spec.commonmark.org/0.29/#tight
     """
-    def __init__(self, element_type, is_tight, mark):
-        super().__init__(element_type)
+    def __init__(self, element_type, is_tight, mark, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Whether the list is tight_ or not
         self.is_tight = is_tight
         #: The character used as a bullet point
@@ -358,9 +383,9 @@ class UnorderedList(ContainerNode, element_type=_BlockType.UL):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '<ul>\n'
+        return b'<ul>\n' if self.bytes else '<ul>\n'
 
     def render_post(self, **kwargs):
         """Render the closing for this unordered list.
@@ -369,13 +394,13 @@ class UnorderedList(ContainerNode, element_type=_BlockType.UL):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</ul>\n'
+        return b'</ul>\n' if self.bytes else '</ul>\n'
 
 
 class OrderedList(ContainerNode, element_type=_BlockType.OL):
-    """OrderedList(element_type, start, is_tight, mark)
+    """OrderedList(element_type, start, is_tight, mark, **kwargs)
 
     Ordered list block. Inherits from :class:`ContainerNode`.
 
@@ -389,8 +414,9 @@ class OrderedList(ContainerNode, element_type=_BlockType.OL):
 
     .. _tight: https://spec.commonmark.org/0.29/#tight
     """
-    def __init__(self, element_type, start, is_tight, mark_delimiter):
-        super().__init__(element_type)
+    def __init__(self, element_type, start, is_tight, mark_delimiter,
+                 **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Start index of the ordered list
         self.start = start
         #: Whether the list is tight_ or not
@@ -405,12 +431,15 @@ class OrderedList(ContainerNode, element_type=_BlockType.OL):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if self.start == 1:
-            return '<ol>\n'
+            return b'<ol>\n' if self.bytes else '<ol>\n'
         else:
-            return f'<ol start="{self.start}">\n'
+            if self.bytes:
+                return b'<ol start="%d">\n' % self.start
+            else:
+                return '<ol start="%d">\n' % self.start
 
     def render_post(self, **kwargs):
         """Render the closing for this ordered list.
@@ -419,13 +448,13 @@ class OrderedList(ContainerNode, element_type=_BlockType.OL):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</ol>\n'
+        return b'</ol>\n' if self.bytes else '</ol>\n'
 
 
 class ListItem(ContainerNode, element_type=_BlockType.LI):
-    """ListItem(element_type, is_task, task_mark, task_mark_offset)
+    """ListItem(element_type, is_task, task_mark, task_mark_offset, **kwargs)
 
     List item block. Inherits from :class:`ContainerNode`.
 
@@ -440,8 +469,8 @@ class ListItem(ContainerNode, element_type=_BlockType.LI):
     :type task_mark_offset: int, optional
     """
     def __init__(self, element_type, is_task,
-                 task_mark=None, task_mark_offset=None):
-        super().__init__(element_type)
+                 task_mark=None, task_mark_offset=None, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Whether the list item is a task list item
         self.is_task = is_task
         #: The character used to mark the task (if a task list item)
@@ -456,16 +485,22 @@ class ListItem(ContainerNode, element_type=_BlockType.LI):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if self.is_task:
             if self.task_mark in ('x', 'X'):
-                return ('<li class="task-list-item"><input type="checkbox" '
+                return (b'<li class="task-list-item"><input type="checkbox" '
+                        b'class="task-list-item-checkbox" disabled checked>'
+                        if self.bytes else
+                        '<li class="task-list-item"><input type="checkbox" '
                         'class="task-list-item-checkbox" disabled checked>')
             else:
-                return ('<li class="task-list-item"><input type="checkbox" '
+                return (b'<li class="task-list-item"><input type="checkbox" '
+                        b'class="task-list-item-checkbox" disabled>'
+                        if self.bytes else
+                        '<li class="task-list-item"><input type="checkbox" '
                         'class="task-list-item-checkbox" disabled>')
-        return '<li>'
+        return b'<li>' if self.bytes else '<li>'
 
     def render_post(self, **kwargs):
         """Render the closing for this list item.
@@ -474,13 +509,15 @@ class ListItem(ContainerNode, element_type=_BlockType.LI):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</li>\n'
+        return b'</li>\n' if self.bytes else '</li>\n'
 
 
 class HorizontalRule(ASTNode, element_type=_BlockType.HR):
-    """Horizontal rule block. Inherits from :class:`ASTNode`.
+    """HorizontalRule(element_type, **kwargs)
+
+    Horizontal rule block. Inherits from :class:`ASTNode`.
 
     :param element_type: :attr:`md4c.BlockType.HR`
     """
@@ -492,13 +529,13 @@ class HorizontalRule(ASTNode, element_type=_BlockType.HR):
                        rendering.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '<hr>\n'
+        return b'<hr>\n' if self.bytes else '<hr>\n'
 
 
 class Heading(ContainerNode, element_type=_BlockType.H):
-    """Heading(element_type, level)
+    """Heading(element_type, level, **kwargs)
 
     Heading block. Inherits from :class:`ContainerNode`.
 
@@ -506,8 +543,8 @@ class Heading(ContainerNode, element_type=_BlockType.H):
     :param level: Heading level (1-6)
     :type level: int
     """
-    def __init__(self, element_type, level):
-        super().__init__(element_type)
+    def __init__(self, element_type, level, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Heading level (1-6)
         self.level = level
 
@@ -518,8 +555,10 @@ class Heading(ContainerNode, element_type=_BlockType.H):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
+        if self.bytes:
+            return b'<h%d>' % self.level
         return f'<h{self.level}>'
 
     def render_post(self, **kwargs):
@@ -529,13 +568,15 @@ class Heading(ContainerNode, element_type=_BlockType.H):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
+        if self.bytes:
+            return b'</h%d>\n' % self.level
         return f'</h{self.level}>\n'
 
 
 class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
-    """CodeBlock(element_type, fence_char, info, lang)
+    """CodeBlock(element_type, fence_char, info, lang, **kwargs)
 
     Code block. Inherits from :class:`ContainerNode`.
 
@@ -547,8 +588,9 @@ class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
     :param lang: Language, if present.
     :type lang: :ref:`Attribute <attribute>` or None, optional
     """
-    def __init__(self, element_type, fence_char=None, info=None, lang=None):
-        super().__init__(element_type)
+    def __init__(self, element_type, fence_char=None, info=None, lang=None,
+                 **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Fence character, if a fenced code block. None otherwise.
         self.fence_char = fence_char
         #: Info string, as a list of :class:`ASTNode` (if a fenced code block)
@@ -563,12 +605,14 @@ class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if self.lang is None:
-            return '<pre><code>'
+            return b'<pre><code>' if self.bytes else '<pre><code>'
         else:
             lang = self.render_attr(self.lang)
+            if self.bytes:
+                return b'<pre><code class="language-%b">' % lang
             return f'<pre><code class="language-{lang}">'
 
     def render_post(self, **kwargs):
@@ -578,20 +622,24 @@ class CodeBlock(ContainerNode, element_type=_BlockType.CODE):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</code></pre>\n'
+        return b'</code></pre>\n' if self.bytes else '</code></pre>\n'
 
 
 class RawHTMLBlock(ContainerNode, element_type=_BlockType.HTML):
-    """Raw HTML block. Inherits from :class:`ContainerNode`.
+    """RawHTMLBlock(element_type, **kwargs)
+
+    Raw HTML block. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.HTML`
     """
 
 
 class Paragraph(ContainerNode, element_type=_BlockType.P):
-    """Paragraph.
+    """Paragraph(element_type, **kwargs)
+
+    Paragraph.
 
     :param element_type: :attr:`md4c.BlockType.P`
     """
@@ -603,9 +651,9 @@ class Paragraph(ContainerNode, element_type=_BlockType.P):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '<p>'
+        return b'<p>' if self.bytes else '<p>'
 
     def render_post(self, **kwargs):
         """Render the closing for this paragraph.
@@ -614,13 +662,13 @@ class Paragraph(ContainerNode, element_type=_BlockType.P):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</p>\n'
+        return b'</p>\n' if self.bytes else '</p>\n'
 
 
 class Table(ContainerNode, element_type=_BlockType.TABLE):
-    """Table(element_type, col_count, head_row_count, bod_row_count)
+    """Table(element_type, col_count, head_row_count, bod_row_count, **kwargs)
 
     Table. Inherits from :class:`ContainerNode`.
 
@@ -633,8 +681,8 @@ class Table(ContainerNode, element_type=_BlockType.TABLE):
     :type body_row_count: int
     """
     def __init__(self, element_type,
-                 col_count, head_row_count, body_row_count):
-        super().__init__(element_type)
+                 col_count, head_row_count, body_row_count, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Number of columns in the table
         self.col_count = col_count
         #: Number of rows in the table head
@@ -649,9 +697,9 @@ class Table(ContainerNode, element_type=_BlockType.TABLE):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '<table>\n'
+        return b'<table>\n' if self.bytes else '<table>\n'
 
     def render_post(self, **kwargs):
         """Render the closing for this table.
@@ -660,13 +708,15 @@ class Table(ContainerNode, element_type=_BlockType.TABLE):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</table>\n'
+        return b'</table>\n' if self.bytes else '</table>\n'
 
 
 class TableHead(ContainerNode, element_type=_BlockType.THEAD):
-    """Table heading. Inherits from :class:`ContainerNode`.
+    """TableHead(element_type, **kwargs)
+
+    Table heading. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.THEAD`
     """
@@ -678,9 +728,9 @@ class TableHead(ContainerNode, element_type=_BlockType.THEAD):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '<thead>\n'
+        return b'<thead>\n' if self.bytes else '<thead>\n'
 
     def render_post(self, **kwargs):
         """Render the closing for this table heading.
@@ -689,13 +739,15 @@ class TableHead(ContainerNode, element_type=_BlockType.THEAD):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</thead>\n'
+        return b'</thead>\n' if self.bytes else '</thead>\n'
 
 
 class TableBody(ContainerNode, element_type=_BlockType.TBODY):
-    """Table body. Inherits from :class:`ContainerNode`.
+    """TableBody(element_type, **kwargs)
+
+    Table body. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.TBODY`
     """
@@ -707,9 +759,9 @@ class TableBody(ContainerNode, element_type=_BlockType.TBODY):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '<tbody>\n'
+        return b'<tbody>\n' if self.bytes else '<tbody>\n'
 
     def render_post(self, **kwargs):
         """Render the closing for this table body.
@@ -718,13 +770,15 @@ class TableBody(ContainerNode, element_type=_BlockType.TBODY):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</tbody>\n'
+        return b'</tbody>\n' if self.bytes else '</tbody>\n'
 
 
 class TableRow(ContainerNode, element_type=_BlockType.TR):
-    """Table row. Inherits from :class:`ContainerNode`.
+    """TableRow(element_type, **kwargs)
+
+    Table row. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.BlockType.TR`
     """
@@ -736,9 +790,9 @@ class TableRow(ContainerNode, element_type=_BlockType.TR):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '<tr>\n'
+        return b'<tr>\n' if self.bytes else '<tr>\n'
 
     def render_post(self, **kwargs):
         """Render the closing for this table row.
@@ -747,13 +801,13 @@ class TableRow(ContainerNode, element_type=_BlockType.TR):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</tr>\n'
+        return b'</tr>\n' if self.bytes else '</tr>\n'
 
 
 class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
-    """TableHeaderCell(element_type, align)
+    """TableHeaderCell(element_type, align, **kwargs)
 
     Table header cell. Inherits from :class:`ContainerNode`.
 
@@ -761,8 +815,8 @@ class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
     :param align: Text alignment for the cell
     :type align: :class:`md4c.Align`
     """
-    def __init__(self, element_type, align):
-        super().__init__(element_type)
+    def __init__(self, element_type, align, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Text alignment for the cell (a :attr:`md4c.BlockType.TH`)
         self.align = align
 
@@ -773,16 +827,18 @@ class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if self.align is _Align.LEFT:
-            return '<th align="left">'
+            return b'<th align="left">' if self.bytes else '<th align="left">'
         elif self.align is _Align.CENTER:
-            return '<th align="center">'
+            return (b'<th align="center">' if self.bytes
+                    else '<th align="center">')
         elif self.align is _Align.RIGHT:
-            return '<th align="right">'
+            return (b'<th align="right">' if self.bytes
+                    else '<th align="right">')
         else:
-            return '<th>'
+            return b'<th>' if self.bytes else '<th>'
 
     def render_post(self, **kwargs):
         """Render the closing for this table header cell.
@@ -791,13 +847,13 @@ class TableHeaderCell(ContainerNode, element_type=_BlockType.TH):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</th>\n'
+        return b'</th>\n' if self.bytes else '</th>\n'
 
 
 class TableCell(ContainerNode, element_type=_BlockType.TD):
-    """TableCell(element_type, align)
+    """TableCell(element_type, align, **kwargs)
 
     Table cell. Inherits from :class:`ContainerNode`.
 
@@ -805,8 +861,8 @@ class TableCell(ContainerNode, element_type=_BlockType.TD):
     :param align: Text alignment for the cell
     :type align: :class:`md4c.Align`
     """
-    def __init__(self, element_type, align):
-        super().__init__(element_type)
+    def __init__(self, element_type, align, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Text alignment for the cell (a :attr:`md4c.BlockType.TH`)
         self.align = align
 
@@ -817,16 +873,18 @@ class TableCell(ContainerNode, element_type=_BlockType.TD):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if self.align is _Align.LEFT:
-            return '<td align="left">'
+            return b'<td align="left">' if self.bytes else '<td align="left">'
         elif self.align is _Align.CENTER:
-            return '<td align="center">'
+            return (b'<td align="center">' if self.bytes
+                    else '<td align="center">')
         elif self.align is _Align.RIGHT:
-            return '<td align="right">'
+            return (b'<td align="right">' if self.bytes
+                    else '<td align="right">')
         else:
-            return '<td>'
+            return b'<td>' if self.bytes else '<td>'
 
     def render_post(self, **kwargs):
         """Render the closing for this table cell.
@@ -835,9 +893,9 @@ class TableCell(ContainerNode, element_type=_BlockType.TD):
                        parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
-        return '</td>\n'
+        return b'</td>\n' if self.bytes else '</td>\n'
 
 
 ###############################################################################
@@ -846,7 +904,9 @@ class TableCell(ContainerNode, element_type=_BlockType.TD):
 
 
 class Emphasis(ContainerNode, element_type=_SpanType.EM):
-    """Emphasis inline. Inherits from :class:`ContainerNode`.
+    """Emphasis(element_type, **kwargs)
+
+    Emphasis inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.EM`
     """
@@ -862,11 +922,11 @@ class Emphasis(ContainerNode, element_type=_SpanType.EM):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '<em>'
-        return ''
+            return b'<em>' if self.bytes else '<em>'
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this emphasis inline.
@@ -879,15 +939,17 @@ class Emphasis(ContainerNode, element_type=_SpanType.EM):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</em>'
-        return ''
+            return b'</em>' if self.bytes else '</em>'
+        return b'' if self.bytes else ''
 
 
 class Strong(ContainerNode, element_type=_SpanType.STRONG):
-    """Strong emphasis inline. Inherits from :class:`ContainerNode`.
+    """Strong(element_type, **kwargs)
+
+    Strong emphasis inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.STRONG`
     """
@@ -903,11 +965,11 @@ class Strong(ContainerNode, element_type=_SpanType.STRONG):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '<strong>'
-        return ''
+            return b'<strong>' if self.bytes else '<strong>'
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this strong emphasis inline.
@@ -920,15 +982,17 @@ class Strong(ContainerNode, element_type=_SpanType.STRONG):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</strong>'
-        return ''
+            return b'</strong>' if self.bytes else '</strong>'
+        return b'' if self.bytes else ''
 
 
 class Underline(ContainerNode, element_type=_SpanType.U):
-    """Underline inline. Inherits from :class:`ContainerNode`.
+    """Underline(element_type, **kwargs)
+
+    Underline inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.U`
     """
@@ -944,11 +1008,11 @@ class Underline(ContainerNode, element_type=_SpanType.U):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '<u>'
-        return ''
+            return b'<u>' if self.bytes else '<u>'
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this underline inline.
@@ -961,15 +1025,15 @@ class Underline(ContainerNode, element_type=_SpanType.U):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</u>'
-        return ''
+            return b'</u>' if self.bytes else '</u>'
+        return b'' if self.bytes else ''
 
 
 class Link(ContainerNode, element_type=_SpanType.A):
-    """Link(element_type, href, title)
+    """Link(element_type, href, title, **kwargs)
 
     Hyperlink inline. Inherits from :class:`ContainerNode`.
 
@@ -979,8 +1043,8 @@ class Link(ContainerNode, element_type=_SpanType.A):
     :param title: Link title, if present
     :type title: :ref:`Attribute <attribute>` or None, optional
     """
-    def __init__(self, element_type, href, title=None):
-        super().__init__(element_type)
+    def __init__(self, element_type, href, title=None, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Link URL, as a list of text :class:`ASTNode`
         self.href = self.attr_to_ast(href)
         #: Link title, as a list of text :class:`ASTNode` (or None if not
@@ -998,16 +1062,20 @@ class Link(ContainerNode, element_type=_SpanType.A):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
             href = self.render_attr(self.href, url_escape=True)
             if self.title is not None:
                 title = self.render_attr(self.title)
+                if self.bytes:
+                    return b'<a href="%b" title="%b">' % (href, title)
                 return f'<a href="{href}" title="{title}">'
             else:
+                if self.bytes:
+                    return b'<a href="%b">' % href
                 return f'<a href="{href}">'
-        return ''
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this link inline.
@@ -1020,15 +1088,15 @@ class Link(ContainerNode, element_type=_SpanType.A):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</a>'
-        return ''
+            return b'</a>' if self.bytes else '</a>'
+        return b'' if self.bytes else ''
 
 
 class Image(ContainerNode, element_type=_SpanType.IMG):
-    """Image(element_type, src, title)
+    """Image(element_type, src, title, **kwargs)
 
     Image inline. Inherits from :class:`ContainerNode`.
 
@@ -1038,8 +1106,8 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
     :param title: Image title, if present
     :type title: :ref:`Attribute <attribute>` or None, optional
     """
-    def __init__(self, element_type, src, title=None):
-        super().__init__(element_type)
+    def __init__(self, element_type, src, title=None, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Image URL, as a list of :class:`ASTNode`
         self.src = self.attr_to_ast(src)
         #: Image title, as a list of :class:`ASTNode` (or None if not present)
@@ -1056,12 +1124,14 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 1:
             src = self.render_attr(self.src, url_escape=True)
+            if self.bytes:
+                return b'<img src="%b" alt="' % src
             return f'<img src="{src}" alt="'
-        return ''
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level, **kwargs):
         """Render the closing for this image inline.
@@ -1074,15 +1144,17 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 1:
             if self.title is not None:
                 title = self.render_attr(self.title)
+                if self.bytes:
+                    return b'" title="%b">' % title
                 return f'" title="{title}">'
             else:
-                return '">'
-        return ''
+                return b'">' if self.bytes else '">'
+        return b'' if self.bytes else ''
 
     def render(self, image_nesting_level=0, **kwargs):
         """Render this image element and the alt text within.
@@ -1094,7 +1166,7 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
         :param kwargs: The rest of the data passed from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         image_nesting_level += 1
         return super().render(image_nesting_level=image_nesting_level,
@@ -1102,7 +1174,9 @@ class Image(ContainerNode, element_type=_SpanType.IMG):
 
 
 class Code(ContainerNode, element_type=_SpanType.CODE):
-    """Code inline. Inherits from :class:`ContainerNode`.
+    """Code(element_type, **kwargs)
+
+    Code inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.CODE`
     """
@@ -1118,11 +1192,11 @@ class Code(ContainerNode, element_type=_SpanType.CODE):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '<code>'
-        return ''
+            return b'<code>' if self.bytes else '<code>'
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this code inline.
@@ -1135,15 +1209,17 @@ class Code(ContainerNode, element_type=_SpanType.CODE):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</code>'
-        return ''
+            return b'</code>' if self.bytes else '</code>'
+        return b'' if self.bytes else ''
 
 
 class Strikethrough(ContainerNode, element_type=_SpanType.DEL):
-    """Strikethrough inline. Inherits from :class:`ContainerNode`.
+    """Strikethrough(element_type, **kwargs)
+
+    Strikethrough inline. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.DEL`
     """
@@ -1159,11 +1235,11 @@ class Strikethrough(ContainerNode, element_type=_SpanType.DEL):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '<del>'
-        return ''
+            return b'<del>' if self.bytes else '<del>'
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this strikethrough inline.
@@ -1176,15 +1252,17 @@ class Strikethrough(ContainerNode, element_type=_SpanType.DEL):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</del>'
-        return ''
+            return b'</del>' if self.bytes else '</del>'
+        return b'' if self.bytes else ''
 
 
 class InlineMath(ContainerNode, element_type=_SpanType.LATEXMATH):
-    """Inline math. Inherits from :class:`ContainerNode`.
+    """InlineMath(element_type, **kwargs)
+
+    Inline math. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.LATEXMATH`
     """
@@ -1200,11 +1278,11 @@ class InlineMath(ContainerNode, element_type=_SpanType.LATEXMATH):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '<x-equation>'
-        return ''
+            return b'<x-equation>' if self.bytes else '<x-equation>'
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this inline math.
@@ -1217,15 +1295,17 @@ class InlineMath(ContainerNode, element_type=_SpanType.LATEXMATH):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</x-equation>'
-        return ''
+            return b'</x-equation>' if self.bytes else '</x-equation>'
+        return b'' if self.bytes else ''
 
 
 class DisplayMath(ContainerNode, element_type=_SpanType.LATEXMATH_DISPLAY):
-    """Display math. Inherits from :class:`ContainerNode`.
+    """DisplayMath(element_type, **kwargs)
+
+    Display math. Inherits from :class:`ContainerNode`.
 
     :param element_type: :attr:`md4c.SpanType.LATEXMATH_DISPLAY`
     """
@@ -1241,11 +1321,12 @@ class DisplayMath(ContainerNode, element_type=_SpanType.LATEXMATH_DISPLAY):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '<x-equation type="display">'
-        return ''
+            return (b'<x-equation type="display">' if self.bytes
+                    else '<x-equation type="display">')
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this display math.
@@ -1258,15 +1339,15 @@ class DisplayMath(ContainerNode, element_type=_SpanType.LATEXMATH_DISPLAY):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</x-equation>'
-        return ''
+            return b'</x-equation>' if self.bytes else '</x-equation>'
+        return b'' if self.bytes else ''
 
 
 class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
-    """WikiLink(element_type, target)
+    """WikiLink(element_type, target, **kwargs)
 
     Wiki link inline. Inherits from :class:`ContainerNode`.
 
@@ -1274,8 +1355,8 @@ class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
     :param target: Link target
     :type target: :ref:`Attribute <attribute>`
     """
-    def __init__(self, element_type, target):
-        super().__init__(element_type)
+    def __init__(self, element_type, target, **kwargs):
+        super().__init__(element_type, **kwargs)
         #: Link target, as a list of :class:`ASTNode`
         self.target = self.attr_to_ast(target)
 
@@ -1290,12 +1371,14 @@ class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
             target = self.render_attr(self.target)
+            if self.bytes:
+                return b'<x-wikilink data-target="%b">' % target
             return f'<x-wikilink data-target="{target}">'
-        return ''
+        return b'' if self.bytes else ''
 
     def render_post(self, image_nesting_level=0, **kwargs):
         """Render the closing for this wiki link inline.
@@ -1308,11 +1391,11 @@ class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
                        function from the parent node.
 
         :returns: Rendered HTML
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
-            return '</x-wikilink>'
-        return ''
+            return b'</x-wikilink>' if self.bytes else '</x-wikilink>'
+        return b'' if self.bytes else ''
 
 
 ###############################################################################
@@ -1321,25 +1404,25 @@ class WikiLink(ContainerNode, element_type=_SpanType.WIKILINK):
 
 
 class NormalText(TextNode, element_type=_TextType.NORMAL):
-    """NormalText(element_type, text)
+    """NormalText(element_type, text, **kwargs)
 
     Normal text. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.NORMAL`
     :param text: The actual text
-    :type text: str
+    :type text: str or bytes
     """
 
 
 class NullChar(TextNode, element_type=_TextType.NULLCHAR):
-    """NullChar(element_type, text)
+    """NullChar(element_type, text, **kwargs)
 
     Null character. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.NULLCHAR`
     :param text: Should be a null character, but this class assumes it is and
                  ignores it.
-    :type text: str
+    :type text: str or bytes
     """
 
     def render(self, **kwargs):
@@ -1350,22 +1433,22 @@ class NullChar(TextNode, element_type=_TextType.NULLCHAR):
                        rendering.
 
         :returns: Null character
-        :rtype: str
+        :rtype: str or bytes
         """
-        if isinstance(self.text, bytes):
-            return '\ufffd'.encode()
-        return '\ufffd'
+        if isinstance(self.text, str):
+            return '\ufffd'
+        return '\ufffd'.encode()
 
 
 class LineBreak(TextNode, element_type=_TextType.BR):
-    """LineBreak(element_type, text)
+    """LineBreak(element_type, text, **kwargs)
 
     Line break. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.BR`
     :param text: Should be a newline character, but this class assumes it is
                  and ignores it.
-    :type text: str
+    :type text: str or bytes
     """
 
     def render(self, image_nesting_level=0, **kwargs):
@@ -1378,26 +1461,26 @@ class LineBreak(TextNode, element_type=_TextType.BR):
         :param kwargs: The rest of the data passed from the parent node.
 
         :returns: Rendered line break tag or space
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
             ret_val = '<br>\n'
         else:
             ret_val = ' '
-        if isinstance(self.text, bytes):
-            return ret_val.encode()
-        return ret_val
+        if isinstance(self.text, str):
+            return ret_val
+        return ret_val.encode()
 
 
 class SoftLineBreak(TextNode, element_type=_TextType.SOFTBR):
-    """SoftLineBreak(element_type, text)
+    """SoftLineBreak(element_type, text, **kwargs)
 
     Soft line break. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.SOFTBR`
     :param text: Should be a newline character, but this class assumes it is
                  and ignores it.
-    :type text: str
+    :type text: str or bytes
     """
 
     def render(self, image_nesting_level=0, **kwargs):
@@ -1410,25 +1493,25 @@ class SoftLineBreak(TextNode, element_type=_TextType.SOFTBR):
         :param kwargs: The rest of the data passed from the parent node.
 
         :returns: Newline or space
-        :rtype: str
+        :rtype: str or bytes
         """
         if image_nesting_level == 0:
             ret_val = '\n'
         else:
             ret_val = ' '
-        if isinstance(self.text, bytes):
-            return ret_val.encode()
-        return ret_val
+        if isinstance(self.text, str):
+            return ret_val
+        return ret_val.encode()
 
 
 class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
-    """HTMLEntity(element_type, text)
+    """HTMLEntity(element_type, text, **kwargs)
 
     HTML entity. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.ENTITY`
     :param text: The entity, including ampersand and semicolon
-    :type text: str
+    :type text: str or bytes
     """
 
     def render(self, url_escape=False, **kwargs):
@@ -1442,13 +1525,13 @@ class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
                        rendering.
 
         :returns: Corresponding UTF-8 text for the entity.
-        :rtype: str
+        :rtype: str or bytes
         """
         entity = _lookup_entity(self.text)
         if isinstance(entity, str):
             # Need to check for null characters in case the entity was '&#0;'
             entity = entity.replace('\x00', '\ufffd')
-            if isinstance(self.text, bytes):
+            if isinstance(self.text, _ByteString):
                 entity = entity.encode()
         if url_escape:
             return self.url_escape(entity)
@@ -1456,24 +1539,24 @@ class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
 
 
 class CodeText(TextNode, element_type=_TextType.CODE):
-    """CodeText(element_type, text)
+    """CodeText(element_type, text, **kwargs)
 
     Text in a code block or code span. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.CODE`
     :param text: The actual code
-    :type text: str
+    :type text: str or bytes
     """
 
 
 class HTMLText(TextNode, element_type=_TextType.HTML):
-    """HTMLText(element_type, text)
+    """HTMLText(element_type, text, **kwargs)
 
     Raw HTML text. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.HTML`
     :param text: The raw HTML
-    :type text: str
+    :type text: str or bytes
     """
 
     def render(self, **kwargs):
@@ -1483,17 +1566,17 @@ class HTMLText(TextNode, element_type=_TextType.HTML):
                        rendering.
 
         :returns: Raw HTML text
-        :rtype: str
+        :rtype: str or bytes
         """
         return self.text
 
 
 class MathText(TextNode, element_type=_TextType.LATEXMATH):
-    """MathText(element_type, text)
+    """MathText(element_type, text, **kwargs)
 
     Text in an equation. Inherits from :class:`TextNode`.
 
     :param element_type: :attr:`md4c.TextType.LATEXMATH`
     :param text: The actual text
-    :type text: str
+    :type text: str or bytes
     """

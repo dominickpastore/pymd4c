@@ -25,6 +25,7 @@
 # IN THE SOFTWARE.
 #
 
+import collections.abc
 from ..parser import ParserObject
 from .ast import ASTNode
 
@@ -59,7 +60,7 @@ class DOMParser(ParserObject):
                            representing the type of block being entered
         :param details: A dict containing details about the block
         """
-        block = ASTNode(block_type, **details)
+        block = ASTNode(block_type, use_bytes=self._use_bytes, **details)
         if self.root is None:
             self.root = block
             self._current = block
@@ -85,7 +86,7 @@ class DOMParser(ParserObject):
                            representing the type of span being entered
         :param details: A dict containing details about the span
         """
-        span = ASTNode(span_type, **details)
+        span = ASTNode(span_type, use_bytes=self._use_bytes, **details)
         self._current.append(span)
         self._current = span
 
@@ -107,7 +108,7 @@ class DOMParser(ParserObject):
                           representing the type of span being entered
         :param text: The actual text to be added
         """
-        text_element = ASTNode(text_type, text=text)
+        text_element = ASTNode(text_type, use_bytes=self._use_bytes, text=text)
         self._current.append(text_element)
 
     def parse(self, markdown):
@@ -120,6 +121,7 @@ class DOMParser(ParserObject):
                   :class:`Document`
         :rtype: ASTNode
         """
+        self._use_bytes = isinstance(markdown, collections.abc.ByteString)
         self.root = None
         self._current = None
         super().parse(markdown)

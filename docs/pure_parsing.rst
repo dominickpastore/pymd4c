@@ -109,6 +109,9 @@ five are the functions to use as callbacks::
                  enter_span, leave_span,
                  process_text)
 
+The Markdown document may be a :class:`str` or :class:`bytes`, whichever is
+convenient. The parsed text will be provided using the same type.
+
 Now, let's look at how the callbacks work.
 
 .. _callbacks:
