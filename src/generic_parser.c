@@ -30,6 +30,7 @@
 #define PY_SSIZE_T_CLEAN
 #endif
 #include <Python.h>
+#include <stdbool.h>
 
 #include <md4c.h>
 #include "entity.h"
@@ -188,6 +189,7 @@ typedef struct {
     PyObject *enter_span_callback;
     PyObject *leave_span_callback;
     PyObject *text_callback;
+    bool is_bytes;
 } GenericParserCallbackData;
 
 /*
@@ -291,7 +293,8 @@ static PyObject * get_enum_align(int align) {
  *
  * Return the list or None on success, NULL on failure
  */
-static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
+static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr,
+        bool is_bytes) {
     // If no MD_ATTRIBUTE, return None
     if (attr->text == NULL) {
         Py_RETURN_NONE;
@@ -306,7 +309,7 @@ static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
     // Add items
     for (int i = 0; attr->substr_offsets[i] != attr->size; i++) {
         // Init item
-        PyObject *item = Py_BuildValue("(Os#)",
+        PyObject *item = Py_BuildValue(is_bytes ? "(Oy#)" : "(Os#)",
                 get_enum_texttype(attr->substr_types[i]),
                 attr->text + attr->substr_offsets[i],
                 attr->substr_offsets[i + 1] - attr->substr_offsets[i]);
@@ -330,7 +333,7 @@ static PyObject * GenericParser_md_attribute(MD_ATTRIBUTE *attr) {
  * GenericParser C callbacks
  */
 static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
-        PyObject *python_callback) {
+        PyObject *python_callback, bool is_bytes) {
     // Construct arguments
     PyObject *arglist;
     switch(type) {
@@ -375,9 +378,11 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
                 arglist = Py_BuildValue("(O{s:O,s:O,s:C})",
                         get_enum_blocktype(type),
                         "info", GenericParser_md_attribute(
-                            &((MD_BLOCK_CODE_DETAIL *) detail)->info),
+                            &((MD_BLOCK_CODE_DETAIL *) detail)->info,
+                            is_bytes),
                         "lang", GenericParser_md_attribute(
-                            &((MD_BLOCK_CODE_DETAIL *) detail)->lang),
+                            &((MD_BLOCK_CODE_DETAIL *) detail)->lang,
+                            is_bytes),
                         "fence_char", ((MD_BLOCK_CODE_DETAIL *) detail)->
                             fence_char);
             }
@@ -420,36 +425,39 @@ static int GenericParser_block(MD_BLOCKTYPE type, void *detail,
 static int GenericParser_enter_block(MD_BLOCKTYPE type, void *detail,
         void *cb_data) {
     return GenericParser_block(type, detail,
-            ((GenericParserCallbackData *) cb_data)->enter_block_callback);
+            ((GenericParserCallbackData *) cb_data)->enter_block_callback,
+            ((GenericParserCallbackData *) cb_data)->is_bytes);
 }
 static int GenericParser_leave_block(MD_BLOCKTYPE type, void *detail,
         void *cb_data) {
     return GenericParser_block(type, detail,
-            ((GenericParserCallbackData *) cb_data)->leave_block_callback);
+            ((GenericParserCallbackData *) cb_data)->leave_block_callback,
+            ((GenericParserCallbackData *) cb_data)->is_bytes);
 }
 static int GenericParser_span(MD_SPANTYPE type, void *detail,
-        PyObject *python_callback) {
+        PyObject *python_callback, bool is_bytes) {
     // Construct arguments
     PyObject *arglist;
     switch(type) {
         case MD_SPAN_A:
             arglist = Py_BuildValue("(O{s:O,s:O})", get_enum_spantype(type),
                     "href", GenericParser_md_attribute(
-                        &((MD_SPAN_A_DETAIL *) detail)->href),
+                        &((MD_SPAN_A_DETAIL *) detail)->href, is_bytes),
                     "title", GenericParser_md_attribute(
-                        &((MD_SPAN_A_DETAIL *) detail)->title));
+                        &((MD_SPAN_A_DETAIL *) detail)->title, is_bytes));
             break;
         case MD_SPAN_IMG:
             arglist = Py_BuildValue("(O{s:O,s:O})", get_enum_spantype(type),
                     "src", GenericParser_md_attribute(
-                        &((MD_SPAN_IMG_DETAIL *) detail)->src),
+                        &((MD_SPAN_IMG_DETAIL *) detail)->src, is_bytes),
                     "title", GenericParser_md_attribute(
-                        &((MD_SPAN_IMG_DETAIL *) detail)->title));
+                        &((MD_SPAN_IMG_DETAIL *) detail)->title, is_bytes));
             break;
         case MD_SPAN_WIKILINK:
             arglist = Py_BuildValue("(O{s:O})", get_enum_spantype(type),
                     "target", GenericParser_md_attribute(
-                        &((MD_SPAN_WIKILINK_DETAIL *) detail)->target));
+                        &((MD_SPAN_WIKILINK_DETAIL *) detail)->target,
+                        is_bytes));
             break;
         default:
             arglist = Py_BuildValue("(O{})", get_enum_spantype(type));
@@ -474,18 +482,24 @@ static int GenericParser_span(MD_SPANTYPE type, void *detail,
 static int GenericParser_enter_span(MD_SPANTYPE type, void *detail,
         void *cb_data) {
     return GenericParser_span(type, detail,
-            ((GenericParserCallbackData *) cb_data)->enter_span_callback);
+            ((GenericParserCallbackData *) cb_data)->enter_span_callback,
+            ((GenericParserCallbackData *) cb_data)->is_bytes);
 }
 static int GenericParser_leave_span(MD_SPANTYPE type, void *detail,
         void *cb_data) {
     return GenericParser_span(type, detail,
-            ((GenericParserCallbackData *) cb_data)->leave_span_callback);
+            ((GenericParserCallbackData *) cb_data)->leave_span_callback,
+            ((GenericParserCallbackData *) cb_data)->is_bytes);
 }
 static int GenericParser_text(MD_TEXTTYPE type, const char *text, MD_SIZE size,
         void *cb_data) {
     // Construct arguments
-    PyObject *arglist = Py_BuildValue("(Os#)", get_enum_texttype(type),
-            text, size);
+    PyObject *arglist;
+    if (((GenericParserCallbackData *) cb_data)->is_bytes) {
+        arglist = Py_BuildValue("(Oy#)", get_enum_texttype(type), text, size);
+    } else {
+        arglist = Py_BuildValue("(Os#)", get_enum_texttype(type), text, size);
+    }
     if (arglist == NULL) {
         return -1;
     }
@@ -517,6 +531,7 @@ static int GenericParser_text(MD_TEXTTYPE type, const char *text, MD_SIZE size,
 static PyObject * GenericParser_parse(GenericParserObject *self,
         PyObject *args, PyObject *kwds) {
     // Parse arguments
+    PyObject *input_obj;
     const char *input;
     Py_ssize_t in_size;
     GenericParserCallbackData cb_data;
@@ -529,14 +544,28 @@ static PyObject * GenericParser_parse(GenericParserObject *self,
         "text_callback",
         NULL
     };
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#OOOOO:parse", kwlist,
-                &input, &in_size,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOOOOO:parse", kwlist,
+                &input_obj,
                 &cb_data.enter_block_callback,
                 &cb_data.leave_block_callback,
                 &cb_data.enter_span_callback,
                 &cb_data.leave_span_callback,
                 &cb_data.text_callback)) {
         return NULL;
+    }
+
+    // Extract contents of str or bytes
+    if (PyBytes_AsStringAndSize(input_obj, (char **) &input, &in_size) < 0) {
+        // str
+        PyErr_Clear();
+        input = PyUnicode_AsUTF8AndSize(input_obj, &in_size);
+        if (input == NULL) {
+            return NULL;
+        }
+        cb_data.is_bytes = false;
+    } else {
+        // bytes
+        cb_data.is_bytes = true;
     }
 
     // Check that callbacks are all valid
@@ -566,7 +595,8 @@ static PyObject * GenericParser_parse(GenericParserObject *self,
         return NULL;
     }
 
-    // Make callback references owned
+    // Make callback and input references owned
+    Py_INCREF(input_obj);
     Py_INCREF(cb_data.enter_block_callback);
     Py_INCREF(cb_data.leave_block_callback);
     Py_INCREF(cb_data.enter_span_callback);
@@ -601,7 +631,8 @@ static PyObject * GenericParser_parse(GenericParserObject *self,
         }
     }
 
-    // Return callback references
+    // Return callback and input references
+    Py_DECREF(input_obj);
     Py_DECREF(cb_data.enter_block_callback);
     Py_DECREF(cb_data.leave_block_callback);
     Py_DECREF(cb_data.enter_span_callback);
@@ -646,8 +677,8 @@ static PyMethodDef GenericParser_methods[] = {
         "\n"
         "Callbacks must all accept two parameters. The first describes the "
         "type of block, inline, or text. The second is a dict with details "
-        "about the block or inline or a string containing the text itself. "
-        "See :ref:`callbacks` for more information.\n"
+        "about the block or inline or a string/bytes containing the text "
+        "itself. See :ref:`callbacks` for more information.\n"
         "\n"
         "If a callback raises :class:`StopParsing`, parsing will abort with "
         "no error. Any other exception will abort parsing and propagate back "

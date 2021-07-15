@@ -14,6 +14,13 @@ PyMD4C version numbers track MD4C version numbers:
 [Unreleased]
 ------------
 
+### Fixed
+
+- Installing projects that depend on PyMD4C will no longer fail due to missing
+  headers when PyMD4C must be built from source (PR #28, thanks @EuAndreh)
+- Updated installation instructions to be more accurate regarding installs
+  without a prebuilt package
+
 [0.4.8.0] - 2021-05-21
 ----------------------
 

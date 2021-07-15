@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <md4c.h>
 #include <md4c-html.h>
@@ -295,16 +296,35 @@ static PyObject * HTMLRenderer_parse(HTMLRendererObject *self,
     PyThreadState *_save;
 
     // Parse arguments
+    PyObject *input_obj;
     const char *input;
     Py_ssize_t in_size;
-    if (!PyArg_ParseTuple(args, "s#", &input, &in_size)) {
+    bool is_bytes;
+    if (!PyArg_ParseTuple(args, "O", &input_obj)) {
         return NULL;
     }
+
+    // Extract contents of str or bytes
+    if (PyBytes_AsStringAndSize(input_obj, (char **) &input, &in_size) < 0) {
+        // str
+        PyErr_Clear();
+        input = PyUnicode_AsUTF8AndSize(input_obj, &in_size);
+        if (input == NULL) {
+            return NULL;
+        }
+        is_bytes = false;
+    } else {
+        // bytes
+        is_bytes = true;
+    }
+    Py_INCREF(input_obj);
 
     // Do the parse
     Py_UNBLOCK_THREADS
     DynamicBuffer buf;
     if (buffer_init(&buf) < 0) {
+        Py_BLOCK_THREADS
+        Py_DECREF(input_obj);
         PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
@@ -313,15 +333,17 @@ static PyObject * HTMLRenderer_parse(HTMLRendererObject *self,
     Py_BLOCK_THREADS
 
     // Return
+    Py_DECREF(input_obj);
     if (sts < 0) {
         PyErr_SetString(ParseError, "Could not parse markdown");
         return NULL;
     }
-    PyObject *result = Py_BuildValue("s#", buf.data, buf.pos);
+    PyObject *result = Py_BuildValue(is_bytes ? "y#" : "s#",
+            buf.data, buf.pos);
+    buffer_free(&buf);
     if (result == NULL) {
         return NULL;
     }
-    buffer_free(&buf);
     return result;
 }
 
@@ -355,7 +377,7 @@ static PyMethodDef HTMLRenderer_methods[] = {
         ":class:`bytes`, it must be UTF-8 encoded.\n"
         ":type markdown: str or bytes\n"
         ":return: The generated HTML\n"
-        ":rtype: str\n"
+        ":rtype: str or bytes\n"
         ":raises ParseError: if there is a runtime error while parsing\n"
     },
     {NULL}

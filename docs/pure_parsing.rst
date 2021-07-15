@@ -151,7 +151,7 @@ Each :meth:`~md4c.GenericParser.parse` call requires five callbacks:
   Called whenever MD4C has text to add to the current block or inline element.
 
   :param text_type: An instance of :class:`~md4c.TextType`
-  :param text: A string containing the text to be added
+  :param text: A string or bytes containing the text to be added
 
 The first four callbacks work similarly. All must accept a
 :class:`~md4c.BlockType` or :class:`~md4c.SpanType` as their first parameter
@@ -162,10 +162,11 @@ writing your own rendering code, these callbacks would write opening or closing
 HTML tags to the output stream.
 
 The fifth callback accepts a :class:`~md4c.TextType` as the first parameter
-and a string of text as the second parameter. The text is unprocessed; for
-example, HTML entities are left in ``&...;`` form. If you were writing your own
-rendering function, this callback would write the text to the output stream
-(potentially after some translation).
+and some text as the second parameter. The text's type will match that of the
+original Markdown input (:class:`str` or :class:`bytes`). The text is
+unprocessed; for example, HTML entities are left in ``&...;`` form. If you were
+writing your own rendering function, this callback would write the text to the
+output stream (potentially after some translation).
 
 Callbacks do not need to return anything specific—their return values are
 ignored. To cancel parsing, callbacks can raise the :class:`~md4c.StopParsing`
@@ -312,14 +313,15 @@ details dict.
 Attributes
 ~~~~~~~~~~
 
-MD4C uses "attributes" for details that are strings, such as link URLs and
+MD4C uses "attributes" for details that are text, such as link URLs and
 fenced code block info strings. These are not allowed to contain any
 span/inline elements, but they may contain HTML entities or null characters, so
 attributes are how MD4C copes with this.
 
 PyMD4C represents attributes as either ``None`` or a list of 2-tuples
 ``(text_type, text)`` where ``text_type`` is a member of
-:class:`~md4c.TextType` and ``text`` is the actual text as a string.
+:class:`~md4c.TextType` and ``text`` is the actual text as a :class:`str` or
+:class:`bytes` (whichever one the Markdown input was).
 
 For example, this string::
 

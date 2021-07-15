@@ -25,6 +25,8 @@
 # IN THE SOFTWARE.
 #
 
+import urllib.parse
+
 from .. import lookup_entity as _lookup_entity
 from ..enums import BlockType as _BlockType
 from ..enums import SpanType as _SpanType
@@ -77,7 +79,7 @@ class ASTNode:
     # of the object. But if a user decides to replace one of the built-in
     # classes for a particular element, isinstance() won't work so well, but
     # comparing self.type will.
-    def __init__(self, element_type):
+    def __init__(self, element_type, is_bytes=False):
         #: A :class:`md4c.BlockType`, :class:`md4c.SpanType`, or
         #: :class:`md4c.TextType` representing the type of element this object
         #: represents
@@ -114,14 +116,18 @@ class ASTNode:
         :type url_escape: bool, optional
 
         :returns: Rendered output.
-        :rtype: str
+        :rtype: str or bytes
         """
+        #TODO bytes
         if attribute is None:
             return ''
         renderings = []
         for text in attribute:
             renderings.append(text.render(url_escape=url_escape))
-        return ''.join(renderings)
+        try:
+            return ''.join(renderings)
+        except TypeError:
+            return b''.join(renderings)
 
     def render(self, **kwargs):
         """Render this node and its children. This base implementation returns
@@ -220,7 +226,7 @@ class TextNode(ASTNode, element_type=None):
     :param element_type: A :class:`md4c.BlockType`, or :class:`md4c.SpanType`
                          representing the type of this element
     :param text: The text this node represents, unprocessed
-    :type text: str
+    :type text: str or bytes
     """
     def __init__(self, element_type, text):
         super().__init__(element_type)
@@ -240,29 +246,29 @@ class TextNode(ASTNode, element_type=None):
         """Escape HTML special characters (``&<>"``)
 
         :param text: Text to escape
-        :return: Escaped string
+        :type text: str or bytes
+        :return: Escaped string or bytes
         """
-        return text.translate(cls.html_escape_table)
-
-    class _URLEscapeDict(dict):
-        """Dict that does percent escaping for any item not in it"""
-        def __missing__(self, cp):
-            utf8 = chr(cp).encode('utf-8')
-            return ''.join(f'%{b:02X}' for b in utf8)
-
-    url_escape_table = _URLEscapeDict(
-        {ord(c): c for c in "0123456789-_.+!*(),%#@?=;:/,+$"
-         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"})
-    url_escape_table[ord('&')] = '&amp;'
+        if isinstance(text, str):
+            return text.translate(cls.html_escape_table)
+        # Hacky workaround since the bytes translate() function is not as
+        # flexible as the string one
+        string = text.decode('latin_1').translate(cls.html_escape_table)
+        return string.encode('latin_1')
 
     @classmethod
     def url_escape(cls, text):
         """Percent-escape special characters in URLs
 
         :param text: URL to percent-escape
-        :return: Escaped string
+        :type text: str or bytes
+        :return: Escaped string or bytes
         """
-        return text.translate(cls.url_escape_table)
+        translated = (urllib.parse.quote(text, safe='-_.!*(),%#@?=;:/,+$&')
+                      .replace('&', '&amp;'))
+        if isinstance(text, bytes):
+            return translated.encode('ascii')
+        return translated
 
     def render(self, url_escape=False, **kwargs):
         """Render the text for this node, performing HTML or URL escaping in
@@ -276,7 +282,7 @@ class TextNode(ASTNode, element_type=None):
                        useful for rendering.
 
         :returns: Rendered output, suitable for inclusion in an HTML document.
-        :rtype: str
+        :rtype: str or bytes
         """
         if url_escape:
             return self.url_escape(self.text)
@@ -1346,6 +1352,8 @@ class NullChar(TextNode, element_type=_TextType.NULLCHAR):
         :returns: Null character
         :rtype: str
         """
+        if isinstance(self.text, bytes):
+            return '\ufffd'.encode()
         return '\ufffd'
 
 
@@ -1373,8 +1381,12 @@ class LineBreak(TextNode, element_type=_TextType.BR):
         :rtype: str
         """
         if image_nesting_level == 0:
-            return '<br>\n'
-        return ' '
+            ret_val = '<br>\n'
+        else:
+            ret_val = ' '
+        if isinstance(self.text, bytes):
+            return ret_val.encode()
+        return ret_val
 
 
 class SoftLineBreak(TextNode, element_type=_TextType.SOFTBR):
@@ -1401,8 +1413,12 @@ class SoftLineBreak(TextNode, element_type=_TextType.SOFTBR):
         :rtype: str
         """
         if image_nesting_level == 0:
-            return '\n'
-        return ' '
+            ret_val = '\n'
+        else:
+            ret_val = ' '
+        if isinstance(self.text, bytes):
+            return ret_val.encode()
+        return ret_val
 
 
 class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
@@ -1429,7 +1445,11 @@ class HTMLEntity(TextNode, element_type=_TextType.ENTITY):
         :rtype: str
         """
         entity = _lookup_entity(self.text)
-        entity = entity.replace('\x00', '\ufffd')
+        if isinstance(entity, str):
+            # Need to check for null characters in case the entity was '&#0;'
+            entity = entity.replace('\x00', '\ufffd')
+            if isinstance(self.text, bytes):
+                entity = entity.encode()
         if url_escape:
             return self.url_escape(entity)
         return self.html_escape(entity)

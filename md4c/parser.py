@@ -108,7 +108,7 @@ class ParserObject:
 
         :param text_type: An instance of the :class:`md4c.TextType` enum
                           representing the type of text element
-        :param text: A string containing the actual text to add
+        :param text: A string or bytes containing the actual text to add
         """
 
     def parse(self, markdown):
@@ -116,7 +116,7 @@ class ParserObject:
         :func:`leave_block`, :func:`enter_span`, :func:`leave_span`, and
         :func:`text` functions as callbacks for :class:`GenericParser`.
 
-        :param markdown: The Markdown text to parse
+        :param markdown: The Markdown text to parse.
         :type markdown: str or bytes
         """
         self.parser.parse(markdown,
