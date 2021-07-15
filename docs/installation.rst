@@ -56,8 +56,11 @@ This package depends on the MD4C library. It may be available through your
 package manager. Otherwise, it can be built from source as follows:
 
 1. Make sure you have CMake_ and a C compiler installed.
-2. Download and extract the matching release from the `MD4C releases`_
-   page (e.g. for PyMD4C version W.X.Y.Z, download MD4C version W.X.Y).
+2. Download and extract MD4C from the `MD4C releases`_ page. See the CHANGELOG_
+   or `about.json`_ for recommended versions to use. PyMD4C is tested against
+   the minimum and maximum MD4C versions listed in those files. If there is a
+   newer version of MD4C available, it is likely to work as well, but has not
+   been tested yet.
 3. On Unix-like systems (including macOS):
 
    - Inside the extracted file, run the following::
@@ -116,8 +119,10 @@ Note that on Windows, setup.py assumes the MD4C library was installed at
 from source, as described above). If this is not the case, installation will
 fail.
 
-.. _MD4C releases: https://github.com/mity/md4c/releases
 .. _CMake: https://cmake.org/
+.. _MD4C releases: https://github.com/mity/md4c/releases
+.. _CHANGELOG: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
+.. _about.json: https://github.com/dominickpastore/pymd4c/blob/master/about.json
 
 .. rubric:: Footnotes
 

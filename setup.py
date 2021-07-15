@@ -4,6 +4,7 @@ import json
 
 with open("about.json", "r") as f:
     about = json.load(f)
+    del about['md4c-version']
 
 with open("README.md", "r") as f:
     long_description = f.read()

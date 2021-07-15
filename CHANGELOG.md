@@ -1,18 +1,28 @@
 PyMD4C Changelog
 ================
 
-PyMD4C version numbers track MD4C version numbers:
+PyMD4C uses [Semantic Versioning][semver] as of version 1.0.0. In summary, new
+major versions contain breaking changes, new minor versions contain new
+features, and new patch versions contain bugfixes. (There is one minor
+deviation: Pre-release versions will use [PEP 440][pep440] formatting, e.g.
+"1.0.0b1", not the hyphenated "1.0.0-beta.1" form specified by Semantic
+Versioning.)
 
-    Major.Minor.Patch.PyMD4C
+[1.0.0] - 2021-07-15
+--------------------
 
-* Major, minor, and patch versions match the version of MD4C that PyMD4C is
-  based on.
-* The final number is the PyMD4C version, which will start at zero for each
-  MD4C version and be incremented each time there is a new PyMD4C release for
-  the same version of MD4C.
+With this release, the version numbering system is changing. In prior releases,
+the version number tracked the MD4C version number: version W.X.Y.Z was tested
+against MD4C version W.X.Y and it was the Zth release against that version.
 
-[Unreleased]
-------------
+From this release forward, releases will use [Semantic Versioning][semver].
+Most MD4C releases are bugfixes, so PyMD4C generally shouldn't be that picky
+about which version it's linked against. That said, the minumum supported
+version and maximum tested version will be listed with each entry in the
+changelog. (Newer versions are likely to work as well.)
+
+This PyMD4C version requires MD4C **0.4.7** or later. It has been tested
+against that and the current latest version, **0.4.8**.
 
 ### Fixed
 
@@ -20,6 +30,9 @@ PyMD4C version numbers track MD4C version numbers:
   headers when PyMD4C must be built from source (PR #28, thanks @EuAndreh)
 - Updated installation instructions to be more accurate regarding installs
   without a prebuilt package
+- Proper support for `bytes` input. Rendered output for `bytes` input will also
+  be `bytes`. This allows documents that are not well-formed Unicode to be
+  parsed, if that is ever desirable. (Fixes issue #29)
 
 [0.4.8.0] - 2021-05-21
 ----------------------
@@ -109,7 +122,11 @@ This is the initial beta release.
 - `HTMLRenderer` class wrapping the MD4C HTML renderer
 - Written for the MD4C version 0.4.4
 
-[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/v0.4.8.0..dev
+[semver]: https://semver.org/
+[pep440]: https://www.python.org/dev/peps/pep-0440/#version-scheme
+
+[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/v1.0.0..dev
+[1.0.0]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.8.0..v1.0.0
 [0.4.8.0]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.7.0b1..v0.4.8.0
 [0.4.7.0b1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.6.0b1..v0.4.7.0b1
 [0.4.6.0b1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.4.0b1..v0.4.6.0b1

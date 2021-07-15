@@ -8,6 +8,49 @@ on:
   pull_request:
 
 jobs:
+  test_minimum_md4c:
+    name: Test minimum MD4C version
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.6, 3.9]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.python-version}}
+      - id: md4c-version
+        name: Get compatible MD4C version
+        uses: ./.github/actions/md4c-version
+      - name: Fetch MD4C
+        uses: actions/checkout@v2
+        with:
+          repository: mity/md4c
+          ref: release-${{steps.md4c-version.outputs.md4c-min}}
+          path: md4c-lib
+      - name: Build and install MD4C
+        run: |
+          mkdir md4c-lib/build
+          cd md4c-lib/build
+          cmake ..
+          make
+          sudo make install
+          sudo ldconfig
+      - name: Install Python packaging tools
+        run: python -m pip install --upgrade pip setuptools wheel
+      - name: Install PyMD4C with test dependencies
+        run: python -m pip install .[test]
+      - name: Check setup.py
+        run: python setup.py check -m -s
+      - name: Run flake8
+        run: flake8 setup.py md4c/
+      - name: Run Pytest
+        run: pytest -vv test/
+
   run_tests:
     name: Run tests
     runs-on: ubuntu-latest

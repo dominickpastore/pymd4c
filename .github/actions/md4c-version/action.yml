@@ -6,6 +6,9 @@ outputs:
   md4c-version:
     description: The MD4C version to link against
     value: ${{steps.get-version.outputs.md4c}}
+  md4c-min:
+    description: The oldest MD4C version to test against
+    value: ${{steps.get-version.outputs.md4c-min}}
 runs:
   using: composite
   steps:
@@ -14,6 +17,8 @@ runs:
         import json
         with open('about.json') as f:
             about = json.load(f)
-        version_components = about['version'].split('.')
-        print('::set-output name=md4c::' + '.'.join(version_components[0:3]))
+        min_version = about['md4c-version']['min']
+        max_version = about['md4c-version']['max']
+        print('::set-output name=md4c::' + max_version)
+        print('::set-output name=md4c-min::' + min_version)
       shell: python

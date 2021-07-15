@@ -1,6 +1,6 @@
 {
     "name": "pymd4c",
-    "version": "1.0.0.dev0",
+    "version": "1.0.0",
     "description": "Python bindings for MD4C",
     "author": "Dominick C. Pastore",
     "author_email": "dominickpastore@dcpx.org",
@@ -10,5 +10,9 @@
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Topic :: Text Processing :: Markup"
-    ]
+    ],
+    "md4c-version": {
+        "min": "0.4.7",
+        "max": "0.4.8"
+    }
 }
