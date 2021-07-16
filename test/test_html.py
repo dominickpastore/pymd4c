@@ -54,6 +54,14 @@ def get_tests(specfile):
                 state = 0
                 example_number = example_number + 1
                 end_line = line_number
+                md4c_version = None
+                for extension in extensions:
+                    if extension.startswith('md4c-'):
+                        md4c_version = extension
+                        break
+                if md4c_version is not None:
+                    extensions.remove(md4c_version)
+                    md4c_version = md4c_version[5:]
                 if 'disabled' not in extensions:
                     tests.append({
                         "markdown":''.join(markdown_lines).replace('→',"\t"),
@@ -63,6 +71,7 @@ def get_tests(specfile):
                         "end_line": end_line,
                         "section": headertext,
                         "file": specfile,
+                        "md4c_version": md4c_version,
                         "extensions": extensions})
                 start_line = 0
                 markdown_lines = []
@@ -88,11 +97,39 @@ def collect_all_tests():
     return all_tests
 
 
+def skip_if_older_version(running_version, test_version):
+    """Skip the current test if the running version of MD4C is older than the
+    version required for the test
+
+    :param running_version: Running version of MD4C, e.g. "0.4.8"
+    :type running_version: str
+    :param test_version: Version of MD4C required for the test
+    :type test_version: str
+    """
+    if running_version is None or test_version is None:
+        return
+    running_version = [int(x) for x in running_version.split('.')]
+    test_version = [int(x) for x in test_version.split('.')]
+    for r, t in zip(running_version, test_version):
+        if r < t:
+            pytest.skip()
+    for t in test_version[len(running_version):]:
+        if t > 0:
+            pytest.skip("Test requires newer MD4C")
+
+
+@pytest.fixture
+def md4c_version(pytestconfig):
+    return pytestconfig.getoption('--md4c-version')
+
+
 @pytest.mark.parametrize(
     'test_case', collect_all_tests(),
      ids=lambda x: f'{x["file"]}:{x["start_line"]}-{x["section"]}')
-def test_html_output(test_case):
+def test_html_output(test_case, md4c_version):
     """Test HTMLRenderer with default render flags on the given example"""
+    skip_if_older_version(md4c_version, test_case['md4c_version'])
+
     parser_flags = 0
     for extension in test_case['extensions']:
         parser_flags |= extension_flags[extension]
@@ -105,9 +142,11 @@ def test_html_output(test_case):
 @pytest.mark.parametrize(
     'test_case', collect_all_tests(),
      ids=lambda x: f'{x["file"]}:{x["start_line"]}-{x["section"]}')
-def test_domparser_html(test_case):
+def test_domparser_html(test_case, md4c_version):
     """Test that the output for DOMParser render() matches HTMLRenderer char
     for char"""
+    skip_if_older_version(md4c_version, test_case['md4c_version'])
+
     parser_flags = 0
     for extension in test_case['extensions']:
         parser_flags |= extension_flags[extension]

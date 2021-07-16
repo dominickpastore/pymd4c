@@ -308,7 +308,7 @@ foo
 
 ### [Issue 149](https://github.com/mity/md4c/issues/149)
 
-```````````````````````````````` example
+```````````````````````````````` example md4c-0.4.8
 - <script>
 - foo
 bar

@@ -49,7 +49,7 @@ jobs:
       - name: Run flake8
         run: flake8 setup.py md4c/
       - name: Run Pytest
-        run: pytest -vv test/
+        run: pytest -vv test/ --md4c-version ${{steps.md4c-version.outputs.md4c-min}}
 
   run_tests:
     name: Run tests

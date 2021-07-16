@@ -9,6 +9,9 @@ flake8 setup.py md4c/
 pytest -vv test/
 ```
 
+Optionally, `--md4c-version X.Y.Z` can be added to the `pytest` line and it
+will skip any tests that require a later version of MD4C.
+
 Specification files
 -------------------
 
@@ -49,3 +52,7 @@ missing some test cases from CommonMark's `spec.txt`, for some reason.
 The rest are specification files [directly from
 MD4C](https://github.com/mity/md4c/tree/master/test). Files that require parser
 options are modified to include annotations for them.
+
+Any tests that require at least a certain version of MD4C have the annotation
+`md4c-X.Y.Z`. These tests will be skipped when `--md4c-version` is provided
+with an earlier version.
