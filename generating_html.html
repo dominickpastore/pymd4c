@@ -73,7 +73,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -112,7 +112,9 @@ this:</p>
 <span class="n">html</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>That is the most basic case: converting CommonMark-compliant Markdown to HTML.</p>
+<p>That is the most basic case: converting CommonMark-compliant Markdown to HTML.
+The Markdown input may be a string or a bytes object, and the HTML output will
+be of the same type.</p>
 </section>
 <section id="parsing-and-rendering-options">
 <h2>Parsing and Rendering Options<a class="headerlink" href="#parsing-and-rendering-options" title="Permalink to this headline">¶</a></h2>
@@ -187,7 +189,7 @@ instead. See <a class="reference internal" href="dom_parsing.html"><span class="
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

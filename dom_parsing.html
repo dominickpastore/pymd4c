@@ -51,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#ast-node-objects">AST Node Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ast-manipulation">AST Manipulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-custom-ast-classes">Using Custom AST Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-bytes-as-the-input">Using <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> as the Input</a></li>
 </ul>
 </li>
 </ul>
@@ -76,7 +77,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -436,6 +437,57 @@ their output through their <a class="reference internal" href="dom_api.html#md4c
 method.</p></li>
 </ul>
 </section>
+<section id="using-bytes-as-the-input">
+<h2>Using <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> as the Input<a class="headerlink" href="#using-bytes-as-the-input" title="Permalink to this headline">¶</a></h2>
+<p>All the examples above have assumed UTF-8 input. As with all the other parsers
+in PyMD4C, <a class="reference internal" href="dom_api.html#md4c.domparser.DOMParser" title="md4c.domparser.DOMParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DOMParser</span></code></a> will parse <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> objects
+as well. In that case, the <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode.render" title="md4c.domparser.ASTNode.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> method on the
+resulting AST will return a <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> object as well.</p>
+<p>There are some additional caveats to be aware of when modifying ASTs generated
+from <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> input:</p>
+<ul>
+<li><p>When constructing a new <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a>, you must set
+<code class="docutils literal notranslate"><span class="pre">use_bytes=True</span></code> in the constructor, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">heading_node</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">BlockType</span><span class="o">.</span><span class="n">H</span><span class="p">,</span>
+                                      <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                      <span class="n">use_bytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Text for any <a class="reference internal" href="dom_api.html#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a> must be a <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>
+object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">link_node</span> <span class="o">=</span> <span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+    <span class="n">md4c</span><span class="o">.</span><span class="n">SpanType</span><span class="o">.</span><span class="n">A</span><span class="p">,</span>
+    <span class="n">href</span><span class="o">=</span><span class="p">[(</span><span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;http://www.example.com/&#39;</span><span class="p">)],</span>
+    <span class="n">use_bytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">link_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">ASTNode</span><span class="p">(</span>
+    <span class="n">md4c</span><span class="o">.</span><span class="n">TextType</span><span class="o">.</span><span class="n">Normal</span><span class="p">,</span>
+    <span class="n">text</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;Example Link Text&#39;</span><span class="p">,</span>
+    <span class="n">use_bytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>When using custom <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a> subclasses, make sure any
+overridden <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode.render" title="md4c.domparser.ASTNode.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a>,
+<a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.render_pre" title="md4c.domparser.ContainerNode.render_pre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render_pre()</span></code></a>, or
+<a class="reference internal" href="dom_api.html#md4c.domparser.ContainerNode.render_post" title="md4c.domparser.ContainerNode.render_post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render_post()</span></code></a> methods return
+<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> objects when the <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode.bytes" title="md4c.domparser.ASTNode.bytes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self.bytes</span></code></a> attribute is True:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">InlineMathJax</span><span class="p">(</span><span class="n">md4c</span><span class="o">.</span><span class="n">domparser</span><span class="o">.</span><span class="n">InlineMath</span><span class="p">,</span>
+                    <span class="n">element_type</span><span class="o">=</span><span class="n">md4c</span><span class="o">.</span><span class="n">SpanType</span><span class="o">.</span><span class="n">LATEXMATH</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bytes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">(&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">(&#39;</span>
+
+    <span class="k">def</span> <span class="nf">render_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bytes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">)&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">)&#39;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
 </section>
 
 
@@ -464,7 +516,7 @@ method.</p></li>
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

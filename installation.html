@@ -72,7 +72,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -109,42 +109,38 @@ Linux distributions, Windows, and macOS.</p>
 <ol class="arabic simple">
 <li><p>You do not have pip installed, or your version is too old. See <a class="reference external" href="https://packaging.python.org/tutorials/installing-packages/">Installing
 Packages - Python Packaging User Guide</a>.</p></li>
-<li><p>Your version of Python is too old. This is a platform wheel, so it is built
-for each Python version separately. Python versions older than 3.6 are not
-supported. If your Python version is older than that, try upgrading.</p></li>
-<li><p>Your OS or architecture is incompatible. Platform wheels require a separate
-build for each OS and architecture, so if yours is uncommon, there may not
-be a prebuilt package for it.</p>
-<ul class="simple">
-<li><p>If you are running Windows, you may be running 32-bit (x86) Python.
-Currently, only packages for 64-bit (x86-64) Python are built. If you can,
-try running 64-bit Python.</p></li>
-<li><p>If you are on macOS, your macOS version might be too old.</p></li>
-<li><p>If you are on Linux, you may be running on an architecture other than
-x86-64, a distribution that is too old, or a more esoteric distribution
-unsupported by <a class="reference external" href="https://github.com/pypa/manylinux">manylinux2014</a>. (Note that many architectures
-supported by manylinux2014 are not built at this time, including x86,
-arm64, ppc64le, and s390x.)</p></li>
-<li><p>If you are on some other platform, unfortunately, it is not supported by
-the pre-built packages.</p></li>
-</ul>
-</li>
+<li><p>A prebuilt package is not available for your platform, and pip could not
+build it from source (likely because the necessary dependencies were not
+available).</p></li>
 </ol>
-<p>If a build is not available for your platform (or you simply want to), you can
-build and install from source. The instructions below should assist.</p>
-<p>If a build is not available or not working for your platform and you think it
-should be, consider opening a <a class="reference external" href="https://github.com/dominickpastore/pymd4c/issues">GitHub issue</a>.</p>
+<p>Regarding reason #2: Since this package contains C extensions, it is built as a
+platform wheel. Prebuilt packages are available for Python 3.6+ on the
+following platforms:</p>
+<ul class="simple">
+<li><p>Windows, 64-bit (amd64/x86-64) Python only.</p></li>
+<li><p>Recent versions of macOS on Intel silicon <a class="footnote-reference brackets" href="#m1" id="id1">1</a></p></li>
+<li><p>Most Linux distributions, 64-bit Python only (specifically, any distribution
+supported by <a class="reference external" href="https://github.com/pypa/manylinux">manylinux2014</a>, amd64 architecture)</p></li>
+</ul>
+<p>Pip will automatically attempt to build from source on other platforms, but it
+will fail if the build dependencies are not available. See <a class="reference internal" href="#prerequisites"><span class="std std-ref">Prerequisites</span></a>
+for information on installing them.</p>
+<p>If a prebuilt package is not available or not working for your platform and you
+think it should be, consider opening a <a class="reference external" href="https://github.com/dominickpastore/pymd4c/issues">GitHub issue</a>.</p>
 </section>
 <section id="build-and-install-from-source">
 <h2>Build and Install from Source<a class="headerlink" href="#build-and-install-from-source" title="Permalink to this headline">¶</a></h2>
 <section id="prerequisites">
-<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
 <p>This package depends on the MD4C library. It may be available through your
 package manager. Otherwise, it can be built from source as follows:</p>
 <ol class="arabic">
 <li><p>Make sure you have <a class="reference external" href="https://cmake.org/">CMake</a> and a C compiler installed.</p></li>
-<li><p>Download and extract the matching release from the <a class="reference external" href="https://github.com/mity/md4c/releases">MD4C releases</a>
-page (e.g. for PyMD4C version W.X.Y.Z, download MD4C version W.X.Y).</p></li>
+<li><p>Download and extract MD4C from the <a class="reference external" href="https://github.com/mity/md4c/releases">MD4C releases</a> page. See the <a class="reference external" href="https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md">CHANGELOG</a>
+or <a class="reference external" href="https://github.com/dominickpastore/pymd4c/blob/master/about.json">about.json</a> for recommended versions to use. PyMD4C is tested against
+the minimum and maximum MD4C versions listed in those files. If there is a
+newer version of MD4C available, it is likely to work as well, but has not
+been tested yet.</p></li>
 <li><p>On Unix-like systems (including macOS):</p>
 <ul>
 <li><p>Inside the extracted file, run the following:</p>
@@ -207,6 +203,13 @@ distribution on PyPI:</p>
 “C:/Program Files (x86)/MD4C/” (this is the default location when building MD4C
 from source, as described above). If this is not the case, installation will
 fail.</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="m1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Sorry M1 users, waiting for GitHub Actions to support Apple Silicon
+for GitHub-hosted runners.</p>
+</dd>
+</dl>
 </section>
 </section>
 </section>
@@ -237,7 +240,7 @@ fail.</p>
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

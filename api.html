@@ -74,7 +74,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -127,7 +127,7 @@ for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</
 <dd class="field-even"><p>The generated HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="#md4c.ParseError" title="md4c.ParseError"><strong>ParseError</strong></a> – if there is a runtime error while parsing</p>
@@ -151,7 +151,7 @@ for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</
 <dt class="sig sig-object py" id="md4c.GenericParser.parse">
 <span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markdown</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enter_block_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_block_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enter_span_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_span_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.GenericParser.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a Markdown document using the provided callbacks for output</p>
-<p>Callbacks must all accept two parameters. The first describes the type of block, inline, or text. The second is a dict with details about the block or inline or a string containing the text itself. See <a class="reference internal" href="pure_parsing.html#callbacks"><span class="std std-ref">Callbacks</span></a> for more information.</p>
+<p>Callbacks must all accept two parameters. The first describes the type of block, inline, or text. The second is a dict with details about the block or inline or a string/bytes containing the text itself. See <a class="reference internal" href="pure_parsing.html#callbacks"><span class="std std-ref">Callbacks</span></a> for more information.</p>
 <p>If a callback raises <a class="reference internal" href="#md4c.StopParsing" title="md4c.StopParsing"><code class="xref py py-class docutils literal notranslate"><span class="pre">StopParsing</span></code></a>, parsing will abort with no error. Any other exception will abort parsing and propagate back to the caller of this method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -279,7 +279,7 @@ default, it does nothing.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text_type</strong> – An instance of the <a class="reference internal" href="#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.TextType</span></code></a> enum
 representing the type of text element</p></li>
-<li><p><strong>text</strong> – A string containing the actual text to add</p></li>
+<li><p><strong>text</strong> – A string or bytes containing the actual text to add</p></li>
 </ul>
 </dd>
 </dl>
@@ -293,7 +293,7 @@ representing the type of text element</p></li>
 <a class="reference internal" href="#md4c.ParserObject.text" title="md4c.ParserObject.text"><code class="xref py py-func docutils literal notranslate"><span class="pre">text()</span></code></a> functions as callbacks for <a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>markdown</strong> (<em>str</em><em> or </em><em>bytes</em>) – The Markdown text to parse</p>
+<dd class="field-odd"><p><strong>markdown</strong> (<em>str</em><em> or </em><em>bytes</em>) – The Markdown text to parse.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -729,7 +729,7 @@ dialect of Markdown as closely as possible.</p>
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

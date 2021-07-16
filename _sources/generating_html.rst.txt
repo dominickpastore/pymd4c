@@ -18,6 +18,8 @@ this::
     html = renderer.parse(markdown)
 
 That is the most basic case: converting CommonMark-compliant Markdown to HTML.
+The Markdown input may be a string or a bytes object, and the HTML output will
+be of the same type.
 
 Parsing and Rendering Options
 -----------------------------

@@ -75,7 +75,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -144,7 +144,7 @@ information about that.</p>
 <span id="astobjs"></span><h2>Base AST Classes<a class="headerlink" href="#base-ast-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.ASTNode">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">ASTNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.ASTNode" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">ASTNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.ASTNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for all AST nodes. When constructed, automatically constructs
 the appropriate subtype instead.</p>
 <p>The default classes for particular Markdown element types can be replaced
@@ -159,9 +159,13 @@ example, to use a custom class to handle <a class="reference internal" href="api
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>element_type</strong> – A <a class="reference internal" href="api.html#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.BlockType</span></code></a>, <a class="reference internal" href="api.html#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.SpanType</span></code></a>, or
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_type</strong> – A <a class="reference internal" href="api.html#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.BlockType</span></code></a>, <a class="reference internal" href="api.html#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.SpanType</span></code></a>, or
 <a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.TextType</span></code></a> representing the type of this
-element</p>
+element</p></li>
+<li><p><strong>use_bytes</strong> (<em>bool</em><em>, </em><em>optional</em>) – True if this node should render as <a class="reference internal" href="#md4c.domparser.ASTNode.bytes" title="md4c.domparser.ASTNode.bytes"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, False
+if it should render as <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>. Defaults to False.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -173,6 +177,14 @@ represents</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="md4c.domparser.ASTNode.bytes">
+<span class="sig-name descname"><span class="pre">bytes</span></span><a class="headerlink" href="#md4c.domparser.ASTNode.bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this node should render as <a class="reference internal" href="#md4c.domparser.ASTNode.bytes" title="md4c.domparser.ASTNode.bytes"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, False if it
+should render as <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>. Normally gets set according to
+whether the Markdown input was a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> or <a class="reference internal" href="#md4c.domparser.ASTNode.bytes" title="md4c.domparser.ASTNode.bytes"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="md4c.domparser.ASTNode.parent">
 <span class="sig-name descname"><span class="pre">parent</span></span><a class="headerlink" href="#md4c.domparser.ASTNode.parent" title="Permalink to this definition">¶</a></dt>
 <dd><p>The parent of this node, or None (for the root Document node and
@@ -181,7 +193,7 @@ attribute nodes)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="md4c.domparser.ASTNode.attr_to_ast">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">attr_to_ast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.ASTNode.attr_to_ast" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">attr_to_ast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.ASTNode.attr_to_ast" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="api.html#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.GenericParser</span></code></a> represents <a class="reference internal" href="pure_parsing.html#attribute"><span class="std std-ref">attributes</span></a>
 as lists of 2-tuples (or None). This static method converts them to a
 list of text <a class="reference internal" href="#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a>.</p>
@@ -197,7 +209,7 @@ list of text <a class="reference internal" href="#md4c.domparser.ASTNode" title=
 
 <dl class="py method">
 <dt class="sig sig-object py" id="md4c.domparser.ASTNode.render_attr">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">render_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url_escape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.ASTNode.render_attr" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">render_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url_escape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.ASTNode.render_attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render an attribute given as a list of <a class="reference internal" href="#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a> or None</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -211,7 +223,7 @@ Otherwise, perform the default (HTML) escaping.</p></li>
 <dd class="field-even"><p>Rendered output.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -232,7 +244,7 @@ to their own children.</p>
 can be replaced to render any output format necessary.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -296,7 +308,7 @@ parent node.</p>
 can be replaced to render any output format necessary.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -316,7 +328,7 @@ parent node.</p>
 can be replaced to render any output format necessary.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -337,7 +349,7 @@ rendering. This data is also passed on to children.</p>
 can be replaced to render any output format necessary.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -346,14 +358,14 @@ can be replaced to render any output format necessary.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.TextNode">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">TextNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.TextNode" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">TextNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.TextNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for all AST nodes representing text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>element_type</strong> – A <a class="reference internal" href="api.html#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.BlockType</span></code></a>, or <a class="reference internal" href="api.html#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.SpanType</span></code></a>
-representing the type of this element</p></li>
-<li><p><strong>text</strong> (<em>str</em>) – The text this node represents, unprocessed</p></li>
+<li><p><strong>element_type</strong> – A <a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.TextType</span></code></a> representing the type of this
+element</p></li>
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – The text this node represents, unprocessed</p></li>
 </ul>
 </dd>
 </dl>
@@ -369,10 +381,10 @@ representing the type of this element</p></li>
 <dd><p>Escape HTML special characters (<code class="docutils literal notranslate"><span class="pre">&amp;&lt;&gt;&quot;</span></code>)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> – Text to escape</p>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – Text to escape</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Escaped string</p>
+<dd class="field-even"><p>Escaped string or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -383,10 +395,10 @@ representing the type of this element</p></li>
 <dd><p>Percent-escape special characters in URLs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> – URL to percent-escape</p>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – URL to percent-escape</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Escaped string</p>
+<dd class="field-even"><p>Escaped string or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -410,7 +422,7 @@ useful for rendering.</p></li>
 <dd class="field-even"><p>Rendered output, suitable for inclusion in an HTML document.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -454,7 +466,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -472,7 +484,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -481,7 +493,7 @@ parent node.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.UnorderedList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">UnorderedList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_tight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mark</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.UnorderedList" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">UnorderedList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_tight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mark</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.UnorderedList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unordered list block. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -517,7 +529,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -535,7 +547,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -544,7 +556,7 @@ parent node.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.OrderedList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">OrderedList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_tight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mark</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.OrderedList" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">OrderedList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_tight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mark</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.OrderedList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ordered list block. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -587,7 +599,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -605,7 +617,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -614,7 +626,7 @@ parent node.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.ListItem">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">ListItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_mark</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_mark_offset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.ListItem" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">ListItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_mark</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_mark_offset</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.ListItem" title="Permalink to this definition">¶</a></dt>
 <dd><p>List item block. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -659,7 +671,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -677,7 +689,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -706,7 +718,7 @@ rendering.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -715,7 +727,7 @@ rendering.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.Heading">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">Heading</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.Heading" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">Heading</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.Heading" title="Permalink to this definition">¶</a></dt>
 <dd><p>Heading block. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -744,7 +756,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -762,7 +774,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -771,7 +783,7 @@ parent node.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.CodeBlock">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">CodeBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fence_char</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.CodeBlock" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">CodeBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fence_char</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.CodeBlock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Code block. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -814,7 +826,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -832,7 +844,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -872,7 +884,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -890,7 +902,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -899,7 +911,7 @@ parent node.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.Table">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">Table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_row_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bod_row_count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.Table" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">Table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_row_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bod_row_count</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.Table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Table. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -942,7 +954,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -960,7 +972,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -989,7 +1001,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1007,7 +1019,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1036,7 +1048,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1054,7 +1066,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1083,7 +1095,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1101,7 +1113,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1110,7 +1122,7 @@ parent node.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.TableHeaderCell">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">TableHeaderCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.TableHeaderCell" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">TableHeaderCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.TableHeaderCell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Table header cell. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1139,7 +1151,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1157,7 +1169,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1166,7 +1178,7 @@ parent node.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.TableCell">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">TableCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.TableCell" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">TableCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.TableCell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Table cell. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1195,7 +1207,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1213,7 +1225,7 @@ parent node.</p>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1250,7 +1262,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1273,7 +1285,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1307,7 +1319,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1330,7 +1342,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1364,7 +1376,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1387,7 +1399,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1396,7 +1408,7 @@ function from the parent node.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.Link">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">href</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.Link" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">href</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.Link" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hyperlink inline. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1438,7 +1450,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1461,7 +1473,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1470,7 +1482,7 @@ function from the parent node.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.Image">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">Image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.Image" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">Image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.Image" title="Permalink to this definition">¶</a></dt>
 <dd><p>Image inline. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1511,7 +1523,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1534,7 +1546,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1556,7 +1568,7 @@ image elements. 0 assumed if not provided.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1590,7 +1602,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1613,7 +1625,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1647,7 +1659,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1670,7 +1682,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1704,7 +1716,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1727,7 +1739,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1761,7 +1773,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1784,7 +1796,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1793,7 +1805,7 @@ function from the parent node.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.WikiLink">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">WikiLink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.WikiLink" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">WikiLink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.WikiLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wiki link inline. Inherits from <a class="reference internal" href="#md4c.domparser.ContainerNode" title="md4c.domparser.ContainerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1827,7 +1839,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1850,7 +1862,7 @@ function from the parent node.</p></li>
 <dd class="field-even"><p>Rendered HTML</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1862,13 +1874,13 @@ function from the parent node.</p></li>
 <h2>Text AST Classes<a class="headerlink" href="#text-ast-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.NormalText">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">NormalText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.NormalText" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">NormalText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.NormalText" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normal text. Inherits from <a class="reference internal" href="#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_type</strong> – <a class="reference internal" href="api.html#md4c.TextType.NORMAL" title="md4c.TextType.NORMAL"><code class="xref py py-attr docutils literal notranslate"><span class="pre">md4c.TextType.NORMAL</span></code></a></p></li>
-<li><p><strong>text</strong> (<em>str</em>) – The actual text</p></li>
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – The actual text</p></li>
 </ul>
 </dd>
 </dl>
@@ -1897,7 +1909,7 @@ useful for rendering.</p></li>
 <dd class="field-even"><p>Rendered output, suitable for inclusion in an HTML document.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1906,13 +1918,13 @@ useful for rendering.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.NullChar">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">NullChar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.NullChar" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">NullChar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.NullChar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Null character. Inherits from <a class="reference internal" href="#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_type</strong> – <a class="reference internal" href="api.html#md4c.TextType.NULLCHAR" title="md4c.TextType.NULLCHAR"><code class="xref py py-attr docutils literal notranslate"><span class="pre">md4c.TextType.NULLCHAR</span></code></a></p></li>
-<li><p><strong>text</strong> (<em>str</em>) – Should be a null character, but this class assumes it is and
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – Should be a null character, but this class assumes it is and
 ignores it.</p></li>
 </ul>
 </dd>
@@ -1931,7 +1943,7 @@ rendering.</p>
 <dd class="field-even"><p>Null character</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1946,13 +1958,13 @@ rendering.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.LineBreak">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">LineBreak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.LineBreak" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">LineBreak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.LineBreak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Line break. Inherits from <a class="reference internal" href="#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_type</strong> – <a class="reference internal" href="api.html#md4c.TextType.BR" title="md4c.TextType.BR"><code class="xref py py-attr docutils literal notranslate"><span class="pre">md4c.TextType.BR</span></code></a></p></li>
-<li><p><strong>text</strong> (<em>str</em>) – Should be a newline character, but this class assumes it is
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – Should be a newline character, but this class assumes it is
 and ignores it.</p></li>
 </ul>
 </dd>
@@ -1975,7 +1987,7 @@ provided.</p></li>
 <dd class="field-even"><p>Rendered line break tag or space</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1990,13 +2002,13 @@ provided.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.SoftLineBreak">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">SoftLineBreak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.SoftLineBreak" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">SoftLineBreak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.SoftLineBreak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Soft line break. Inherits from <a class="reference internal" href="#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_type</strong> – <a class="reference internal" href="api.html#md4c.TextType.SOFTBR" title="md4c.TextType.SOFTBR"><code class="xref py py-attr docutils literal notranslate"><span class="pre">md4c.TextType.SOFTBR</span></code></a></p></li>
-<li><p><strong>text</strong> (<em>str</em>) – Should be a newline character, but this class assumes it is
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – Should be a newline character, but this class assumes it is
 and ignores it.</p></li>
 </ul>
 </dd>
@@ -2019,7 +2031,7 @@ provided.</p></li>
 <dd class="field-even"><p>Newline or space</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2034,13 +2046,13 @@ provided.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.HTMLEntity">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">HTMLEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.HTMLEntity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">HTMLEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.HTMLEntity" title="Permalink to this definition">¶</a></dt>
 <dd><p>HTML entity. Inherits from <a class="reference internal" href="#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_type</strong> – <a class="reference internal" href="api.html#md4c.TextType.ENTITY" title="md4c.TextType.ENTITY"><code class="xref py py-attr docutils literal notranslate"><span class="pre">md4c.TextType.ENTITY</span></code></a></p></li>
-<li><p><strong>text</strong> (<em>str</em>) – The entity, including ampersand and semicolon</p></li>
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – The entity, including ampersand and semicolon</p></li>
 </ul>
 </dd>
 </dl>
@@ -2062,7 +2074,7 @@ rendering.</p></li>
 <dd class="field-even"><p>Corresponding UTF-8 text for the entity.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2077,13 +2089,13 @@ rendering.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.CodeText">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">CodeText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.CodeText" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">CodeText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.CodeText" title="Permalink to this definition">¶</a></dt>
 <dd><p>Text in a code block or code span. Inherits from <a class="reference internal" href="#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_type</strong> – <a class="reference internal" href="api.html#md4c.TextType.CODE" title="md4c.TextType.CODE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">md4c.TextType.CODE</span></code></a></p></li>
-<li><p><strong>text</strong> (<em>str</em>) – The actual code</p></li>
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – The actual code</p></li>
 </ul>
 </dd>
 </dl>
@@ -2112,7 +2124,7 @@ useful for rendering.</p></li>
 <dd class="field-even"><p>Rendered output, suitable for inclusion in an HTML document.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2121,13 +2133,13 @@ useful for rendering.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.HTMLText">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">HTMLText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.HTMLText" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">HTMLText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.HTMLText" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raw HTML text. Inherits from <a class="reference internal" href="#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_type</strong> – <a class="reference internal" href="api.html#md4c.TextType.HTML" title="md4c.TextType.HTML"><code class="xref py py-attr docutils literal notranslate"><span class="pre">md4c.TextType.HTML</span></code></a></p></li>
-<li><p><strong>text</strong> (<em>str</em>) – The raw HTML</p></li>
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – The raw HTML</p></li>
 </ul>
 </dd>
 </dl>
@@ -2144,7 +2156,7 @@ rendering.</p>
 <dd class="field-even"><p>Raw HTML text</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2159,13 +2171,13 @@ rendering.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.domparser.MathText">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">MathText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.MathText" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">md4c.domparser.</span></span><span class="sig-name descname"><span class="pre">MathText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.domparser.MathText" title="Permalink to this definition">¶</a></dt>
 <dd><p>Text in an equation. Inherits from <a class="reference internal" href="#md4c.domparser.TextNode" title="md4c.domparser.TextNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextNode</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_type</strong> – <a class="reference internal" href="api.html#md4c.TextType.LATEXMATH" title="md4c.TextType.LATEXMATH"><code class="xref py py-attr docutils literal notranslate"><span class="pre">md4c.TextType.LATEXMATH</span></code></a></p></li>
-<li><p><strong>text</strong> (<em>str</em>) – The actual text</p></li>
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>bytes</em>) – The actual text</p></li>
 </ul>
 </dd>
 </dl>
@@ -2194,7 +2206,7 @@ useful for rendering.</p></li>
 <dd class="field-even"><p>Rendered output, suitable for inclusion in an HTML document.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2230,7 +2242,7 @@ useful for rendering.</p></li>
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

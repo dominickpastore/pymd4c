@@ -20,31 +20,25 @@ If this does not work, there are a couple potential reasons:
 1. You do not have pip installed, or your version is too old. See `Installing
    Packages - Python Packaging User Guide`_.
 
-2. Your version of Python is too old. This is a platform wheel, so it is built
-   for each Python version separately. Python versions older than 3.6 are not
-   supported. If your Python version is older than that, try upgrading.
+2. A prebuilt package is not available for your platform, and pip could not
+   build it from source (likely because the necessary dependencies were not
+   available).
 
-3. Your OS or architecture is incompatible. Platform wheels require a separate
-   build for each OS and architecture, so if yours is uncommon, there may not
-   be a prebuilt package for it.
+Regarding reason #2: Since this package contains C extensions, it is built as a
+platform wheel. Prebuilt packages are available for Python 3.6+ on the
+following platforms:
 
-   - If you are running Windows, you may be running 32-bit (x86) Python.
-     Currently, only packages for 64-bit (x86-64) Python are built. If you can,
-     try running 64-bit Python.
-   - If you are on macOS, your macOS version might be too old.
-   - If you are on Linux, you may be running on an architecture other than
-     x86-64, a distribution that is too old, or a more esoteric distribution
-     unsupported by manylinux2014_. (Note that many architectures
-     supported by manylinux2014 are not built at this time, including x86,
-     arm64, ppc64le, and s390x.)
-   - If you are on some other platform, unfortunately, it is not supported by
-     the pre-built packages.
+- Windows, 64-bit (amd64/x86-64) Python only.
+- Recent versions of macOS on Intel silicon [#m1]_
+- Most Linux distributions, 64-bit Python only (specifically, any distribution
+  supported by manylinux2014_, amd64 architecture)
 
-If a build is not available for your platform (or you simply want to), you can
-build and install from source. The instructions below should assist.
+Pip will automatically attempt to build from source on other platforms, but it
+will fail if the build dependencies are not available. See :ref:`prerequisites`
+for information on installing them.
 
-If a build is not available or not working for your platform and you think it
-should be, consider opening a `GitHub issue`_.
+If a prebuilt package is not available or not working for your platform and you
+think it should be, consider opening a `GitHub issue`_.
 
 .. _Installing Packages - Python Packaging User Guide: https://packaging.python.org/tutorials/installing-packages/
 .. _manylinux2014: https://github.com/pypa/manylinux
@@ -53,6 +47,8 @@ should be, consider opening a `GitHub issue`_.
 Build and Install from Source
 -----------------------------
 
+.. _prerequisites:
+
 Prerequisites
 ~~~~~~~~~~~~~
 
@@ -60,8 +56,11 @@ This package depends on the MD4C library. It may be available through your
 package manager. Otherwise, it can be built from source as follows:
 
 1. Make sure you have CMake_ and a C compiler installed.
-2. Download and extract the matching release from the `MD4C releases`_
-   page (e.g. for PyMD4C version W.X.Y.Z, download MD4C version W.X.Y).
+2. Download and extract MD4C from the `MD4C releases`_ page. See the CHANGELOG_
+   or `about.json`_ for recommended versions to use. PyMD4C is tested against
+   the minimum and maximum MD4C versions listed in those files. If there is a
+   newer version of MD4C available, it is likely to work as well, but has not
+   been tested yet.
 3. On Unix-like systems (including macOS):
 
    - Inside the extracted file, run the following::
@@ -120,5 +119,12 @@ Note that on Windows, setup.py assumes the MD4C library was installed at
 from source, as described above). If this is not the case, installation will
 fail.
 
-.. _MD4C releases: https://github.com/mity/md4c/releases
 .. _CMake: https://cmake.org/
+.. _MD4C releases: https://github.com/mity/md4c/releases
+.. _CHANGELOG: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
+.. _about.json: https://github.com/dominickpastore/pymd4c/blob/master/about.json
+
+.. rubric:: Footnotes
+
+.. [#m1] Sorry M1 users, waiting for GitHub Actions to support Apple Silicon
+   for GitHub-hosted runners.

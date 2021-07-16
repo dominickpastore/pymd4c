@@ -73,7 +73,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -199,6 +199,8 @@ five are the functions to use as callbacks:</p>
              <span class="n">process_text</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>The Markdown document may be a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, whichever is
+convenient. The parsed text will be provided using the same type.</p>
 <p>Now, let’s look at how the callbacks work.</p>
 </section>
 <section id="callbacks">
@@ -268,7 +270,7 @@ five are the functions to use as callbacks:</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text_type</strong> – An instance of <a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></a></p></li>
-<li><p><strong>text</strong> – A string containing the text to be added</p></li>
+<li><p><strong>text</strong> – A string or bytes containing the text to be added</p></li>
 </ul>
 </dd>
 </dl>
@@ -282,10 +284,11 @@ provided, such as a heading’s label or a link’s destination. If you were
 writing your own rendering code, these callbacks would write opening or closing
 HTML tags to the output stream.</p>
 <p>The fifth callback accepts a <a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></a> as the first parameter
-and a string of text as the second parameter. The text is unprocessed; for
-example, HTML entities are left in <code class="docutils literal notranslate"><span class="pre">&amp;...;</span></code> form. If you were writing your own
-rendering function, this callback would write the text to the output stream
-(potentially after some translation).</p>
+and some text as the second parameter. The text’s type will match that of the
+original Markdown input (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>). The text is
+unprocessed; for example, HTML entities are left in <code class="docutils literal notranslate"><span class="pre">&amp;...;</span></code> form. If you were
+writing your own rendering function, this callback would write the text to the
+output stream (potentially after some translation).</p>
 <p>Callbacks do not need to return anything specific—their return values are
 ignored. To cancel parsing, callbacks can raise the <a class="reference internal" href="api.html#md4c.StopParsing" title="md4c.StopParsing"><code class="xref py py-class docutils literal notranslate"><span class="pre">StopParsing</span></code></a>
 exception. The <a class="reference internal" href="api.html#md4c.GenericParser.parse" title="md4c.GenericParser.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a> method will catch it and
@@ -563,13 +566,14 @@ blocks.</p></td>
 </section>
 <section id="attributes">
 <span id="attribute"></span><h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
-<p>MD4C uses “attributes” for details that are strings, such as link URLs and
+<p>MD4C uses “attributes” for details that are text, such as link URLs and
 fenced code block info strings. These are not allowed to contain any
 span/inline elements, but they may contain HTML entities or null characters, so
 attributes are how MD4C copes with this.</p>
 <p>PyMD4C represents attributes as either <code class="docutils literal notranslate"><span class="pre">None</span></code> or a list of 2-tuples
 <code class="docutils literal notranslate"><span class="pre">(text_type,</span> <span class="pre">text)</span></code> where <code class="docutils literal notranslate"><span class="pre">text_type</span></code> is a member of
-<a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></a> and <code class="docutils literal notranslate"><span class="pre">text</span></code> is the actual text as a string.</p>
+<a class="reference internal" href="api.html#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextType</span></code></a> and <code class="docutils literal notranslate"><span class="pre">text</span></code> is the actual text as a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> (whichever one the Markdown input was).</p>
 <p>For example, this string:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Copyright</span> <span class="o">&amp;</span><span class="n">copy</span><span class="p">;</span> <span class="n">John</span> <span class="n">Doe</span>
 </pre></div>
@@ -680,7 +684,7 @@ omitted entirely, since they were not necessary.</p>
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

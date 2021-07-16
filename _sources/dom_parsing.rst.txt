@@ -352,3 +352,52 @@ Some additional notes about the AST classes:
   argument: ``url_escape``. When True, normal text and entities must process
   their output through their :meth:`~md4c.domparser.TextNode.url_escape`
   method.
+
+Using :class:`bytes` as the Input
+---------------------------------
+
+All the examples above have assumed UTF-8 input. As with all the other parsers
+in PyMD4C, :class:`~md4c.domparser.DOMParser` will parse :class:`bytes` objects
+as well. In that case, the :meth:`~md4c.domparser.ASTNode.render` method on the
+resulting AST will return a :class:`bytes` object as well.
+
+There are some additional caveats to be aware of when modifying ASTs generated
+from :class:`bytes` input:
+
+- When constructing a new :class:`~md4c.domparser.ASTNode`, you must set
+  ``use_bytes=True`` in the constructor, for example::
+
+      heading_node = md4c.domparser.ASTNode(md4c.BlockType.H,
+                                            level=1,
+                                            use_bytes=True)
+
+- Text for any :class:`~md4c.domparser.TextNode` must be a :class:`bytes`
+  object::
+
+      link_node = md4c.domparser.ASTNode(
+          md4c.SpanType.A,
+          href=[(md4c.TextType.NORMAL, b'http://www.example.com/')],
+          use_bytes=True)
+      link_node.append(md4c.domparser.ASTNode(
+          md4c.TextType.Normal,
+          text=b'Example Link Text',
+          use_bytes=True)
+
+- When using custom :class:`~md4c.domparser.ASTNode` subclasses, make sure any
+  overridden :meth:`~md4c.domparser.ASTNode.render`,
+  :meth:`~md4c.domparser.ContainerNode.render_pre`, or
+  :meth:`~md4c.domparser.ContainerNode.render_post` methods return
+  :class:`bytes` objects when the :attr:`self.bytes
+  <md4c.domparser.ASTNode.bytes>` attribute is True::
+
+      class InlineMathJax(md4c.domparser.InlineMath,
+                          element_type=md4c.SpanType.LATEXMATH):
+          def render_pre(self, **kwargs):
+              if self.bytes:
+                  return b'\\('
+              return '\\('
+
+          def render_post(self, **kwargs):
+              if self.bytes:
+                  return b'\\)'
+              return '\\)'
