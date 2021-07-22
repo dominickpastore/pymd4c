@@ -112,7 +112,7 @@ def skip_if_older_version(running_version, test_version):
     test_version = [int(x) for x in test_version.split('.')]
     for r, t in zip(running_version, test_version):
         if r < t:
-            pytest.skip()
+            pytest.skip("Test requires newer MD4C")
     for t in test_version[len(running_version):]:
         if t > 0:
             pytest.skip("Test requires newer MD4C")
