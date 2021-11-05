@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
 
     steps:
       - name: Checkout
@@ -108,14 +108,25 @@ jobs:
       image: quay.io/pypa/${{matrix.plat}}
       env:
         PLAT: ${{matrix.plat}}
-        PY_VERSIONS: 3.6 3.7 3.8 3.9
+        PY_VERSIONS: ${{matrix.py_versions}}
 
     strategy:
       matrix:
-        plat:
-          # Ideally we'd build for i686 and maybe even aarch64, but these don't
-          # work with GitHub Actions.
-          - manylinux2014_x86_64
+        include:
+          # Note 1: Ideally we'd build for i686 and maybe even aarch64, but
+          #   these don't work with GitHub Actions.
+          # Note 2: The goal is to use the oldest manylinux platform that's not
+          #   an EOL OS. Unfortunately, some Python versions getting security
+          #   fixes are only available on an older manylinux platform, and some
+          #   recent Python versions are only available on a newer manylinux
+          #   platform. So, we cannot use the same manylinux platform for all
+          #   Python versions.
+          - plat: manylinux1_x86_64
+            py_versions: 3.6
+          - plat: manylinux2014_x86_64
+            py_versions: 3.7 3.8 3.9
+          - plat: manylinux_2_24_x86_64
+            py_versions: 3.10
 
     steps:
       - name: Checkout
@@ -177,7 +188,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
         platform:
           - windows
           - macos
