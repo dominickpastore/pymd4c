@@ -359,7 +359,7 @@ Using :class:`bytes` as the Input
 All the examples above have assumed UTF-8 input. As with all the other parsers
 in PyMD4C, :class:`~md4c.domparser.DOMParser` will parse :class:`bytes` objects
 as well. In that case, the :meth:`~md4c.domparser.ASTNode.render` method on the
-resulting AST will return a :class:`bytes` object as well.
+resulting AST will also return a :class:`bytes` object.
 
 There are some additional caveats to be aware of when modifying ASTs generated
 from :class:`bytes` input:
