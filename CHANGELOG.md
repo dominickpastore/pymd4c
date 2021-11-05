@@ -8,7 +8,7 @@ deviation: Pre-release versions will use [PEP 440][pep440] formatting, e.g.
 "1.0.0b1", not the hyphenated "1.0.0-beta.1" form specified by Semantic
 Versioning.)
 
-[1.1.1] - 2021-11-04
+[1.1.1] - 2021-11-05
 --------------------
 
 This PyMD4C version requires MD4C **0.4.7** or later. It has been tested
@@ -148,7 +148,8 @@ This is the initial beta release.
 [semver]: https://semver.org/
 [pep440]: https://www.python.org/dev/peps/pep-0440/#version-scheme
 
-[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/v1.1.0..dev
+[Unreleased]: https://github.com/dominickpastore/pymd4c/compare/v1.1.1..dev
+[1.1.1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-1.1.0..v1.1.1
 [1.1.0]: https://github.com/dominickpastore/pymd4c/compare/tag/release-1.0.0..v1.1.0
 [1.0.0]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.8.0..v1.0.0
 [0.4.8.0]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.7.0b1..v0.4.8.0
