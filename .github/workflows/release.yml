@@ -1,5 +1,5 @@
-# GitHub Actions workflow for creating Python sdist and wheels and uploading to
-# PyPI and deploying docs to GitHub Pages
+# GitHub Actions workflow for creating Python sdist and wheels, uploading to
+# PyPI, and deploying docs to GitHub Pages
 # vim: set ts=8 sts=2 sw=2:
 name: Release
 on:
@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
 
     steps:
       - name: Checkout
@@ -122,11 +122,11 @@ jobs:
           #   platform. So, we cannot use the same manylinux platform for all
           #   Python versions.
           - plat: manylinux1_x86_64
-            py_versions: 3.6
+            py_versions: "3.6"
           - plat: manylinux2014_x86_64
-            py_versions: 3.7 3.8 3.9
+            py_versions: "3.7 3.8 3.9"
           - plat: manylinux_2_24_x86_64
-            py_versions: 3.10
+            py_versions: "3.10"
 
     steps:
       - name: Checkout
@@ -188,7 +188,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
         platform:
           - windows
           - macos
