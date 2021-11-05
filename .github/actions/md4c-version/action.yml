@@ -14,11 +14,10 @@ runs:
   steps:
     - id: get-version
       run: |
-        import json
-        with open('about.json') as f:
-            about = json.load(f)
-        min_version = about['md4c-version']['min']
-        max_version = about['md4c-version']['max']
-        print('::set-output name=md4c::' + max_version)
-        print('::set-output name=md4c-min::' + min_version)
-      shell: python3 {0}
+        if command -V python
+        then
+            python "$GITHUB_ACTION_PATH/get_version.py"
+        else
+            python3 "$GITHUB_ACTION_PATH/get_version.py"
+        fi
+      shell: bash
