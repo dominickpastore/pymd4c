@@ -113,20 +113,19 @@ jobs:
     strategy:
       matrix:
         include:
-          # Note 1: Ideally we'd build for i686 and maybe even aarch64, but
-          #   these don't work with GitHub Actions.
-          # Note 2: The goal is to use the oldest manylinux platform that's not
-          #   an EOL OS. Unfortunately, some Python versions getting security
-          #   fixes are only available on an older manylinux platform, and some
-          #   recent Python versions are only available on a newer manylinux
-          #   platform. So, we cannot use the same manylinux platform for all
-          #   Python versions.
-          - plat: manylinux1_x86_64
-            py_versions: "3.6"
+          # Ideally we'd build for i686 and maybe even aarch64, but the GitHub
+          # Actions hosted runners are only x86_64. Possible future solution:
+          # There may be a way to set up self-hosted runners on KVM using
+          # QEMU's support for virtualizing other architectures.
           - plat: manylinux2014_x86_64
-            py_versions: "3.7 3.8 3.9"
-          - plat: manylinux_2_24_x86_64
-            py_versions: "3.10"
+            py_versions: "3.6 3.7 3.8 3.9 3.10"
+          # If there is ever a need to use different platforms for different
+          # Python versions, it can be done like this:
+          #
+          # - plat: manylinux2014_x86_64
+          #   py_versions: "3.6 3.7 3.8 3.9"
+          # - plat: manylinux_2_24_x86_64
+          #   py_versions: "3.10"
 
     steps:
       - name: Checkout

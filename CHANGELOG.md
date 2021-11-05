@@ -8,8 +8,21 @@ deviation: Pre-release versions will use [PEP 440][pep440] formatting, e.g.
 "1.0.0b1", not the hyphenated "1.0.0-beta.1" form specified by Semantic
 Versioning.)
 
+[1.1.1] - 2021-11-04
+--------------------
+
+This PyMD4C version requires MD4C **0.4.7** or later. It has been tested
+against that and the current latest version, **0.4.8**.
+
+### Fixed
+
+- GitHub Actions workflow does not contain fatal errors
+
 [1.1.0] - 2021-11-04
 --------------------
+
+**Note:** This version was never fully released. The updated build workflow
+contained fatal errors.
 
 This PyMD4C version requires MD4C **0.4.7** or later. It has been tested
 against that and the current latest version, **0.4.8**.
