@@ -149,10 +149,10 @@ This is the initial beta release.
 [pep440]: https://www.python.org/dev/peps/pep-0440/#version-scheme
 
 [Unreleased]: https://github.com/dominickpastore/pymd4c/compare/v1.1.1..dev
-[1.1.1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-1.1.0..v1.1.1
-[1.1.0]: https://github.com/dominickpastore/pymd4c/compare/tag/release-1.0.0..v1.1.0
-[1.0.0]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.8.0..v1.0.0
-[0.4.8.0]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.7.0b1..v0.4.8.0
-[0.4.7.0b1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.6.0b1..v0.4.7.0b1
+[1.1.1]: https://github.com/dominickpastore/pymd4c/compare/tag/v1.1.0..v1.1.1
+[1.1.0]: https://github.com/dominickpastore/pymd4c/compare/tag/v1.0.0..v1.1.0
+[1.0.0]: https://github.com/dominickpastore/pymd4c/compare/tag/v0.4.8.0..v1.0.0
+[0.4.8.0]: https://github.com/dominickpastore/pymd4c/compare/tag/v0.4.7.0b1..v0.4.8.0
+[0.4.7.0b1]: https://github.com/dominickpastore/pymd4c/compare/tag/v0.4.6.0b1..v0.4.7.0b1
 [0.4.6.0b1]: https://github.com/dominickpastore/pymd4c/compare/tag/release-0.4.4.0b1..v0.4.6.0b1
 [0.4.4.0b1]: https://github.com/dominickpastore/pymd4c/releases/tag/release-0.4.4.0b1
