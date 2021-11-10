@@ -17,6 +17,7 @@ against that and the current latest version, **0.4.8**.
 ### Fixed
 
 - Include docs in sdist
+- Add a `manylinux1` wheel for Python 3.6 users with an old version of pip
 
 [1.1.1] - 2021-11-05
 --------------------

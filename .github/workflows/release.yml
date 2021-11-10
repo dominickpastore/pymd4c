@@ -119,6 +119,12 @@ jobs:
           # QEMU's support for virtualizing other architectures.
           - plat: manylinux2014_x86_64
             py_versions: "3.6 3.7 3.8 3.9 3.10"
+          # Python 3.6 comes with a version of pip that doesn't recognize
+          # manylinux2014 (or 2010). Ideally, users should upgrade to a newer
+          # pip, but in case that is not an option, provide a manylinux1
+          # package for 3.6.
+          - plat: manylinux1_x86_64
+            py_versions: "3.6"
           # If there is ever a need to use different platforms for different
           # Python versions, it can be done like this:
           #
