@@ -121,6 +121,36 @@ important considering it will likely handle untrusted input.</p></li>
 </ul>
 <p>And since Python bindings for MD4C did not yet exist, I decided to create them.</p>
 </section>
+<section id="why-is-pip-trying-to-build-from-source">
+<span id="why-source"></span><h3>Why is pip trying to build from source?<a class="headerlink" href="#why-is-pip-trying-to-build-from-source" title="Permalink to this headline">¶</a></h3>
+<p>This means pip cannot find a suitable pre-built package. There can be any
+number of reasons for this:</p>
+<ul class="simple">
+<li><p>If you are on Linux with Python 3.6, your version of pip may be too old. Try
+upgrading to 19.3 or newer.</p></li>
+<li><p>You are using 32-bit Python on Windows. Try installing 64-bit Python.</p></li>
+<li><p>You are on an M1 Mac.</p></li>
+<li><p>You are running an esoteric Linux distribution or on an architecture other
+than amd64.</p></li>
+<li><p>You are on an OS other than Windows, macOS, or Linux.</p></li>
+</ul>
+<p>Unfortunately, apart from the first two reasons, there is currently no way to
+avoid building from source (pre-built packages cannot currently be compiled for
+your platform). If you are getting errors during the install, make sure you
+have all the prerequisites (see <a class="reference internal" href="installation.html#prerequisites"><span class="std std-ref">Prerequisites</span></a>), then try again.</p>
+</section>
+<section id="why-do-i-see-error-pkg-config-probably-not-installed-when-trying-to-install">
+<h3>Why do I see <code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">pkg-config</span> <span class="pre">probably</span> <span class="pre">not</span> <span class="pre">installed:</span> <span class="pre">...</span></code> when trying to install?<a class="headerlink" href="#why-do-i-see-error-pkg-config-probably-not-installed-when-trying-to-install" title="Permalink to this headline">¶</a></h3>
+<p>Pip is trying to build from source. See <a class="reference internal" href="#why-source"><span class="std std-ref">Why is pip trying to build from source?</span></a></p>
+<p>If building from source is unavoidable, make sure you install all the
+prerequisites (see <a class="reference internal" href="installation.html#prerequisites"><span class="std std-ref">Prerequisites</span></a>), then try again.</p>
+</section>
+<section id="why-do-i-see-pkgconfig-pkgconfig-packagenotfounderror-md4c-not-found-when-trying-to-install">
+<h3>Why do I see <code class="docutils literal notranslate"><span class="pre">pkgconfig.pkgconfig.PackageNotFoundError:</span> <span class="pre">md4c</span> <span class="pre">not</span> <span class="pre">found</span></code> when trying to install?<a class="headerlink" href="#why-do-i-see-pkgconfig-pkgconfig-packagenotfounderror-md4c-not-found-when-trying-to-install" title="Permalink to this headline">¶</a></h3>
+<p>Pip is trying to build from source. See <a class="reference internal" href="#why-source"><span class="std std-ref">Why is pip trying to build from source?</span></a></p>
+<p>If building from source is unavoidable, make sure you install all the
+prerequisites (see <a class="reference internal" href="installation.html#prerequisites"><span class="std std-ref">Prerequisites</span></a>), then try again.</p>
+</section>
 </section>
 <section id="generating-these-docs-locally">
 <h2>Generating These Docs Locally<a class="headerlink" href="#generating-these-docs-locally" title="Permalink to this headline">¶</a></h2>

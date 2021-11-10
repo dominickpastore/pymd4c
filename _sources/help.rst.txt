@@ -29,6 +29,47 @@ And since Python bindings for MD4C did not yet exist, I decided to create them.
 
 .. _Global Interpreter Lock: https://docs.python.org/3/glossary.html#term-global-interpreter-lock
 
+.. _why-source:
+
+Why is pip trying to build from source?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This means pip cannot find a suitable pre-built package. There can be any
+number of reasons for this:
+
+- If you are on Linux with Python 3.6, your version of pip may be too old. Try
+  upgrading to 19.3 or newer.
+
+- You are using 32-bit Python on Windows. Try installing 64-bit Python.
+
+- You are on an M1 Mac.
+
+- You are running an esoteric Linux distribution or on an architecture other
+  than amd64.
+
+- You are on an OS other than Windows, macOS, or Linux.
+
+Unfortunately, apart from the first two reasons, there is currently no way to
+avoid building from source (pre-built packages cannot currently be compiled for
+your platform). If you are getting errors during the install, make sure you
+have all the prerequisites (see :ref:`prerequisites`), then try again.
+
+Why do I see ``error: pkg-config probably not installed: ...`` when trying to install?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pip is trying to build from source. See :ref:`why-source`
+
+If building from source is unavoidable, make sure you install all the
+prerequisites (see :ref:`prerequisites`), then try again.
+
+Why do I see ``pkgconfig.pkgconfig.PackageNotFoundError: md4c not found`` when trying to install?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pip is trying to build from source. See :ref:`why-source`
+
+If building from source is unavoidable, make sure you install all the
+prerequisites (see :ref:`prerequisites`), then try again.
+
 Generating These Docs Locally
 -----------------------------
 
