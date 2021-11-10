@@ -18,7 +18,7 @@ against that and the current latest version, **0.4.8**.
 
 - Include docs in sdist
 - Include headers in sdist so builds from source are successful
-- Add a `manylinux1` wheel for Python 3.6 users with an old version of pip
+- Update docs with FAQ entries about building from source
 
 [1.1.1] - 2021-11-05
 --------------------

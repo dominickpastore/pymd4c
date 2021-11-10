@@ -120,7 +120,7 @@ from source, as described above). If this is not the case, installation will
 fail.
 
 .. _CMake: https://cmake.org/
-.. _MD4C releases: https://github.com/mity/md4c/releases
+.. _MD4C releases: https://github.com/mity/md4c/tags
 .. _CHANGELOG: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
 .. _about.json: https://github.com/dominickpastore/pymd4c/blob/master/about.json
 

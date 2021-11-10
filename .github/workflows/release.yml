@@ -117,14 +117,13 @@ jobs:
           # Actions hosted runners are only x86_64. Possible future solution:
           # There may be a way to set up self-hosted runners on KVM using
           # QEMU's support for virtualizing other architectures.
+          #
+          # Note that Python 3.6 comes with a version of pip that is
+          # incompatible with manylinux2014 (and 2010). Unfortunately,
+          # manylinux1 is incompatible with GitHub Actions (the checkout@v2
+          # action depends on newer libraries), so we can't build for it.
           - plat: manylinux2014_x86_64
             py_versions: "3.6 3.7 3.8 3.9 3.10"
-          # Python 3.6 comes with a version of pip that doesn't recognize
-          # manylinux2014 (or 2010). Ideally, users should upgrade to a newer
-          # pip, but in case that is not an option, provide a manylinux1
-          # package for 3.6.
-          - plat: manylinux1_x86_64
-            py_versions: "3.6"
           # If there is ever a need to use different platforms for different
           # Python versions, it can be done like this:
           #
