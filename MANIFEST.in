@@ -1,5 +1,6 @@
 include about.json
 include CHANGELOG.md
 include LICENSE.md
+include src/*.h
 graft docs
 prune docs/_build
