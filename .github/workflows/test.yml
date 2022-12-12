@@ -10,7 +10,7 @@ on:
 jobs:
   test_minimum_md4c:
     name: Test minimum MD4C version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -53,7 +53,7 @@ jobs:
 
   run_tests:
     name: Run tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
