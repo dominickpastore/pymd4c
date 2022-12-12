@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - name: Checkout
@@ -123,7 +123,7 @@ jobs:
           # manylinux1 is incompatible with GitHub Actions (the checkout@v2
           # action depends on newer libraries), so we can't build for it.
           - plat: manylinux2014_x86_64
-            py_versions: "3.6 3.7 3.8 3.9 3.10"
+            py_versions: "3.6 3.7 3.8 3.9 3.10 3.11"
           # If there is ever a need to use different platforms for different
           # Python versions, it can be done like this:
           #
@@ -192,7 +192,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
         platform:
           - windows
           - macos

@@ -11,6 +11,13 @@ Versioning.)
 [Unreleased]
 ------------
 
+This PyMD4C version requires MD4C **0.4.7** or later. It has been tested
+against that and the current latest version, **0.4.8**.
+
+### Added
+
+- Binary packages for Python 3.11
+
 [1.1.2] - 2021-11-10
 --------------------
 
