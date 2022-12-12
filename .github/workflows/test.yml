@@ -18,16 +18,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Python ${{matrix.python-version}}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
       - id: md4c-version
         name: Get compatible MD4C version
         uses: ./.github/actions/md4c-version
       - name: Fetch MD4C
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: mity/md4c
           ref: release-${{steps.md4c-version.outputs.md4c-min}}
@@ -61,16 +61,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Python ${{matrix.python-version}}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
       - id: md4c-version
         name: Get compatible MD4C version
         uses: ./.github/actions/md4c-version
       - name: Fetch MD4C
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: mity/md4c
           ref: release-${{steps.md4c-version.outputs.md4c-version}}
