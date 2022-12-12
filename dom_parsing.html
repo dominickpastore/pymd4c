@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>DOM Parsing &#8212; PyMD4C  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,7 +12,9 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API" href="api.html" />
@@ -82,7 +84,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -100,7 +102,7 @@
           <div class="body" role="main">
             
   <section id="dom-parsing">
-<h1>DOM Parsing<a class="headerlink" href="#dom-parsing" title="Permalink to this headline">¶</a></h1>
+<h1>DOM Parsing<a class="headerlink" href="#dom-parsing" title="Permalink to this heading">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>I am seeking feedback for this feature. If there are any changes or
@@ -111,7 +113,7 @@ response to feedback I receive. When that is no longer the case, I will
 remove this message and make a note in the <a class="reference external" href="https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md">changelog</a>.</p>
 </div>
 <section id="what-does-dom-parsing-mean">
-<h2>What does “DOM parsing” mean?<a class="headerlink" href="#what-does-dom-parsing-mean" title="Permalink to this headline">¶</a></h2>
+<h2>What does “DOM parsing” mean?<a class="headerlink" href="#what-does-dom-parsing-mean" title="Permalink to this heading">¶</a></h2>
 <p>In the world of XML, there are two general types of parsers: SAX (i.e.
 event-based) and DOM (i.e. tree-based). SAX parsers traverse the document, and
 as each tag or bit of content is parsed, the appropriate event is emitted
@@ -128,7 +130,7 @@ heading, link, block quote, etc. is represented by an
 <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode" title="md4c.domparser.ASTNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASTNode</span></code></a>.</p>
 </section>
 <section id="why-use-dom-like-parsing">
-<h2>Why use DOM-like parsing?<a class="headerlink" href="#why-use-dom-like-parsing" title="Permalink to this headline">¶</a></h2>
+<h2>Why use DOM-like parsing?<a class="headerlink" href="#why-use-dom-like-parsing" title="Permalink to this heading">¶</a></h2>
 <p>You may find that the <a class="reference internal" href="api.html#md4c.HTMLRenderer" title="md4c.HTMLRenderer"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code></a> and SAX-like parsers do not
 provide the flexibility you need. A typical use-case would be if you want to
 manipulate the input document before it is rendered. For example, maybe you
@@ -146,7 +148,7 @@ implemented in Python on top of <a class="reference internal" href="api.html#md4
 </ul>
 </section>
 <section id="generating-an-ast">
-<h2>Generating an AST<a class="headerlink" href="#generating-an-ast" title="Permalink to this headline">¶</a></h2>
+<h2>Generating an AST<a class="headerlink" href="#generating-an-ast" title="Permalink to this heading">¶</a></h2>
 <p>Since many applications will not need them, the DOM-like parser and the classes
 for the AST are all in a separate module: <a class="reference internal" href="dom_api.html#module-md4c.domparser" title="md4c.domparser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c.domparser</span></code></a>. The parser
 itself is the <a class="reference internal" href="dom_api.html#md4c.domparser.DOMParser" title="md4c.domparser.DOMParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.domparser.DOMParser</span></code></a> class. In the most simple case,
@@ -183,7 +185,7 @@ the tree. You can render the tree as HTML:</p>
 </div>
 </section>
 <section id="ast-node-objects">
-<h2>AST Node Objects<a class="headerlink" href="#ast-node-objects" title="Permalink to this headline">¶</a></h2>
+<h2>AST Node Objects<a class="headerlink" href="#ast-node-objects" title="Permalink to this heading">¶</a></h2>
 <p>Each type of Markdown element (i.e. each type of block, span, and text) has an
 associated AST type. For example, <a class="reference internal" href="dom_api.html#md4c.domparser.Paragraph" title="md4c.domparser.Paragraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">Paragraph</span></code></a> is for
 <a class="reference internal" href="api.html#md4c.BlockType.P" title="md4c.BlockType.P"><code class="xref py py-attr docutils literal notranslate"><span class="pre">BlockType.P</span></code></a>. See <a class="reference internal" href="dom_api.html#astobjs"><span class="std std-ref">Base AST Classes</span></a> for the full list.
@@ -212,12 +214,12 @@ the unprocessed text from the parser.</p>
 </dl>
 </section>
 <section id="ast-manipulation">
-<h2>AST Manipulation<a class="headerlink" href="#ast-manipulation" title="Permalink to this headline">¶</a></h2>
+<h2>AST Manipulation<a class="headerlink" href="#ast-manipulation" title="Permalink to this heading">¶</a></h2>
 <p>One of the primary benefits of using a DOM-like parser is you can do AST
 manipulations on the parsed document before rendering it in HTML. Below are a
 couple examples of AST manipulations you could do.</p>
 <section id="add-a-copyright-notice">
-<h3>Add a Copyright Notice<a class="headerlink" href="#add-a-copyright-notice" title="Permalink to this headline">¶</a></h3>
+<h3>Add a Copyright Notice<a class="headerlink" href="#add-a-copyright-notice" title="Permalink to this heading">¶</a></h3>
 <p>Suppose you wanted to add a horizontal rule and then a copyright notice at the
 end of the document. (This probably doesn’t require generating the full AST,
 but it serves as a simple example.) You could do that like this:</p>
@@ -269,7 +271,7 @@ children. They do not have <a class="reference internal" href="dom_api.html#md4c
 </ul>
 </section>
 <section id="linkify-a-keyword">
-<h3>Linkify a Keyword<a class="headerlink" href="#linkify-a-keyword" title="Permalink to this headline">¶</a></h3>
+<h3>Linkify a Keyword<a class="headerlink" href="#linkify-a-keyword" title="Permalink to this heading">¶</a></h3>
 <p>Now a slightly more involved example: You want to replace every instance of
 your company name, “Example, Inc.” with a link to its homepage, but only in
 normal text (i.e. not code blocks, raw HTML, etc.). You might do that as
@@ -369,7 +371,7 @@ be used to foil the matching.</p>
 </section>
 </section>
 <section id="using-custom-ast-classes">
-<h2>Using Custom AST Classes<a class="headerlink" href="#using-custom-ast-classes" title="Permalink to this headline">¶</a></h2>
+<h2>Using Custom AST Classes<a class="headerlink" href="#using-custom-ast-classes" title="Permalink to this heading">¶</a></h2>
 <p>You can customize the classes used for the AST. The main reason to do so is for
 customizing the rendering functionality, either to tailor the HTML generation
 to your particular application or generate another output format altogether.</p>
@@ -438,7 +440,7 @@ method.</p></li>
 </ul>
 </section>
 <section id="using-bytes-as-the-input">
-<h2>Using <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> as the Input<a class="headerlink" href="#using-bytes-as-the-input" title="Permalink to this headline">¶</a></h2>
+<h2>Using <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> as the Input<a class="headerlink" href="#using-bytes-as-the-input" title="Permalink to this heading">¶</a></h2>
 <p>All the examples above have assumed UTF-8 input. As with all the other parsers
 in PyMD4C, <a class="reference internal" href="dom_api.html#md4c.domparser.DOMParser" title="md4c.domparser.DOMParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DOMParser</span></code></a> will parse <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code> objects
 as well. In that case, the <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNode.render" title="md4c.domparser.ASTNode.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> method on the
@@ -516,7 +518,7 @@ overridden <a class="reference internal" href="dom_api.html#md4c.domparser.ASTNo
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

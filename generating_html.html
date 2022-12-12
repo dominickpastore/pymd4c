@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Generating HTML &#8212; PyMD4C  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,7 +12,9 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Pure Parsing" href="pure_parsing.html" />
@@ -78,7 +80,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -96,9 +98,9 @@
           <div class="body" role="main">
             
   <section id="generating-html">
-<h1>Generating HTML<a class="headerlink" href="#generating-html" title="Permalink to this headline">¶</a></h1>
+<h1>Generating HTML<a class="headerlink" href="#generating-html" title="Permalink to this heading">¶</a></h1>
 <section id="basic-generation">
-<h2>Basic Generation<a class="headerlink" href="#basic-generation" title="Permalink to this headline">¶</a></h2>
+<h2>Basic Generation<a class="headerlink" href="#basic-generation" title="Permalink to this heading">¶</a></h2>
 <p>Generating HTML is probably the most common task related to Markdown. PyMD4C
 provides a class that does exactly this. It’s implemented in C directly on top
 of MD4C’s MD4C-HTML library, for maximum efficiency. Using it is as simple as
@@ -117,7 +119,7 @@ The Markdown input may be a string or a bytes object, and the HTML output will
 be of the same type.</p>
 </section>
 <section id="parsing-and-rendering-options">
-<h2>Parsing and Rendering Options<a class="headerlink" href="#parsing-and-rendering-options" title="Permalink to this headline">¶</a></h2>
+<h2>Parsing and Rendering Options<a class="headerlink" href="#parsing-and-rendering-options" title="Permalink to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="api.html#md4c.HTMLRenderer" title="md4c.HTMLRenderer"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code></a> constructor accepts options to customize the
 parsing and rendering behavior. These options typically add extra parsing
 features, disable undesirable parsing features, or tweak the HTML generation.
@@ -156,7 +158,7 @@ combination options.</p>
 </div>
 </section>
 <section id="advanced-manipulations">
-<h2>Advanced Manipulations<a class="headerlink" href="#advanced-manipulations" title="Permalink to this headline">¶</a></h2>
+<h2>Advanced Manipulations<a class="headerlink" href="#advanced-manipulations" title="Permalink to this heading">¶</a></h2>
 <p>If the available options for <a class="reference internal" href="api.html#md4c.HTMLRenderer" title="md4c.HTMLRenderer"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code></a> do not provide enough
 flexibility for your needs, it’s possible to use a <code class="xref py py-class docutils literal notranslate"><span class="pre">DOMParser</span></code>
 instead. See <a class="reference internal" href="dom_parsing.html"><span class="doc">DOM Parsing</span></a> for more information.</p>
@@ -189,7 +191,7 @@ instead. See <a class="reference internal" href="dom_parsing.html"><span class="
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

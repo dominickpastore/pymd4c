@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Help Resources &#8212; PyMD4C  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,7 +12,9 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Contributing to PyMD4C" href="contributing.html" />
@@ -78,7 +80,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -96,11 +98,11 @@
           <div class="body" role="main">
             
   <section id="help-resources">
-<h1>Help Resources<a class="headerlink" href="#help-resources" title="Permalink to this headline">¶</a></h1>
+<h1>Help Resources<a class="headerlink" href="#help-resources" title="Permalink to this heading">¶</a></h1>
 <section id="frequently-asked-questions">
-<h2>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h2>
+<h2>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this heading">¶</a></h2>
 <section id="why-another-markdown-library">
-<h3>Why another Markdown library?<a class="headerlink" href="#why-another-markdown-library" title="Permalink to this headline">¶</a></h3>
+<h3>Why another Markdown library?<a class="headerlink" href="#why-another-markdown-library" title="Permalink to this heading">¶</a></h3>
 <p>The primary reason is performance. Most applications that work with Markdown
 are going to be interested in one thing and one thing only: generating HTML.
 For that, there are two performance advantages from offloading the task to C:</p>
@@ -122,7 +124,7 @@ important considering it will likely handle untrusted input.</p></li>
 <p>And since Python bindings for MD4C did not yet exist, I decided to create them.</p>
 </section>
 <section id="why-is-pip-trying-to-build-from-source">
-<span id="why-source"></span><h3>Why is pip trying to build from source?<a class="headerlink" href="#why-is-pip-trying-to-build-from-source" title="Permalink to this headline">¶</a></h3>
+<span id="why-source"></span><h3>Why is pip trying to build from source?<a class="headerlink" href="#why-is-pip-trying-to-build-from-source" title="Permalink to this heading">¶</a></h3>
 <p>This means pip cannot find a suitable pre-built package. There can be any
 number of reasons for this:</p>
 <ul class="simple">
@@ -140,20 +142,20 @@ your platform). If you are getting errors during the install, make sure you
 have all the prerequisites (see <a class="reference internal" href="installation.html#prerequisites"><span class="std std-ref">Prerequisites</span></a>), then try again.</p>
 </section>
 <section id="why-do-i-see-error-pkg-config-probably-not-installed-when-trying-to-install">
-<h3>Why do I see <code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">pkg-config</span> <span class="pre">probably</span> <span class="pre">not</span> <span class="pre">installed:</span> <span class="pre">...</span></code> when trying to install?<a class="headerlink" href="#why-do-i-see-error-pkg-config-probably-not-installed-when-trying-to-install" title="Permalink to this headline">¶</a></h3>
+<h3>Why do I see <code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">pkg-config</span> <span class="pre">probably</span> <span class="pre">not</span> <span class="pre">installed:</span> <span class="pre">...</span></code> when trying to install?<a class="headerlink" href="#why-do-i-see-error-pkg-config-probably-not-installed-when-trying-to-install" title="Permalink to this heading">¶</a></h3>
 <p>Pip is trying to build from source. See <a class="reference internal" href="#why-source"><span class="std std-ref">Why is pip trying to build from source?</span></a></p>
 <p>If building from source is unavoidable, make sure you install all the
 prerequisites (see <a class="reference internal" href="installation.html#prerequisites"><span class="std std-ref">Prerequisites</span></a>), then try again.</p>
 </section>
 <section id="why-do-i-see-pkgconfig-pkgconfig-packagenotfounderror-md4c-not-found-when-trying-to-install">
-<h3>Why do I see <code class="docutils literal notranslate"><span class="pre">pkgconfig.pkgconfig.PackageNotFoundError:</span> <span class="pre">md4c</span> <span class="pre">not</span> <span class="pre">found</span></code> when trying to install?<a class="headerlink" href="#why-do-i-see-pkgconfig-pkgconfig-packagenotfounderror-md4c-not-found-when-trying-to-install" title="Permalink to this headline">¶</a></h3>
+<h3>Why do I see <code class="docutils literal notranslate"><span class="pre">pkgconfig.pkgconfig.PackageNotFoundError:</span> <span class="pre">md4c</span> <span class="pre">not</span> <span class="pre">found</span></code> when trying to install?<a class="headerlink" href="#why-do-i-see-pkgconfig-pkgconfig-packagenotfounderror-md4c-not-found-when-trying-to-install" title="Permalink to this heading">¶</a></h3>
 <p>Pip is trying to build from source. See <a class="reference internal" href="#why-source"><span class="std std-ref">Why is pip trying to build from source?</span></a></p>
 <p>If building from source is unavoidable, make sure you install all the
 prerequisites (see <a class="reference internal" href="installation.html#prerequisites"><span class="std std-ref">Prerequisites</span></a>), then try again.</p>
 </section>
 </section>
 <section id="generating-these-docs-locally">
-<h2>Generating These Docs Locally<a class="headerlink" href="#generating-these-docs-locally" title="Permalink to this headline">¶</a></h2>
+<h2>Generating These Docs Locally<a class="headerlink" href="#generating-these-docs-locally" title="Permalink to this heading">¶</a></h2>
 <p>This documentation is generated with <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a>. With it installed and a local
 copy of the PyMD4C repository, you can generate your own local copy of the docs
 as follows:</p>
@@ -165,7 +167,7 @@ as follows:</p>
 of your choice.</p>
 </section>
 <section id="human-help">
-<h2>Human Help<a class="headerlink" href="#human-help" title="Permalink to this headline">¶</a></h2>
+<h2>Human Help<a class="headerlink" href="#human-help" title="Permalink to this heading">¶</a></h2>
 <p>If you find you need a bit of human help, feel free to post in the <a class="reference external" href="https://github.com/dominickpastore/pymd4c/discussions">discussions</a>
 tab on GitHub. I do my best to keep an eye on these and respond.</p>
 <p>Currently, there is no mailing list, IRC channel, Discord chat, or Stack
@@ -199,7 +201,7 @@ Overflow tag. The project is not yet big enough to warrant them.</p>
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Installation &#8212; PyMD4C  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,7 +12,9 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Generating HTML" href="generating_html.html" />
@@ -77,7 +79,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -95,9 +97,9 @@
           <div class="body" role="main">
             
   <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
 <section id="install-from-pypi">
-<h2>Install from PyPI<a class="headerlink" href="#install-from-pypi" title="Permalink to this headline">¶</a></h2>
+<h2>Install from PyPI<a class="headerlink" href="#install-from-pypi" title="Permalink to this heading">¶</a></h2>
 <p>PyMD4C is available on PyPI under the name <a class="reference external" href="https://pypi.org/project/pymd4c/"><code class="docutils literal notranslate"><span class="pre">pymd4c</span></code></a>. Install it with
 pip like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pymd4c</span>
@@ -118,7 +120,7 @@ platform wheel. Prebuilt packages are available for Python 3.6+ on the
 following platforms:</p>
 <ul class="simple">
 <li><p>Windows, 64-bit (amd64/x86-64) Python only.</p></li>
-<li><p>Recent versions of macOS on Intel silicon <a class="footnote-reference brackets" href="#m1" id="id1">1</a></p></li>
+<li><p>Recent versions of macOS on Intel silicon <a class="footnote-reference brackets" href="#m1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
 <li><p>Most Linux distributions, 64-bit Python only (specifically, any distribution
 supported by <a class="reference external" href="https://github.com/pypa/manylinux">manylinux2014</a>, amd64 architecture)</p></li>
 </ul>
@@ -129,9 +131,9 @@ for information on installing them.</p>
 think it should be, consider opening a <a class="reference external" href="https://github.com/dominickpastore/pymd4c/issues">GitHub issue</a>.</p>
 </section>
 <section id="build-and-install-from-source">
-<h2>Build and Install from Source<a class="headerlink" href="#build-and-install-from-source" title="Permalink to this headline">¶</a></h2>
+<h2>Build and Install from Source<a class="headerlink" href="#build-and-install-from-source" title="Permalink to this heading">¶</a></h2>
 <section id="prerequisites">
-<span id="id2"></span><h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h3>
 <p>This package depends on the MD4C library. It may be available through your
 package manager. Otherwise, it can be built from source as follows:</p>
 <ol class="arabic">
@@ -188,7 +190,7 @@ some distributions split these off from the main Python package. Install
 <code class="docutils literal notranslate"><span class="pre">python-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">python-devel</span></code> to get them.</p>
 </section>
 <section id="build-install">
-<h3>Build/Install<a class="headerlink" href="#build-install" title="Permalink to this headline">¶</a></h3>
+<h3>Build/Install<a class="headerlink" href="#build-install" title="Permalink to this heading">¶</a></h3>
 <p>Build and install as you would for any Python source repository. Download and
 extract a release or clone the repository, and run the following inside:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
@@ -204,12 +206,13 @@ distribution on PyPI:</p>
 from source, as described above). If this is not the case, installation will
 fail.</p>
 <p class="rubric">Footnotes</p>
-<dl class="footnote brackets">
-<dt class="label" id="m1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Sorry M1 users, waiting for GitHub Actions to support Apple Silicon
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="m1" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Sorry M1 users, waiting for GitHub Actions to support Apple Silicon
 for GitHub-hosted runners.</p>
-</dd>
-</dl>
+</aside>
+</aside>
 </section>
 </section>
 </section>
@@ -240,7 +243,7 @@ for GitHub-hosted runners.</p>
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

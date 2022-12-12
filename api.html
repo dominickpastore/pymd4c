@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>API &#8212; PyMD4C  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,7 +12,9 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="DOM API" href="dom_api.html" />
@@ -79,7 +81,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -97,17 +99,17 @@
           <div class="body" role="main">
             
   <section id="module-md4c">
-<span id="api"></span><h1>API<a class="headerlink" href="#module-md4c" title="Permalink to this headline">¶</a></h1>
+<span id="api"></span><h1>API<a class="headerlink" href="#module-md4c" title="Permalink to this heading">¶</a></h1>
 <p>This is the API for the <a class="reference internal" href="#module-md4c" title="md4c"><code class="xref py py-mod docutils literal notranslate"><span class="pre">md4c</span></code></a> module, which provides the actual bindings
 for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</a> C library.</p>
 <section id="parsers-and-renderers">
-<h2>Parsers and Renderers<a class="headerlink" href="#parsers-and-renderers" title="Permalink to this headline">¶</a></h2>
+<h2>Parsers and Renderers<a class="headerlink" href="#parsers-and-renderers" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.HTMLRenderer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">HTMLRenderer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser_flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer_flags</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.HTMLRenderer" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class to convert Markdown to HTML, implemented in C on top of the MD4C-HTML library. This is the fastest way to convert Markdown to HTML with PyMD4C.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parser_flags</strong> (<em>int</em><em>, </em><em>optional</em>) – Zero or more parser option flags OR’d together. See <a class="reference internal" href="#options"><span class="std std-ref">Option Flags</span></a>.</p></li>
 <li><p><strong>renderer_flags</strong> (<em>int</em><em>, </em><em>optional</em>) – Zero or more HTML renderer option flags OR’d together. See <a class="reference internal" href="#options"><span class="std std-ref">Option Flags</span></a>.</p></li>
@@ -120,16 +122,16 @@ for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</
 <span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markdown</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.HTMLRenderer.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a Markdown document and return the rendered HTML.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>markdown</strong> (<em>str</em><em> or </em><em>bytes</em>) – The Markdown text to parse. If provided as a <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, it must be UTF-8 encoded.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The generated HTML</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str or bytes</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#md4c.ParseError" title="md4c.ParseError"><strong>ParseError</strong></a> – if there is a runtime error while parsing</p>
 </dd>
 </dl>
@@ -142,7 +144,7 @@ for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">GenericParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser_flags</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.GenericParser" title="Permalink to this definition">¶</a></dt>
 <dd><p>SAX-like Markdown parser, implemented in C on top of the bare MD4C parser.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>parser_flags</strong> (<em>int</em><em>, </em><em>optional</em>) – Zero or more parser option flags OR’d together. See <a class="reference internal" href="#options"><span class="std std-ref">Option Flags</span></a>.</p>
 </dd>
 </dl>
@@ -154,7 +156,7 @@ for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</
 <p>Callbacks must all accept two parameters. The first describes the type of block, inline, or text. The second is a dict with details about the block or inline or a string/bytes containing the text itself. See <a class="reference internal" href="pure_parsing.html#callbacks"><span class="std std-ref">Callbacks</span></a> for more information.</p>
 <p>If a callback raises <a class="reference internal" href="#md4c.StopParsing" title="md4c.StopParsing"><code class="xref py py-class docutils literal notranslate"><span class="pre">StopParsing</span></code></a>, parsing will abort with no error. Any other exception will abort parsing and propagate back to the caller of this method.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>markdown</strong> (<em>str</em><em> or </em><em>bytes</em>) – The Markdown text to parse. If provided as a <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, it must be UTF-8 encoded.</p></li>
 <li><p><strong>enter_block_callback</strong> (<em>function</em><em> or </em><em>callable</em>) – Callback to be called when the parser enters a new block element</p></li>
@@ -164,7 +166,7 @@ for the <a class="reference external" href="https://github.com/mity/md4c">MD4C</
 <li><p><strong>text_callback</strong> (<em>function</em><em> or </em><em>callable</em>) – Callback to be called when the parser has text to add to the current block or inline element</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#md4c.ParseError" title="md4c.ParseError"><strong>ParseError</strong></a> – if there is a runtime error while parsing</p>
 </dd>
 </dl>
@@ -190,7 +192,7 @@ as-is to set parser options.</p>
 <dd><p>Called when the parser is entering a block element. This function
 should be overridden in subclasses. By default, it does nothing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>block_type</strong> – An instance of the <a class="reference internal" href="#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.BlockType</span></code></a> enum
 representing the type of block being entered</p></li>
@@ -211,7 +213,7 @@ more information, see the documentation for
 <dd><p>Called when the parser is leaving a block element. This function
 should be overridden in subclasses. By default, it does nothing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>block_type</strong> – An instance of the <a class="reference internal" href="#md4c.BlockType" title="md4c.BlockType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.BlockType</span></code></a> enum
 representing the type of block being left</p></li>
@@ -232,7 +234,7 @@ more information, see the documentation for
 <dd><p>Called when the parser is entering an inline element. This function
 should be overridden in subclasses. By default, it does nothing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>span_type</strong> – An instance of the <a class="reference internal" href="#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.SpanType</span></code></a> enum
 representing the type of inline being entered</p></li>
@@ -253,7 +255,7 @@ more information, see the documentation for
 <dd><p>Called when the parser is entering an inline element. This function
 should be overridden in subclasses. By default, it does nothing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>span_type</strong> – An instance of the <a class="reference internal" href="#md4c.SpanType" title="md4c.SpanType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.SpanType</span></code></a> enum
 representing the type of inline being entered</p></li>
@@ -275,7 +277,7 @@ more information, see the documentation for
 inline element. This function should be overridden in subclasses. By
 default, it does nothing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text_type</strong> – An instance of the <a class="reference internal" href="#md4c.TextType" title="md4c.TextType"><code class="xref py py-class docutils literal notranslate"><span class="pre">md4c.TextType</span></code></a> enum
 representing the type of text element</p></li>
@@ -292,7 +294,7 @@ representing the type of text element</p></li>
 <a class="reference internal" href="#md4c.ParserObject.leave_block" title="md4c.ParserObject.leave_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">leave_block()</span></code></a>, <a class="reference internal" href="#md4c.ParserObject.enter_span" title="md4c.ParserObject.enter_span"><code class="xref py py-func docutils literal notranslate"><span class="pre">enter_span()</span></code></a>, <a class="reference internal" href="#md4c.ParserObject.leave_span" title="md4c.ParserObject.leave_span"><code class="xref py py-func docutils literal notranslate"><span class="pre">leave_span()</span></code></a>, and
 <a class="reference internal" href="#md4c.ParserObject.text" title="md4c.ParserObject.text"><code class="xref py py-func docutils literal notranslate"><span class="pre">text()</span></code></a> functions as callbacks for <a class="reference internal" href="#md4c.GenericParser" title="md4c.GenericParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericParser</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>markdown</strong> (<em>str</em><em> or </em><em>bytes</em>) – The Markdown text to parse.</p>
 </dd>
 </dl>
@@ -301,19 +303,19 @@ representing the type of text element</p></li>
 </dd></dl>
 
 <section id="html-entity-helper">
-<h3>HTML Entity Helper<a class="headerlink" href="#html-entity-helper" title="Permalink to this headline">¶</a></h3>
+<h3>HTML Entity Helper<a class="headerlink" href="#html-entity-helper" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="md4c.lookup_entity">
 <span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">lookup_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#md4c.lookup_entity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translate an HTML entity to its UTF-8 representation. Returns the unmodified input if it is not a valid entity.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>entity</strong> (<em>str</em>) – The HTML entity, including ampersand and semicolon</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Corresponding UTF-8 character(s)</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -322,14 +324,14 @@ representing the type of text element</p></li>
 </section>
 </section>
 <section id="option-flags">
-<span id="options"></span><h2>Option Flags<a class="headerlink" href="#option-flags" title="Permalink to this headline">¶</a></h2>
+<span id="options"></span><h2>Option Flags<a class="headerlink" href="#option-flags" title="Permalink to this heading">¶</a></h2>
 <p>PyMD4C’s parsers and renderers accept options in two forms: An OR’d set of
 flags or as keyword arguments that accept <code class="docutils literal notranslate"><span class="pre">True</span></code>. All parsers and renderers
 accept the parsing options, but renderer options are specific to the renderer.</p>
 <section id="parser-option-flags">
-<h3>Parser Option Flags<a class="headerlink" href="#parser-option-flags" title="Permalink to this headline">¶</a></h3>
+<h3>Parser Option Flags<a class="headerlink" href="#parser-option-flags" title="Permalink to this heading">¶</a></h3>
 <section id="basic-option-flags">
-<h4>Basic option flags<a class="headerlink" href="#basic-option-flags" title="Permalink to this headline">¶</a></h4>
+<h4>Basic option flags<a class="headerlink" href="#basic-option-flags" title="Permalink to this heading">¶</a></h4>
 <dl>
 <dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_FLAG_COLLAPSEWHITESPACE</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">collapse_whitespace</span></code></p>
 <p>In normal text, collapse non-trivial whitespace into a single space.</p>
@@ -377,7 +379,7 @@ with <code class="docutils literal notranslate"><span class="pre">www.</span></c
 </dl>
 </section>
 <section id="combination-option-flags">
-<h4>Combination option flags<a class="headerlink" href="#combination-option-flags" title="Permalink to this headline">¶</a></h4>
+<h4>Combination option flags<a class="headerlink" href="#combination-option-flags" title="Permalink to this heading">¶</a></h4>
 <p>These enable several related parser options, or options to match a particular
 dialect of Markdown as closely as possible.</p>
 <dl>
@@ -409,7 +411,7 @@ dialect of Markdown as closely as possible.</p>
 </section>
 </section>
 <section id="html-renderer-option-flags">
-<h3>HTML Renderer Option Flags<a class="headerlink" href="#html-renderer-option-flags" title="Permalink to this headline">¶</a></h3>
+<h3>HTML Renderer Option Flags<a class="headerlink" href="#html-renderer-option-flags" title="Permalink to this heading">¶</a></h3>
 <p>These options are only accepted by the <a class="reference internal" href="#md4c.HTMLRenderer" title="md4c.HTMLRenderer"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLRenderer</span></code></a>.</p>
 <dl>
 <dt><code class="xref py py-const docutils literal notranslate"><span class="pre">md4c.MD_HTML_FLAG_DEBUG</span></code></dt><dd><p>Keyword argument: <code class="docutils literal notranslate"><span class="pre">debug</span></code></p>
@@ -430,7 +432,7 @@ dialect of Markdown as closely as possible.</p>
 </section>
 </section>
 <section id="enums">
-<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
+<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this heading">¶</a></h2>
 <p>The MD4C library uses various enums to provide data to callbacks. PyMD4C uses
 <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code>s to encapsulate these.</p>
 <dl class="py class">
@@ -687,7 +689,7 @@ dialect of Markdown as closely as possible.</p>
 
 </section>
 <section id="exceptions">
-<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="md4c.ParseError">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">md4c.</span></span><span class="sig-name descname"><span class="pre">ParseError</span></span><a class="headerlink" href="#md4c.ParseError" title="Permalink to this definition">¶</a></dt>
@@ -729,7 +731,7 @@ dialect of Markdown as closely as possible.</p>
       &copy; Copyright 2021 Dominick C. Pastore.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
