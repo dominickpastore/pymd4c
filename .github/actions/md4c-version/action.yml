@@ -14,5 +14,10 @@ runs:
   steps:
     - id: get-version
       run: |
-          python3 "$GITHUB_ACTION_PATH/get_version.py"
+        if command -V python
+        then
+            python "$GITHUB_ACTION_PATH/get_version.py"
+        else
+            python3 "$GITHUB_ACTION_PATH/get_version.py"
+        fi
       shell: bash
