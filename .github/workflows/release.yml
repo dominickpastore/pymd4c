@@ -100,37 +100,31 @@ jobs:
           publish_dir: ./docs/_build/html
           cname: pymd4c.dcpx.org
 
-  package-linux:
-    name: Package for Linux
+  package-wheels:
+    name: Package wheels on ${{matrix.os}}, arch ${{matrix.arch}}
     needs: test
-    runs-on: ubuntu-20.04
-    container:
-      image: quay.io/pypa/${{matrix.plat}}
-      env:
-        PLAT: ${{matrix.plat}}
-        PY_VERSIONS: ${{matrix.py_versions}}
+    runs-on: ${{matrix.os}}
 
     strategy:
       matrix:
         include:
-          # Ideally we'd build for i686 and maybe even aarch64, but the GitHub
-          # Actions hosted runners are only x86_64. Possible future solution:
-          # There may be a way to set up self-hosted runners on KVM using
-          # QEMU's support for virtualizing other architectures.
-          #
-          # Note that Python 3.6 comes with a version of pip that is
-          # incompatible with manylinux2014 (and 2010). Unfortunately,
-          # manylinux1 is incompatible with GitHub Actions (the checkout@v3
-          # action depends on newer libraries), so we can't build for it.
-          - plat: manylinux2014_x86_64
-            py_versions: "3.6 3.7 3.8 3.9 3.10 3.11"
-          # If there is ever a need to use different platforms for different
-          # Python versions, it can be done like this:
-          #
-          # - plat: manylinux2014_x86_64
-          #   py_versions: "3.6 3.7 3.8 3.9"
-          # - plat: manylinux_2_24_x86_64
-          #   py_versions: "3.10"
+          - os: ubuntu-20.04
+            arch: all
+          - os: windows-2019
+            arch: AMD64
+            cmake-arch: x64
+          - os: windows-2019
+            arch: x86
+            cmake-arch: Win32
+          - os: windows-2019
+            arch: ARM64
+            cmake-arch: ARM64
+          - os: macos-11
+            arch: x86_64
+            cmake-arch: x86_64
+          - os: macos-11
+            arch: universal2
+            cmake-arch: arm64;x86_64
 
     steps:
       - name: Checkout
@@ -144,101 +138,64 @@ jobs:
           repository: mity/md4c
           ref: release-${{steps.md4c-version.outputs.md4c-version}}
           path: md4c-lib
-      - name: Build and install MD4C
-        run: |
-          yum install -y cmake3
-          mkdir md4c-lib/build
-          cd md4c-lib/build
-          cmake3 -DCMAKE_INSTALL_LIBDIR:PATH=/usr/local/lib -DCMAKE_BUILD_TYPE=Release ..
-          make
-          make install
-      - name: Build wheels
-        run: |
-          for ver in ${PY_VERSIONS//.}
-          do
-            pybins="$pybins /opt/python/cp${ver}-*/bin"
-          done
-          for pybin in $pybins
-          do
-            ${pybin}/pip wheel . --no-deps -w dist/
-          done
-        shell: bash
-      - name: Run auditwheel repair
-        run: |
-          for wheel in dist/*.whl
-          do
-            if ! auditwheel show $wheel
-            then
-              echo "Skipping non-platform wheel $wheel"
-            else
-              auditwheel repair $wheel --plat $PLAT -w dist/
-            fi
-          done
-        shell: bash
-      - name: Remove original unaudited wheels
-        run: rm -f dist/*-linux_*
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: all
+      - name: Build MD4C and wheels
+        uses: pypa/cibuildwheel@v2.11.3
+        env:
+          CIBW_ARCHS: ${{matrix.arch}}
+          # Note: cmake3 is not available in yum repos for all archs, so we
+          # install from PyPI instead.
+          CIBW_BEFORE_ALL_LINUX: >
+            pip install cmake &&
+            mkdir md4c-lib/build &&
+            cd md4c-lib/build &&
+            cmake
+            -DCMAKE_INSTALL_LIBDIR:PATH=/usr/local/lib
+            -DCMAKE_BUILD_TYPE=Release .. &&
+            make &&
+            make install
+          CIBW_ENVIRONMENT_WINDOWS: MD4C_PATH="C:\\MD4C"
+          CIBW_BEFORE_ALL_WINDOWS: >
+            mkdir md4c-lib\build &&
+            cd md4c-lib\build &&
+            cmake
+            -A ${{matrix.cmake-arch}}
+            -DCMAKE_INSTALL_PREFIX:PATH="C:\MD4C"
+            -DCMAKE_BUILD_TYPE=Release .. &&
+            cmake --build . --config Release &&
+            cmake --install .
+          # Note: CMAKE_INSTALL_NAME_DIR must be the path to where the
+          # dylibs are installed. By default, this is
+          # CMAKE_INSTALL_PREFIX/CMAKE_INSTALL_LIBDIR, which is /usr/local/lib
+          # by default (see CMAKE docs for those vars).
+          CIBW_BEFORE_ALL_MACOS: >
+            mkdir md4c-lib/build &&
+            cd md4c-lib/build &&
+            cmake
+            -DCMAKE_OSX_ARCHITECTURES="${{matrix.cmake-arch}}"
+            -DCMAKE_INSTALL_NAME_DIR:PATH=/usr/local/lib
+            -DCMAKE_BUILD_TYPE=Release .. &&
+            cmake --build . --config Release &&
+            cmake --install .
+        with:
+          output-dir: dist/
       - name: List build artifacts
         run: ls dist/
       - name: Save wheels as artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: linux-wheels
-          path: dist/*
-
-  package-others:
-    name: Package for ${{matrix.platform}}/${{matrix.python-version}}
-    needs: test
-    runs-on: ${{matrix.platform}}-latest
-
-    strategy:
-      matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
-        platform:
-          - windows
-          - macos
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Python ${{matrix.python-version}}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{matrix.python-version}}
-      - id: md4c-version
-        name: Get compatible MD4C version
-        uses: ./.github/actions/md4c-version
-      - name: Fetch MD4C
-        uses: actions/checkout@v3
-        with:
-          repository: mity/md4c
-          ref: release-${{steps.md4c-version.outputs.md4c-version}}
-          path: md4c-lib
-      - name: Build and install MD4C
-        run: |
-          mkdir md4c-lib/build
-          cd md4c-lib/build
-          cmake -DCMAKE_BUILD_TYPE=Release ..
-          cmake --build . --config Release
-          cmake --install .
-      - name: Install Python packaging tools
-        run: python -m pip install --upgrade pip setuptools wheel
-      - name: Build wheel
-        run: |
-          python -m pip wheel . --no-deps -w dist/
-      - name: List build artifacts
-        run: ls dist/
-      - name: Save wheels as artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{matrix.platform}}-${{matrix.python-version}}-wheel
+          name: wheels
           path: dist/*
 
   pypi-upload:
     name: Upload packages to PyPI
     needs:
       - package-sdist-docs
-      - package-linux
-      - package-others
+      - package-wheels
     runs-on: ubuntu-20.04
 
     steps:
@@ -253,6 +210,7 @@ jobs:
         with:
           path: dist/
       - name: Flatten directory structure
+        # Necessary because artifacts go in subfolders by job
         run: |
           for d in dist/*
           do

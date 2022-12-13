@@ -67,6 +67,13 @@ class PkgconfigExtensionList(list):
 
 
 if sys.platform.startswith('win'):
+    import os
+    import os.path
+
+    md4c_path = os.environ.get('MD4C_PATH', 'C:/Program Files (x86)/MD4C')
+    md4c_include = os.path.join(md4c_path, 'include')
+    md4c_lib = os.path.join(md4c_path, 'lib')
+
     extensions = [
         Extension(
             'md4c._md4c',
@@ -75,15 +82,15 @@ if sys.platform.startswith('win'):
                 'src/generic_parser.c',
                 'src/html_renderer.c',
             ],
-            include_dirs=['C:/Program Files (x86)/MD4C/include'],
+            include_dirs=[md4c_include],
             libraries=['md4c', 'md4c-html'],
-            library_dirs=['C:/Program Files (x86)/MD4C/lib']),
+            library_dirs=[md4c_lib]),
         Extension(
             'md4c._enum_consts',
             sources=['src/enum_consts.c'],
-            include_dirs=['C:/Program Files (x86)/MD4C/include'],
+            include_dirs=[md4c_include],
             libraries=['md4c'],
-            library_dirs=['C:/Program Files (x86)/MD4C/lib']),
+            library_dirs=[md4c_lib]),
     ]
 else:
     extensions = PkgconfigExtensionList([
