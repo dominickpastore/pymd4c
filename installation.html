@@ -116,14 +116,8 @@ build it from source (likely because the necessary dependencies were not
 available).</p></li>
 </ol>
 <p>Regarding reason #2: Since this package contains C extensions, it is built as a
-platform wheel. Prebuilt packages are available for Python 3.6+ on the
-following platforms:</p>
-<ul class="simple">
-<li><p>Windows, 64-bit (amd64/x86-64) Python only.</p></li>
-<li><p>Recent versions of macOS on Intel silicon <a class="footnote-reference brackets" href="#m1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
-<li><p>Most Linux distributions, 64-bit Python only (specifically, any distribution
-supported by <a class="reference external" href="https://github.com/pypa/manylinux">manylinux2014</a>, amd64 architecture)</p></li>
-</ul>
+platform wheel. Prebuilt packages are available for recent versions of Python
+on a variety of platforms. See the <a class="reference external" href="https://pypi.org/project/pymd4c/#files">files page on PyPI</a> for a full list.</p>
 <p>Pip will automatically attempt to build from source on other platforms, but it
 will fail if the build dependencies are not available. See <a class="reference internal" href="#prerequisites"><span class="std std-ref">Prerequisites</span></a>
 for information on installing them.</p>
@@ -133,7 +127,7 @@ think it should be, consider opening a <a class="reference external" href="https
 <section id="build-and-install-from-source">
 <h2>Build and Install from Source<a class="headerlink" href="#build-and-install-from-source" title="Permalink to this heading">¶</a></h2>
 <section id="prerequisites">
-<span id="id2"></span><h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h3>
+<span id="id1"></span><h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h3>
 <p>This package depends on the MD4C library. It may be available through your
 package manager. Otherwise, it can be built from source as follows:</p>
 <ol class="arabic">
@@ -203,16 +197,10 @@ distribution on PyPI:</p>
 </div>
 <p>Note that on Windows, setup.py assumes the MD4C library was installed at
 “C:/Program Files (x86)/MD4C/” (this is the default location when building MD4C
-from source, as described above). If this is not the case, installation will
-fail.</p>
-<p class="rubric">Footnotes</p>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="m1" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Sorry M1 users, waiting for GitHub Actions to support Apple Silicon
-for GitHub-hosted runners.</p>
-</aside>
-</aside>
+from source, as described above). If this is not the case, you will need to set
+an environment variable <code class="docutils literal notranslate"><span class="pre">MD4C_PATH</span></code> to the location it was installed to, or
+installation will fail. (This environment variable need only be set during the
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>. It will not be required after that.)</p>
 </section>
 </section>
 </section>

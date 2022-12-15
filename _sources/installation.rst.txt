@@ -25,13 +25,8 @@ If this does not work, there are a couple potential reasons:
    available).
 
 Regarding reason #2: Since this package contains C extensions, it is built as a
-platform wheel. Prebuilt packages are available for Python 3.6+ on the
-following platforms:
-
-- Windows, 64-bit (amd64/x86-64) Python only.
-- Recent versions of macOS on Intel silicon [#m1]_
-- Most Linux distributions, 64-bit Python only (specifically, any distribution
-  supported by manylinux2014_, amd64 architecture)
+platform wheel. Prebuilt packages are available for recent versions of Python
+on a variety of platforms. See the `files page on PyPI`_ for a full list.
 
 Pip will automatically attempt to build from source on other platforms, but it
 will fail if the build dependencies are not available. See :ref:`prerequisites`
@@ -41,6 +36,7 @@ If a prebuilt package is not available or not working for your platform and you
 think it should be, consider opening a `GitHub issue`_.
 
 .. _Installing Packages - Python Packaging User Guide: https://packaging.python.org/tutorials/installing-packages/
+.. _files page on PyPI: https://pypi.org/project/pymd4c/#files
 .. _manylinux2014: https://github.com/pypa/manylinux
 .. _GitHub issue: https://github.com/dominickpastore/pymd4c/issues
 
@@ -101,6 +97,11 @@ for Python must be installed for the build to succeed. If you are using Linux,
 some distributions split these off from the main Python package. Install
 ``python-dev`` or ``python-devel`` to get them.
 
+.. _CMake: https://cmake.org/
+.. _MD4C releases: https://github.com/mity/md4c/tags
+.. _CHANGELOG: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
+.. _about.json: https://github.com/dominickpastore/pymd4c/blob/master/about.json
+
 Build/Install
 ~~~~~~~~~~~~~
 
@@ -116,15 +117,7 @@ distribution on PyPI::
 
 Note that on Windows, setup.py assumes the MD4C library was installed at
 "C:/Program Files (x86)/MD4C/" (this is the default location when building MD4C
-from source, as described above). If this is not the case, installation will
-fail.
-
-.. _CMake: https://cmake.org/
-.. _MD4C releases: https://github.com/mity/md4c/tags
-.. _CHANGELOG: https://github.com/dominickpastore/pymd4c/blob/master/CHANGELOG.md
-.. _about.json: https://github.com/dominickpastore/pymd4c/blob/master/about.json
-
-.. rubric:: Footnotes
-
-.. [#m1] Sorry M1 users, waiting for GitHub Actions to support Apple Silicon
-   for GitHub-hosted runners.
+from source, as described above). If this is not the case, you will need to set
+an environment variable ``MD4C_PATH`` to the location it was installed to, or
+installation will fail. (This environment variable need only be set during the
+``pip install``. It will not be required after that.)
