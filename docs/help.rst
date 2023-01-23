@@ -34,25 +34,24 @@ And since Python bindings for MD4C did not yet exist, I decided to create them.
 Why is pip trying to build from source?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This means pip cannot find a suitable pre-built package. There can be any
-number of reasons for this:
+This means pip cannot find a suitable pre-built package. Older versions of the
+library had a limited number of platforms for which pre-built packages were
+published, but since version 1.3.0, most common platforms should be supported.
+However, if you fall into one of the following groups, pip may still need to
+build from source:
 
-- If you are on Linux with Python 3.6, your version of pip may be too old. Try
-  upgrading to 19.3 or newer.
+- You are on an OS other than Windows, macOS, or Linux
 
-- You are using 32-bit Python on Windows. Try installing 64-bit Python.
+- You are running a very old version of your OS
 
-- You are on an M1 Mac.
+- On Linux with Python 3.6, you have a version of pip older than 19.3
 
-- You are running an esoteric Linux distribution or on an architecture other
-  than amd64.
+- You are running an esoteric Linux distribution or on an esoteric architecture
 
-- You are on an OS other than Windows, macOS, or Linux.
-
-Unfortunately, apart from the first two reasons, there is currently no way to
-avoid building from source (pre-built packages cannot currently be compiled for
-your platform). If you are getting errors during the install, make sure you
-have all the prerequisites (see :ref:`prerequisites`), then try again.
+Not having a pre-built package available for your platform isn't necessarily a
+showstopper. Pip will happily perform a build from source if necessary. If you
+are getting errors during the install, make sure you have all the prerequisites
+(see :ref:`prerequisites`), then try again.
 
 Why do I see ``error: pkg-config probably not installed: ...`` when trying to install?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
